@@ -34,11 +34,6 @@ export default function ChatListPage() {
     getNip04UserProfilesFromChats();
   }, []);
 
-  // console.log(
-  //   "userProfiles",
-  //   userProfiles && JSON.stringify(userProfiles, null, 2)
-  // );
-
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />

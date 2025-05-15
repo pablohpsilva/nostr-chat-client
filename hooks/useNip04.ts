@@ -29,8 +29,6 @@ export default function useNip14() {
         throw new Error("No active user");
       }
 
-      // @ts-expect-error
-      const privateKey = getNDK().getInstance().signer?._privateKey;
       const currentUserPublicKey = user.pubkey;
       const currentUserNpub = user.npub;
 
@@ -50,7 +48,6 @@ export default function useNip14() {
 
         try {
           const _profile = await profileUser.fetchProfile();
-          //   console.log("profile", _profile);
           const profile = _profile ? _profile : pubKeyObj;
           return { ...profile, pubkey: rumor.pubkey };
         } catch (err) {
@@ -59,8 +56,6 @@ export default function useNip14() {
           return pubKeyObj;
         }
       });
-
-      //   console.log("profilePromises", profilePromises);
 
       const profileResults = await Promise.allSettled(profilePromises);
       //   const _profiles: NIP04UserProfile[] = profileResults

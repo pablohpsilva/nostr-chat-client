@@ -44,8 +44,6 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
         npub,
       };
 
-      console.log("newKeys", newKeys);
-
       setKeys(newKeys);
     } catch (error) {
       console.error(error);

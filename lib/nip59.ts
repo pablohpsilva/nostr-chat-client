@@ -31,7 +31,6 @@ const nip44Encrypt = (
     JSON.stringify(data),
     nip44ConversationKey(privateKey, publicKey)
   );
-  console.log(`encrypted: ${encrypted}`);
   return encrypted;
 };
 
@@ -79,11 +78,8 @@ export function createWrap(
 ): NostrEvent {
   const randomKey = generateSecretKey();
   const kind = GiftWrap;
-  console.log(`kind: ${kind}`);
   const created_at = randomNow();
-  console.log(`created_at: ${created_at}`);
   const content = nip44Encrypt(seal, randomKey, recipientPublicKey);
-  console.log(`content: ${content}`);
 
   const result = finalizeEvent(
     {
@@ -94,8 +90,6 @@ export function createWrap(
     },
     randomKey
   ) as NostrEvent;
-
-  console.log(`result: ${result}`);
 
   return result;
 }

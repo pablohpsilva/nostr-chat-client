@@ -1,6 +1,7 @@
+import { Button } from "@/components/ui/Button";
 import { Stack, useRouter } from "expo-router";
 import { Fragment } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
@@ -29,12 +30,9 @@ export default function HomeScreen() {
         </View>
 
         <SafeAreaView edges={["bottom"]}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleNavigateToLogin}
-          >
+          <Button onPress={handleNavigateToLogin}>
             <Text style={styles.buttonText}>Get Started</Text>
-          </TouchableOpacity>
+          </Button>
         </SafeAreaView>
       </View>
     </Fragment>
@@ -72,13 +70,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 12,
     paddingLeft: 10,
-  },
-  button: {
-    backgroundColor: "#0066CC",
-    paddingVertical: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 20,
   },
   buttonText: {
     color: "white",

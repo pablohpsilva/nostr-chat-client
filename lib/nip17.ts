@@ -57,17 +57,8 @@ export function wrapEvent(
   replyTo?: ReplyTo
 ): NostrEvent {
   const event = createEvent(recipient, message, conversationTitle, replyTo);
-  console.log(`event: ${event}`);
-
-  console.log(
-    "event, senderPrivateKey, recipient.publicKey",
-    event,
-    senderPrivateKey,
-    recipient.publicKey
-  );
 
   const wrap = nip59.wrapEvent(event, senderPrivateKey, recipient.publicKey);
-  console.log(`wrap: ${wrap}`);
 
   return wrap;
 }
@@ -84,11 +75,8 @@ export function wrapManyEvents(
   }
 
   const senderPublicKey = getPublicKey(senderPrivateKey);
-  console.log(`senderPublicKey: ${senderPublicKey}`);
 
   const recipietsArray = [{ publicKey: senderPublicKey }, ...recipients];
-
-  console.log("recipietsArray", recipietsArray);
 
   // wrap the event for the sender and then for each recipient
   return recipietsArray.map((recipient) =>

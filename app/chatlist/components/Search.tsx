@@ -103,8 +103,6 @@ export default function Search() {
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
     // // TODO: Implement nostr search logic here
-    // console.log("Searching on nostr for:", query);
-    // await search(query);
   };
 
   return (

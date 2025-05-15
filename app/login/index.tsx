@@ -29,7 +29,6 @@ export default function LoginScreen() {
   const router = useRouter();
   const [mode, setMode] = useState<LoginMode>(LoginMode.LOGIN);
   const login = useNDKSessionLogin();
-  const backgroundColor = useThemeColor({}, "background");
 
   const handleLogin = async (keys: KeysType) => {
     const signer = new NDKPrivateKeySigner(keys.nsec);

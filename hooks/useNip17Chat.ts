@@ -34,7 +34,6 @@ export default function useNip17Chat() {
     }
 
     const unwrappedEvent = nip17.unwrapEvent(event as Event, privateKey);
-    console.log("unwrappedEvent", unwrappedEvent);
     setMessagesByUser((prev) => [...prev, unwrappedEvent]);
   };
 
@@ -55,8 +54,6 @@ export default function useNip17Chat() {
       const recipients = Array.isArray(_recipients)
         ? _recipients
         : [_recipients];
-
-      console.log("recipients", recipients);
 
       // We need two filters to get the complete conversation:
       // 1. Messages sent BY current user TO recipients
@@ -84,7 +81,6 @@ export default function useNip17Chat() {
         .subscribe(incomingFilter, options);
 
       outgoingSub.on("event", (event: NDKEvent) => {
-        // console.log("Outgoing message received:", event);
         // For outgoing messages, the p tag contains the recipient
         const recipientPubkey = event.tags.find((tag) => tag[0] === "p")?.[1];
 
@@ -95,7 +91,6 @@ export default function useNip17Chat() {
       });
 
       incomingSub.on("event", (event: NDKEvent) => {
-        // console.log("Incoming message received:", event);
         // For incoming messages, the author is the sender
         const senderPubkey = event.pubkey;
 
@@ -107,12 +102,10 @@ export default function useNip17Chat() {
 
       // Handle EOSE (End of Stored Events)
       outgoingSub.on("eose", (event: any) => {
-        console.log("Outgoing messages EOSE received", event);
         setLoading(false);
       });
 
       incomingSub.on("eose", (event: any) => {
-        console.log("Incoming messages EOSE received", event);
         setLoading(false);
       });
 
@@ -172,28 +165,10 @@ export default function useNip17Chat() {
         });
 
       await Promise.all(
-        events.map(async (event, index) => {
-          console.log(`publishing event ${index + 1} of ${events.length}...`);
+        events.map(async (event) => {
           await event.publish();
-          console.log(`event ${index + 1} of ${events.length} published!`);
         })
       );
-
-      // const event = nip17.wrapEvent(
-      //   privateKey,
-      //   recipient,
-      //   message,
-      //   conversationTitle,
-      //   replyTo
-      // );
-
-      // const publishedEvent = Object.assign(
-      //   new NDKEvent(getNDK().getInstance()),
-      //   event
-      // );
-      // console.log("publishing event...");
-      // await publishedEvent.publish();
-      // console.log("event published!");
     } catch (error) {
       console.error("Error sending direct message:", error);
       throw error;

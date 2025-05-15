@@ -1,15 +1,10 @@
 import { getNDK } from "@/components/NDKHeadless";
+import { Button } from "@/components/ui/Button";
 import { fillRoute, ROUTES } from "@/constants/routes";
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { Link } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 const formatPubkey = (pubkey: string) => {
   return `${pubkey.substring(0, 8)}...${pubkey.substring(pubkey.length - 8)}`;
@@ -78,6 +73,21 @@ export default function SearchStartChat({
               </View>
             </View>
           </View>
+        </View>
+
+        <View style={styles.chatButtonContainer}>
+          <Link
+            href={fillRoute(ROUTES.CHAT_ID, {
+              nip: "NIP04",
+              npub,
+            })}
+            asChild
+            onPress={handleOnClose}
+          >
+            <Button variant="outlined">
+              <Text style={styles.chatButtonText}>Regular Chat</Text>
+            </Button>
+          </Link>
 
           <Link
             href={fillRoute(ROUTES.CHAT_ID, {
@@ -87,9 +97,9 @@ export default function SearchStartChat({
             asChild
             onPress={handleOnClose}
           >
-            <TouchableOpacity style={styles.chatButton}>
-              <Text style={styles.chatButtonText}>Chat</Text>
-            </TouchableOpacity>
+            <Button variant="outlined">
+              <Text style={styles.chatButtonText}>Private Chat</Text>
+            </Button>
           </Link>
         </View>
       </View>
@@ -117,6 +127,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
+    gap: 16,
   },
   contentContainer: {
     flexDirection: "row",
@@ -165,6 +176,12 @@ const styles = StyleSheet.create({
   chatButtonText: {
     color: "white",
     fontWeight: "500",
+  },
+  chatButtonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
   },
   loadingContainer: {
     flexDirection: "row",
