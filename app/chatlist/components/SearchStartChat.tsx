@@ -1,6 +1,6 @@
 import { getNDK } from "@/components/NDKHeadless";
 import { fillRoute, ROUTES } from "@/constants/routes";
-import { NDKKind, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { Link } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
 import {
@@ -15,7 +15,13 @@ const formatPubkey = (pubkey: string) => {
   return `${pubkey.substring(0, 8)}...${pubkey.substring(pubkey.length - 8)}`;
 };
 
-export default function SearchStartChat({ npub }: { npub: string }) {
+export default function SearchStartChat({
+  npub,
+  onClose,
+}: {
+  npub: string;
+  onClose?: () => void;
+}) {
   const [userProfiles, setUserProfiles] = useState<NDKUserProfile>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +40,10 @@ export default function SearchStartChat({ npub }: { npub: string }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleOnClose = () => {
+    onClose?.();
   };
 
   useEffect(() => {
@@ -71,10 +81,11 @@ export default function SearchStartChat({ npub }: { npub: string }) {
 
           <Link
             href={fillRoute(ROUTES.CHAT_ID, {
-              nip: `NIP${NDKKind.EncryptedDirectMessage}`,
-              pubkey: npub,
+              nip: "NIP17",
+              npub,
             })}
             asChild
+            onPress={handleOnClose}
           >
             <TouchableOpacity style={styles.chatButton}>
               <Text style={styles.chatButtonText}>Chat</Text>

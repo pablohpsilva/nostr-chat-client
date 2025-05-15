@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Fragment, useState } from "react";
 import {
   Modal,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,7 +10,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 // import { useSearch } from "@/hooks/useSearch";
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
@@ -132,7 +132,7 @@ export default function Search() {
         animationType="slide"
         onRequestClose={handleCloseOverlay}
       >
-        <SafeAreaView style={styles.modalSafeArea} edges={["top"]}>
+        <SafeAreaView style={styles.modalSafeArea}>
           <View style={styles.searchHeader}>
             <TouchableOpacity
               onPress={handleCloseOverlay}
@@ -156,7 +156,10 @@ export default function Search() {
             {searchQuery &&
               searchQuery.startsWith("npub") &&
               searchQuery.length === 63 && (
-                <SearchStartChat npub={searchQuery} />
+                <SearchStartChat
+                  npub={searchQuery}
+                  onClose={handleCloseOverlay}
+                />
               )}
 
             {/* Commented out search results code would be converted here */}

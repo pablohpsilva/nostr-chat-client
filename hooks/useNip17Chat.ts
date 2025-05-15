@@ -6,7 +6,7 @@ import {
   useNDKCurrentUser,
 } from "@nostr-dev-kit/ndk-hooks";
 import { Event, nip17, nip19 } from "nostr-tools";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
 import { Recipient, ReplyTo } from "@/constants/types";
@@ -18,6 +18,10 @@ export default function useNip17Chat() {
   const [messagesByUser, setMessagesByUser] = useState<
     ReturnType<typeof nip17.unwrapEvent>[]
   >([]);
+  const sortedMessagesByUser = useMemo(
+    () => messagesByUser.sort((a, b) => a.created_at - b.created_at),
+    [messagesByUser]
+  );
 
   const addMessageToConversation = (
     event: NDKEvent,
@@ -141,37 +145,41 @@ export default function useNip17Chat() {
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
 
-      // let recipient: Recipient[];
-      let recipient: Recipient;
+      let recipient: Recipient[];
+      // let recipient: Recipient;
 
       // THIS IS NEEDED!!! Do not remove it.
       // You can only send events if you use the REAL public key.
       if (_recipient.publicKey.startsWith("npub")) {
         const { data: publicKey } = nip19.decode(_recipient.publicKey);
-        // recipient = [{ publicKey: publicKey as string }];
-        recipient = { publicKey: publicKey as string };
+        recipient = [{ publicKey: publicKey as string }];
+        // recipient = { publicKey: publicKey as string };
       } else {
-        // recipient = [_recipient];
-        recipient = _recipient;
+        recipient = [_recipient];
+        // recipient = _recipient;
       }
 
-      const event = nip17.wrapEvent(
-        privateKey,
-        recipient,
-        message,
-        conversationTitle,
-        replyTo
+      const events = nip17
+        .wrapManyEvents(
+          privateKey,
+          recipient,
+          message,
+          conversationTitle,
+          replyTo
+        )
+        .map((event) => {
+          return Object.assign(new NDKEvent(getNDK().getInstance()), event);
+        });
+
+      await Promise.all(
+        events.map(async (event, index) => {
+          console.log(`publishing event ${index + 1} of ${events.length}...`);
+          await event.publish();
+          console.log(`event ${index + 1} of ${events.length} published!`);
+        })
       );
 
-      const publishedEvent = Object.assign(
-        new NDKEvent(getNDK().getInstance()),
-        event
-      );
-      console.log("publishedEvent", publishedEvent);
-      await publishedEvent.publish();
-      console.log("publishedEvent", publishedEvent);
-
-      // const events = nip17.wrapManyEvents(
+      // const event = nip17.wrapEvent(
       //   privateKey,
       //   recipient,
       //   message,
@@ -179,17 +187,13 @@ export default function useNip17Chat() {
       //   replyTo
       // );
 
-      // await Promise.all(
-      //   events.map(async (event) => {
-      //     const publishedEvent = Object.assign(
-      //       new NDKEvent(getNDK().getInstance()),
-      //       event
-      //     );
-      //     console.log("publishedEvent", publishedEvent);
-      //     await publishedEvent.publish();
-      //     console.log("publishedEvent", publishedEvent);
-      //   })
+      // const publishedEvent = Object.assign(
+      //   new NDKEvent(getNDK().getInstance()),
+      //   event
       // );
+      // console.log("publishing event...");
+      // await publishedEvent.publish();
+      // console.log("event published!");
     } catch (error) {
       console.error("Error sending direct message:", error);
       throw error;
@@ -200,7 +204,7 @@ export default function useNip17Chat() {
 
   return {
     isLoading,
-    messages: messagesByUser,
+    messages: sortedMessagesByUser,
     sendMessage,
     getConversationMessagesWebhook,
     chat: null,

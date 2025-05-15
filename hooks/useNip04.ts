@@ -2,23 +2,22 @@ import { NDKFilter, NDKKind, NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
-import { Event, nip17, nip19 } from "nostr-tools";
+import { Event, nip19 } from "nostr-tools";
 
-const CACHE_KEY_NIP17_PROFILE_EVENT_IDS = "nip17-profile-events";
-const CACHE_KEY_NIP17_PROFILE = "nip17-profile";
+const CACHE_KEY_NIP04_PROFILE_EVENT_IDS = "nip04-profile-events";
+const CACHE_KEY_NIP04_PROFILE = "nip04-profile";
 
-export type NIP17UserProfile = NDKUserProfile & {
+export type NIP04UserProfile = NDKUserProfile & {
   pubkey: string;
   npub: string;
 };
 
-export default function useNip17() {
+export default function useNip14() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [userProfiles, setUserProfiles] = useState<NIP17UserProfile[]>([]);
-  //   const { getFromCache, saveToCache } = useCache();
+  const [userProfiles, setUserProfiles] = useState<NIP04UserProfile[]>([]);
 
-  const getUserProfilesFromChats = async (): Promise<NIP17UserProfile[]> => {
+  const getUserProfilesFromChats = async (): Promise<NIP04UserProfile[]> => {
     try {
       setIsLoading(true);
       setError(null);
@@ -37,48 +36,14 @@ export default function useNip17() {
 
       // Filter for NIP-17 (Private Direct Messages) events
       let filter: NDKFilter = {
-        kinds: [NDKKind.GiftWrap],
+        kinds: [NDKKind.EncryptedDirectMessage],
         "#p": [user.pubkey],
         limit: 10,
-        // "#e": [
-        //   "d57548998f0a86ba0a96401db56b166db8c44b36f0fd58689d593e63ac3e4934",
-        // ],
       };
-      //   const cachedNip17ProfileEvents = await getFromCache<string[]>(
-      //     CACHE_KEY_NIP17_PROFILE_EVENT_IDS
-      //   );
-      //   const cachedNip17ProfileEventsIds = cachedNip17ProfileEvents?.map(
-      //     (event) => event
-      //   );
-
-      //   console.log("cachedNip17ProfileEventsIds", cachedNip17ProfileEventsIds);
-
-      //   if (cachedNip17ProfileEvents) {
-      //     filter = {
-      //       ...filter,
-      //       "#e": cachedNip17ProfileEventsIds,
-      //     };
-      //   }
 
       const events = Array.from(await ndk.fetchEvents(filter)) as Event[];
-      //   console.log("events", events);
 
-      //   await saveToCache(CACHE_KEY_NIP17_PROFILE_EVENT_IDS, [
-      //     ...(cachedNip17ProfileEventsIds ?? []),
-      //     ...events.map((event) => event.id),
-      //   ]);
-
-      let unwrappedGifts: ReturnType<typeof nip17.unwrapManyEvents> = [];
-
-      try {
-        unwrappedGifts = nip17.unwrapManyEvents(events, privateKey);
-      } catch (err) {
-        console.error("Error unwrapping gifts", err);
-      }
-
-      //   console.log("unwrappedGifts", unwrappedGifts);
-
-      const profilePromises = unwrappedGifts.map(async (rumor) => {
+      const profilePromises = events.map(async (rumor) => {
         const npub = nip19.npubEncode(rumor.pubkey);
         const pubKeyObj = { pubkey: rumor.pubkey, npub };
         const profileUser = ndk.getUser(pubKeyObj);
@@ -98,11 +63,11 @@ export default function useNip17() {
       //   console.log("profilePromises", profilePromises);
 
       const profileResults = await Promise.allSettled(profilePromises);
-      //   const _profiles: NIP17UserProfile[] = profileResults
-      const profiles: NIP17UserProfile[] = Array.from(
+      //   const _profiles: NIP04UserProfile[] = profileResults
+      const profiles: NIP04UserProfile[] = Array.from(
         profileResults
           .filter(
-            (result): result is PromiseFulfilledResult<NIP17UserProfile> =>
+            (result): result is PromiseFulfilledResult<NIP04UserProfile> =>
               result.status === "fulfilled"
           )
           .map((result) => result.value)
@@ -126,15 +91,10 @@ export default function useNip17() {
               unique.set(profile.npub, profile);
             }
             return unique;
-          }, new Map<string, NIP17UserProfile>())
+          }, new Map<string, NIP04UserProfile>())
           // Convert Map back to array
           .values()
       );
-
-      //   const profiles =
-      //     (await getFromCache<NIP17UserProfile[]>(CACHE_KEY_NIP17_PROFILE)) || [];
-
-      //   await saveToCache(CACHE_KEY_NIP17_PROFILE, [..._profiles, ...profiles]);
 
       setUserProfiles(profiles);
       return profiles;
