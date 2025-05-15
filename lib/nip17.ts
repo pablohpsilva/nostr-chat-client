@@ -1,0 +1,101 @@
+import { EventTemplate, getPublicKey, NostrEvent } from "nostr-tools";
+import { PrivateDirectMessage } from "nostr-tools/kinds";
+import * as nip59 from "./nip59";
+
+type Recipient = {
+  publicKey: string;
+  relayUrl?: string;
+};
+
+type ReplyTo = {
+  eventId: string;
+  relayUrl?: string;
+};
+
+function createEvent(
+  recipients: Recipient | Recipient[],
+  message: string,
+  conversationTitle?: string,
+  replyTo?: ReplyTo
+): EventTemplate {
+  const baseEvent: EventTemplate = {
+    created_at: Math.ceil(Date.now() / 1000),
+    kind: PrivateDirectMessage,
+    tags: [],
+    content: message,
+  };
+
+  const recipientsArray = Array.isArray(recipients) ? recipients : [recipients];
+
+  recipientsArray.forEach(({ publicKey, relayUrl }) => {
+    baseEvent.tags.push(
+      relayUrl ? ["p", publicKey, relayUrl] : ["p", publicKey]
+    );
+  });
+
+  if (replyTo) {
+    baseEvent.tags.push([
+      "e",
+      replyTo.eventId,
+      replyTo.relayUrl || "",
+      "reply",
+    ]);
+  }
+
+  if (conversationTitle) {
+    baseEvent.tags.push(["subject", conversationTitle]);
+  }
+
+  return baseEvent;
+}
+
+export function wrapEvent(
+  senderPrivateKey: Uint8Array,
+  recipient: Recipient,
+  message: string,
+  conversationTitle?: string,
+  replyTo?: ReplyTo
+): NostrEvent {
+  const event = createEvent(recipient, message, conversationTitle, replyTo);
+  console.log(`event: ${event}`);
+
+  console.log(
+    "event, senderPrivateKey, recipient.publicKey",
+    event,
+    senderPrivateKey,
+    recipient.publicKey
+  );
+
+  const wrap = nip59.wrapEvent(event, senderPrivateKey, recipient.publicKey);
+  console.log(`wrap: ${wrap}`);
+
+  return wrap;
+}
+
+export function wrapManyEvents(
+  senderPrivateKey: Uint8Array,
+  recipients: Recipient[],
+  message: string,
+  conversationTitle?: string,
+  replyTo?: ReplyTo
+): NostrEvent[] {
+  if (!recipients || recipients.length === 0) {
+    throw new Error("At least one recipient is required.");
+  }
+
+  const senderPublicKey = getPublicKey(senderPrivateKey);
+  console.log(`senderPublicKey: ${senderPublicKey}`);
+
+  const recipietsArray = [{ publicKey: senderPublicKey }, ...recipients];
+
+  console.log("recipietsArray", recipietsArray);
+
+  // wrap the event for the sender and then for each recipient
+  return recipietsArray.map((recipient) =>
+    wrapEvent(senderPrivateKey, recipient, message, conversationTitle, replyTo)
+  );
+}
+
+export const unwrapEvent = nip59.unwrapEvent;
+
+export const unwrapManyEvents = nip59.unwrapManyEvents;

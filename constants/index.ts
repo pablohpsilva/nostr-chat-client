@@ -2,11 +2,12 @@ import { Capacitor } from "@capacitor/core";
 import { Channel, Platform, RelayDict } from "./types";
 
 export const DEFAULT_RELAYS: RelayDict = {
-  "wss://relay1.nostrchat.io": { read: true, write: true },
-  "wss://relay2.nostrchat.io": { read: true, write: true },
-  "wss://relay.damus.io": { read: true, write: true },
-  "wss://relay.snort.social": { read: true, write: false },
-  "wss://nos.lol": { read: true, write: true },
+  // "wss://relay1.nostrchat.io": { read: true, write: true },
+  // "wss://relay2.nostrchat.io": { read: true, write: true },
+  // "wss://relay.damus.io": { read: true, write: true },
+  // "wss://relay.snort.social": { read: true, write: false },
+  // "wss://nos.lol": { read: true, write: true },
+  "ws://localhost:8008": { read: true, write: true },
 };
 
 export const MESSAGE_PER_PAGE = 30;

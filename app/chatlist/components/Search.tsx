@@ -176,6 +176,11 @@ export default function Search() {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e7eb",
+  },
   safeArea: {
     backgroundColor: "white",
   },

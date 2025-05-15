@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import { NDKKind, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKKind } from "@nostr-dev-kit/ndk";
 import { Link } from "expo-router";
 import { Fragment } from "react";
 import {
   ActivityIndicator,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,13 +14,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { fillRoute, ROUTES } from "@/constants/routes";
+import { NIP17UserProfile } from "@/hooks/useNip17";
 import Search from "./Search";
 
 interface ListProps {
   loading: boolean;
   error: string | null;
-  nip04UserProfiles: Record<string, NDKUserProfile>;
-  nip17UserProfiles: Record<string, NDKUserProfile>;
+  nip04UserProfiles: NIP17UserProfile[];
+  nip17UserProfiles: NIP17UserProfile[];
   onChatClick: (kind: `NIP${NDKKind}`, pubkey: string) => void;
   handleOnClickLogout: () => void;
 }
@@ -35,8 +37,8 @@ export default function List({
   const hasPublicChats = Object.keys(nip04UserProfiles).length > 0;
   const hasConversations = hasPrivateChats || hasPublicChats;
 
-  const formatPubkey = (pubkey: string) => {
-    return `${pubkey.substring(0, 6)}...${pubkey.substring(pubkey.length - 4)}`;
+  const formatPublicKey = (value: string) => {
+    return `${value.substring(0, 6)}...${value.substring(value.length - 4)}`;
   };
 
   return (
@@ -47,7 +49,7 @@ export default function List({
             style={styles.menuButton}
             onPress={handleOnClickLogout}
           >
-            <Ionicons name="menu" size={24} color="#666" />
+            <Ionicons name="log-out-outline" size={24} color="#666" />
           </TouchableOpacity>
 
           <Search />
@@ -73,26 +75,29 @@ export default function List({
             {hasPrivateChats && (
               <Fragment>
                 {Object.values(nip17UserProfiles).map(
-                  ({ pubkey, displayName, picture, image, created_at }) => (
+                  (
+                    { npub, pubkey, displayName, picture, image, created_at },
+                    index
+                  ) => (
                     <Link
-                      key={pubkey}
+                      key={`${pubkey}-${npub}-${index}`}
                       href={fillRoute(ROUTES.CHAT_ID, {
-                        nip: `NIP${NDKKind.PrivateDirectMessage}`,
-                        pubkey: `${pubkey}`,
+                        nip: "NIP17",
+                        npub: `${npub}`,
                       })}
                       asChild
                     >
                       <TouchableOpacity style={styles.chatItem}>
                         <View style={styles.chatItemContent}>
-                          {/* <Image
+                          <Image
                             source={{ uri: image || picture }}
                             style={styles.avatar}
-                            defaultSource={require("@/assets/default-avatar.png")}
-                          /> */}
+                            // defaultSource={require("@/assets/default-avatar.png")}
+                          />
 
                           <View style={styles.chatInfo}>
                             <Text style={styles.chatName}>
-                              {displayName || formatPubkey(`${pubkey}`)}
+                              {displayName || formatPublicKey(`${npub}`)}
                             </Text>
                             {created_at && (
                               <Text style={styles.chatDate}>
@@ -104,9 +109,12 @@ export default function List({
                         </View>
 
                         <View style={styles.nipContainer}>
-                          <Text style={styles.nipTag}>
-                            {`NIP${NDKKind.PrivateDirectMessage}`}
-                          </Text>
+                          <Text style={styles.nipTag}>NIP17</Text>
+                          <Ionicons
+                            name="chevron-forward-outline"
+                            size={24}
+                            color="#666"
+                          />
                         </View>
                       </TouchableOpacity>
                     </Link>
@@ -118,25 +126,25 @@ export default function List({
             {hasPublicChats && (
               <Fragment>
                 {Object.values(nip04UserProfiles).map(
-                  ({ pubkey, displayName, picture, image, created_at }) => (
+                  ({ npub, displayName, picture, image, created_at }) => (
                     <Link
-                      key={pubkey}
+                      key={npub}
                       href={fillRoute(ROUTES.CHAT_ID, {
                         nip: `NIP${NDKKind.EncryptedDirectMessage}`,
-                        pubkey: `${pubkey}`,
+                        npub: `${npub}`,
                       })}
                       asChild
                     >
                       <TouchableOpacity style={styles.chatItem}>
                         <View style={styles.chatItemContent}>
-                          {/* <Image
+                          <Image
                             source={{ uri: image || picture }}
                             style={styles.avatar}
-                            defaultSource={require("@/assets/default-avatar.png")}
-                          /> */}
+                            // defaultSource={require("@/assets/default-avatar.png")}
+                          />
                           <View style={styles.chatInfo}>
                             <Text style={styles.chatName}>
-                              {displayName || formatPubkey(`${pubkey}`)}
+                              {displayName || formatPublicKey(`${npub}`)}
                             </Text>
                             {created_at && (
                               <Text style={styles.chatDate}>
@@ -151,6 +159,11 @@ export default function List({
                           <Text style={styles.nipTag}>
                             {`NIP${NDKKind.EncryptedDirectMessage}`}
                           </Text>
+                          <Ionicons
+                            name="chevron-forward-outline"
+                            size={24}
+                            color="#666"
+                          />
                         </View>
                       </TouchableOpacity>
                     </Link>
@@ -235,8 +248,9 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   nipContainer: {
-    justifyContent: "center",
+    flexDirection: "row",
     alignItems: "center",
+    gap: 4,
   },
   nipTag: {
     paddingHorizontal: 8,

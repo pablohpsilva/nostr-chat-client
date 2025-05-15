@@ -1,51 +1,31 @@
-import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { useNDKSessionLogout } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useRouter } from "expo-router";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
-// import { ROUTES } from "@/constants/routes";
-import useEncryptedMessage from "@/hooks/useEncryptedMessage";
-import usePrivateDirectMessage from "@/hooks/usePrivateDirectMessage";
+import { ROUTES } from "@/constants/routes";
+import useNip17 from "@/hooks/useNip17";
 import List from "./components/List";
 // import List from "./components/List";
 
 export default function ChatListPage() {
   const logout = useNDKSessionLogout();
   const router = useRouter();
-  const { getUserChats: getEncryptedUserChats, isLoading: isEncryptedLoading } =
-    useEncryptedMessage();
-  const { getUserChats: getPrivateUserChats, isLoading: isPrivateLoading } =
-    usePrivateDirectMessage();
-  const [userChats, setUserChats] = useState<{
-    encryptedUserChats: Record<string, NDKUserProfile>;
-    privateUserChats: Record<string, NDKUserProfile>;
-  }>({
-    encryptedUserChats: {},
-    privateUserChats: {},
-  });
-  const isLoading = isEncryptedLoading || isPrivateLoading;
-
-  const getUserChats = async () => {
-    const encryptedUserChats = await getEncryptedUserChats();
-    const privateUserChats = await getPrivateUserChats();
-
-    console.log("{encryptedUserChats, privateUserChats}", {
-      encryptedUserChats,
-      privateUserChats,
-    });
-
-    setUserChats({ encryptedUserChats, privateUserChats });
-  };
+  const { getUserProfilesFromChats, userProfiles, isLoading } = useNip17();
 
   const handleOnClickLogout = () => {
     logout();
-    // router.replace(ROUTES.LOGIN);
+    router.replace(ROUTES.LOGIN);
   };
 
   useEffect(() => {
-    getUserChats();
+    getUserProfilesFromChats();
   }, []);
+
+  // console.log(
+  //   "userProfiles",
+  //   userProfiles && JSON.stringify(userProfiles, null, 2)
+  // );
 
   return (
     <Fragment>
@@ -54,8 +34,8 @@ export default function ChatListPage() {
         <List
           loading={isLoading}
           error={null}
-          nip04UserProfiles={userChats.encryptedUserChats}
-          nip17UserProfiles={userChats.privateUserChats}
+          nip04UserProfiles={[]}
+          nip17UserProfiles={userProfiles}
           onChatClick={() => {}}
           handleOnClickLogout={handleOnClickLogout}
         />

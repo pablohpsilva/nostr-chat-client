@@ -20,7 +20,10 @@ export const ImportKeyForm: React.FC<ImportKeyFormProps> = ({
   handleLogin,
   onClickBack,
 }) => {
-  const [nsec, setNsec] = useState("");
+  const [nsec, setNsec] = useState(
+    "60569c58045299f924661381db8c71eb19d5f8de52b99e102a066e0dd9e170d9"
+    // "nsec1dwwauw7mvj8klywn5wcsep7hm29tyvfmmp3e55qanzr3s6g5y3hstpmts4"
+  );
 
   const handleOnChangeNsec = (value: string) => {
     setNsec(value);

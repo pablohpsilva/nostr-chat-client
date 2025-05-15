@@ -1,6 +1,7 @@
 import { Stack, useRouter } from "expo-router";
 import { Fragment } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -27,9 +28,14 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleNavigateToLogin}>
-          <Text style={styles.buttonText}>Get Started</Text>
-        </TouchableOpacity>
+        <SafeAreaView edges={["bottom"]}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleNavigateToLogin}
+          >
+            <Text style={styles.buttonText}>Get Started</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
       </View>
     </Fragment>
   );
