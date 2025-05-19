@@ -30,9 +30,7 @@ export default function HomeScreen() {
         </View>
 
         <SafeAreaView edges={["bottom"]}>
-          <Button onPress={handleNavigateToLogin}>
-            <Text style={styles.buttonText}>Get Started</Text>
-          </Button>
+          <Button onPress={handleNavigateToLogin}>Get Started</Button>
         </SafeAreaView>
       </View>
     </Fragment>
@@ -72,7 +70,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   buttonText: {
-    color: "white",
+    color: "inherit",
     fontSize: 18,
     fontWeight: "bold",
   },

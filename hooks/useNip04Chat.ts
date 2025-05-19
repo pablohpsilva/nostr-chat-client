@@ -9,7 +9,7 @@ import { nip04, nip19 } from "nostr-tools";
 import { useMemo, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
-import { Recipient, ReplyTo } from "@/constants/types";
+import { Recipient } from "@/constants/types";
 
 export default function useNip04Chat() {
   const currentUser = useNDKCurrentUser();
@@ -120,53 +120,39 @@ export default function useNip04Chat() {
     }
   };
 
-  const sendMessage = async (
-    _recipient: Recipient,
-    message: string,
-    conversationTitle?: string,
-    replyTo?: ReplyTo
-  ) => {
+  const sendMessage = async (_recipient: Recipient, message: string) => {
     if (!currentUser) {
       return;
     }
 
     try {
       setLoading(true);
-
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
 
-      let recipient: Recipient[];
-      // let recipient: Recipient;
-
+      let recipient: Recipient;
       // THIS IS NEEDED!!! Do not remove it.
       // You can only send events if you use the REAL public key.
       if (_recipient.publicKey.startsWith("npub")) {
         const { data: publicKey } = nip19.decode(_recipient.publicKey);
-        recipient = [{ publicKey: publicKey as string }];
+        recipient = { publicKey: publicKey as string };
         // recipient = { publicKey: publicKey as string };
       } else {
-        recipient = [_recipient];
+        recipient = _recipient;
         // recipient = _recipient;
       }
 
-      const events = nip04
-        .wrapManyEvents(
-          privateKey,
-          recipient,
-          message,
-          conversationTitle,
-          replyTo
-        )
-        .map((event) => {
-          return Object.assign(new NDKEvent(getNDK().getInstance()), event);
-        });
+      // Create a new DM event
+      const event = new NDKEvent(getNDK().getInstance());
+      event.kind = NDKKind.EncryptedDirectMessage;
+      // event.content = content;
+      event.content = nip04.encrypt(privateKey!, recipient.publicKey, message);
+      event.tags = [["p", recipient.publicKey]];
 
-      await Promise.all(
-        events.map(async (event) => {
-          await event.publish();
-        })
-      );
+      console.log("event", event);
+
+      // Publish the event
+      await event.publish();
     } catch (error) {
       console.error("Error sending direct message:", error);
       throw error;

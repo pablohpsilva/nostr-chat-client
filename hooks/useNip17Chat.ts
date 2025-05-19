@@ -10,7 +10,6 @@ import { useMemo, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
 import { Recipient, ReplyTo } from "@/constants/types";
-// import { unwrapEvent, wrapEvent } from "@/lib/nip17";
 
 export default function useNip17Chat() {
   const currentUser = useNDKCurrentUser();
@@ -51,9 +50,16 @@ export default function useNip17Chat() {
     try {
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
-      const recipients = Array.isArray(_recipients)
-        ? _recipients
-        : [_recipients];
+      const recipients = (
+        Array.isArray(_recipients) ? _recipients : [_recipients]
+      ).map((recipient) => {
+        if (recipient.startsWith("npub")) {
+          const { data: publicKey } = nip19.decode(recipient);
+          return publicKey as string;
+        } else {
+          return recipient;
+        }
+      });
 
       // We need two filters to get the complete conversation:
       // 1. Messages sent BY current user TO recipients
@@ -67,6 +73,9 @@ export default function useNip17Chat() {
         kinds: [NDKKind.GiftWrap],
         "#p": [currentUser.pubkey],
       };
+
+      console.log("outgoingFilter", outgoingFilter);
+      console.log("incomingFilter", incomingFilter);
 
       const options: NDKSubscriptionOptions = {
         closeOnEose: false, // Keep the subscription open

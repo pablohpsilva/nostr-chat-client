@@ -5,7 +5,7 @@ import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ROUTES } from "@/constants/routes";
-import useNip17Chat from "@/hooks/useNip17Chat";
+import useNip04Chat from "@/hooks/useNip04Chat";
 import { nip19 } from "nostr-tools";
 import ChatHeader from "./components/ChatHeader";
 import EmptyChat from "./components/EmptyChat";
@@ -17,7 +17,7 @@ export default function NIP17ChatPage() {
   const router = useRouter();
   const currentUser = useNDKCurrentUser();
   const { messages, getConversationMessagesWebhook, sendMessage } =
-    useNip17Chat();
+    useNip04Chat();
   const destinatairePublicKey = useMemo(() => {
     if ((npub as string).startsWith("npub")) {
       const { data: publicKey } = nip19.decode(npub as string);
@@ -45,8 +45,9 @@ export default function NIP17ChatPage() {
 
   useEffect(() => {
     getConversationMessagesWebhook(`${npub}`);
-    console.log("npub", npub);
   }, [npub]);
+
+  console.log("messages", messages);
 
   return (
     <Fragment>

@@ -1,8 +1,7 @@
 import { getNDK } from "@/components/NDKHeadless";
-import { Button } from "@/components/ui/Button";
+import { LinkButton } from "@/components/ui/Button/LinkButton";
 import { fillRoute, ROUTES } from "@/constants/routes";
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
-import { Link } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
@@ -76,31 +75,25 @@ export default function SearchStartChat({
         </View>
 
         <View style={styles.chatButtonContainer}>
-          <Link
+          <LinkButton
             href={fillRoute(ROUTES.CHAT_ID, {
               nip: "NIP04",
               npub,
             })}
-            asChild
             onPress={handleOnClose}
           >
-            <Button variant="outlined">
-              <Text style={styles.chatButtonText}>Regular Chat</Text>
-            </Button>
-          </Link>
+            Regular Chat
+          </LinkButton>
 
-          <Link
+          <LinkButton
             href={fillRoute(ROUTES.CHAT_ID, {
               nip: "NIP17",
               npub,
             })}
-            asChild
             onPress={handleOnClose}
           >
-            <Button variant="outlined">
-              <Text style={styles.chatButtonText}>Private Chat</Text>
-            </Button>
-          </Link>
+            Private Chat
+          </LinkButton>
         </View>
       </View>
 

@@ -5,7 +5,7 @@
 import "react-native-get-random-values";
 
 // // this is needed to polyfill crypto.subtle which nostr-tools uses
-// import "react-native-webview-crypto";
+import "react-native-webview-crypto";
 
 import {
   DarkTheme,

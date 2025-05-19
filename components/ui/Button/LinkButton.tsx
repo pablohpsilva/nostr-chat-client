@@ -1,23 +1,19 @@
+import { Link, LinkProps } from "expo-router";
 import { useMemo } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  type TouchableOpacityProps,
-} from "react-native";
+import { StyleSheet, Text } from "react-native";
 
-export type ButtonProps = TouchableOpacityProps & {
+export type LinkButtonProps = LinkProps & {
   children: React.ReactNode;
   variant?: "default" | "outlined";
   size?: "small" | "medium" | "large";
 };
 
-export function Button({
+export function LinkButton({
   children,
   variant = "default",
   size = "medium",
   ...props
-}: ButtonProps) {
+}: LinkButtonProps) {
   const style = useMemo(() => {
     if (styles?.[variant]) {
       return { ...styles[variant], ...styles.sizes[size] };
@@ -34,9 +30,9 @@ export function Button({
   }, [size, style.color]);
 
   return (
-    <TouchableOpacity style={style} {...props}>
+    <Link style={style} {...props}>
       <Text style={textStyle}>{children}</Text>
-    </TouchableOpacity>
+    </Link>
   );
 }
 
