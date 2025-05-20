@@ -2,20 +2,26 @@ import {
   NDKEvent,
   NDKFilter,
   NDKKind,
+  NDKSubscription,
   NDKSubscriptionOptions,
   useNDKCurrentUser,
 } from "@nostr-dev-kit/ndk-hooks";
-import { Event, nip17, nip19 } from "nostr-tools";
-import { useMemo, useState } from "react";
+import { Event, nip19 } from "nostr-tools";
+import { useEffect, useMemo, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
 import { Recipient, ReplyTo } from "@/constants/types";
+import { unwrapEvent, wrapManyEvents } from "@/lib/nip17.v2";
+
+let outgoingSub: NDKSubscription;
+let incomingSub: NDKSubscription;
 
 export default function useNip17Chat() {
   const currentUser = useNDKCurrentUser();
   const [isLoading, setLoading] = useState(false);
   const [messagesByUser, setMessagesByUser] = useState<
-    ReturnType<typeof nip17.unwrapEvent>[]
+    ReturnType<typeof unwrapEvent>[]
+    // ReturnType<typeof nip17.unwrapEvent>[]
   >([]);
   const sortedMessagesByUser = useMemo(
     () => messagesByUser.sort((a, b) => a.created_at - b.created_at),
@@ -25,6 +31,7 @@ export default function useNip17Chat() {
   const addMessageToConversation = (
     event: NDKEvent,
     privateKey: Uint8Array<ArrayBuffer>,
+    recipientPublicKey: string[],
     raw?: boolean
   ) => {
     if (raw) {
@@ -32,8 +39,19 @@ export default function useNip17Chat() {
       return;
     }
 
-    const unwrappedEvent = nip17.unwrapEvent(event as Event, privateKey);
-    setMessagesByUser((prev) => [...prev, unwrappedEvent]);
+    const unwrappedEvent = unwrapEvent(event as Event, privateKey);
+    // const unwrappedEvent = nip17.unwrapEvent(event as Event, privateKey);
+
+    if (
+      recipientPublicKey.includes(
+        unwrappedEvent.tags.find((tag) => tag[0] === "p")?.[0] as string
+      ) ||
+      recipientPublicKey.includes(
+        unwrappedEvent.tags.find((tag) => tag[0] === "p")?.[1] as string
+      )
+    ) {
+      setMessagesByUser((prev) => [...prev, unwrappedEvent]);
+    }
   };
 
   const getConversationMessagesWebhook = async (
@@ -74,20 +92,13 @@ export default function useNip17Chat() {
         "#p": [currentUser.pubkey],
       };
 
-      console.log("outgoingFilter", outgoingFilter);
-      console.log("incomingFilter", incomingFilter);
-
       const options: NDKSubscriptionOptions = {
         closeOnEose: false, // Keep the subscription open
         ..._options,
       };
 
-      const outgoingSub = getNDK()
-        .getInstance()
-        .subscribe(outgoingFilter, options);
-      const incomingSub = getNDK()
-        .getInstance()
-        .subscribe(incomingFilter, options);
+      outgoingSub = getNDK().getInstance().subscribe(outgoingFilter, options);
+      incomingSub = getNDK().getInstance().subscribe(incomingFilter, options);
 
       outgoingSub.on("event", (event: NDKEvent) => {
         // For outgoing messages, the p tag contains the recipient
@@ -95,7 +106,10 @@ export default function useNip17Chat() {
 
         if (recipientPubkey) {
           // addMessageToConversation(event, recipientPubkey, privateKey!);
-          addMessageToConversation(event, privateKey!);
+          addMessageToConversation(event, privateKey!, [
+            currentUser.pubkey,
+            ...recipients,
+          ]);
         }
       });
 
@@ -105,7 +119,10 @@ export default function useNip17Chat() {
 
         if (senderPubkey) {
           // addMessageToConversation(event, senderPubkey, privateKey);
-          addMessageToConversation(event, privateKey);
+          addMessageToConversation(event, privateKey!, [
+            currentUser.pubkey,
+            ...recipients,
+          ]);
         }
       });
 
@@ -119,6 +136,7 @@ export default function useNip17Chat() {
       });
 
       return () => {
+        console.log("unmounting");
         // Clean up subscriptions when the hook unmounts
         outgoingSub.stop();
         incomingSub.stop();
@@ -161,17 +179,27 @@ export default function useNip17Chat() {
         // recipient = _recipient;
       }
 
-      const events = nip17
-        .wrapManyEvents(
-          privateKey,
-          recipient,
-          message,
-          conversationTitle,
-          replyTo
-        )
-        .map((event) => {
-          return Object.assign(new NDKEvent(getNDK().getInstance()), event);
-        });
+      const events = wrapManyEvents(
+        privateKey,
+        recipient,
+        message,
+        conversationTitle,
+        replyTo
+      ).map((event) => {
+        return Object.assign(new NDKEvent(getNDK().getInstance()), event);
+      });
+
+      // const events = nip17
+      //   .wrapManyEvents(
+      //     privateKey,
+      //     recipient,
+      //     message,
+      //     conversationTitle,
+      //     replyTo
+      //   )
+      //   .map((event) => {
+      //     return Object.assign(new NDKEvent(getNDK().getInstance()), event);
+      //   });
 
       await Promise.all(
         events.map(async (event) => {
@@ -185,6 +213,14 @@ export default function useNip17Chat() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      console.log("unmounting");
+      outgoingSub.stop();
+      incomingSub.stop();
+    };
+  }, []);
 
   return {
     isLoading,

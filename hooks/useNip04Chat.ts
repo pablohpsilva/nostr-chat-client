@@ -2,14 +2,18 @@ import {
   NDKEvent,
   NDKFilter,
   NDKKind,
+  NDKSubscription,
   NDKSubscriptionOptions,
   useNDKCurrentUser,
 } from "@nostr-dev-kit/ndk-hooks";
 import { nip04, nip19 } from "nostr-tools";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
 import { Recipient } from "@/constants/types";
+
+let outgoingSub: NDKSubscription;
+let incomingSub: NDKSubscription;
 
 export default function useNip04Chat() {
   const currentUser = useNDKCurrentUser();
@@ -71,12 +75,8 @@ export default function useNip04Chat() {
         ..._options,
       };
 
-      const outgoingSub = getNDK()
-        .getInstance()
-        .subscribe(outgoingFilter, options);
-      const incomingSub = getNDK()
-        .getInstance()
-        .subscribe(incomingFilter, options);
+      outgoingSub = getNDK().getInstance().subscribe(outgoingFilter, options);
+      incomingSub = getNDK().getInstance().subscribe(incomingFilter, options);
 
       outgoingSub.on("event", (event: NDKEvent) => {
         // For outgoing messages, the p tag contains the recipient
@@ -160,6 +160,13 @@ export default function useNip04Chat() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      outgoingSub.stop();
+      incomingSub.stop();
+    };
+  }, []);
 
   return {
     isLoading,

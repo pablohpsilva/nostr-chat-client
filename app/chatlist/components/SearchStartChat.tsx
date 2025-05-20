@@ -1,9 +1,10 @@
 import { getNDK } from "@/components/NDKHeadless";
-import { LinkButton } from "@/components/ui/Button/LinkButton";
 import { fillRoute, ROUTES } from "@/constants/routes";
+import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { Link } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 
 const formatPubkey = (pubkey: string) => {
   return `${pubkey.substring(0, 8)}...${pubkey.substring(pubkey.length - 8)}`;
@@ -46,19 +47,26 @@ export default function SearchStartChat({
 
   return (
     <Fragment>
-      <View style={styles.container}>
+      <Link
+        style={styles.container}
+        href={fillRoute(ROUTES.CHAT_ID, {
+          nip: "NIP17",
+          npub,
+        })}
+        onPress={handleOnClose}
+      >
         <View style={styles.contentContainer}>
           <View style={styles.userInfoContainer}>
             <View style={styles.avatarContainer}>
-              {/* <Image
+              <Image
                 source={{
                   uri:
                     userProfiles?.picture ||
                     "https://placehold.co/40x40?text=NostrChat",
                 }}
                 style={styles.avatar}
-                defaultSource={require("@/assets/default-avatar.png")}
-              /> */}
+                // defaultSource={require("@/assets/default-avatar.png")}
+              />
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.label}>Text this user:</Text>
@@ -72,30 +80,12 @@ export default function SearchStartChat({
               </View>
             </View>
           </View>
-        </View>
 
-        <View style={styles.chatButtonContainer}>
-          <LinkButton
-            href={fillRoute(ROUTES.CHAT_ID, {
-              nip: "NIP04",
-              npub,
-            })}
-            onPress={handleOnClose}
-          >
-            Regular Chat
-          </LinkButton>
-
-          <LinkButton
-            href={fillRoute(ROUTES.CHAT_ID, {
-              nip: "NIP17",
-              npub,
-            })}
-            onPress={handleOnClose}
-          >
-            Private Chat
-          </LinkButton>
+          <View style={styles.nipContainer}>
+            <Ionicons name="chevron-forward-outline" size={24} color="#666" />
+          </View>
         </View>
-      </View>
+      </Link>
 
       {isLoading && (
         <View style={styles.loadingContainer}>
@@ -121,8 +111,15 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     gap: 16,
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   contentContainer: {
+    width: "100%",
+    display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -182,6 +179,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     marginVertical: 8,
+  },
+  nipContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   errorContainer: {
     padding: 8,

@@ -14,6 +14,7 @@ type ReplyTo = {
 
 function createEvent(
   recipients: Recipient | Recipient[],
+  senderPublicKey: string,
   message: string,
   conversationTitle?: string,
   replyTo?: ReplyTo
@@ -29,7 +30,8 @@ function createEvent(
 
   recipientsArray.forEach(({ publicKey, relayUrl }) => {
     baseEvent.tags.push(
-      relayUrl ? ["p", publicKey, relayUrl] : ["p", publicKey]
+      relayUrl ? ["p", publicKey, relayUrl] : ["p", publicKey],
+      relayUrl ? ["p", senderPublicKey, relayUrl] : ["p", senderPublicKey]
     );
   });
 
@@ -51,12 +53,19 @@ function createEvent(
 
 export function wrapEvent(
   senderPrivateKey: Uint8Array,
+  senderPublicKey: string,
   recipient: Recipient,
   message: string,
   conversationTitle?: string,
   replyTo?: ReplyTo
 ): NostrEvent {
-  const event = createEvent(recipient, message, conversationTitle, replyTo);
+  const event = createEvent(
+    recipient,
+    senderPublicKey,
+    message,
+    conversationTitle,
+    replyTo
+  );
 
   const wrap = nip59.wrapEvent(event, senderPrivateKey, recipient.publicKey);
 
@@ -80,6 +89,17 @@ export function wrapManyEvents(
 
   // wrap the event for the sender and then for each recipient
   return recipietsArray.map((recipient) =>
-    wrapEvent(senderPrivateKey, recipient, message, conversationTitle, replyTo)
+    wrapEvent(
+      senderPrivateKey,
+      senderPublicKey,
+      recipient,
+      message,
+      conversationTitle,
+      replyTo
+    )
   );
 }
+
+export const unwrapEvent = nip59.unwrapEvent;
+
+export const unwrapManyEvents = nip59.unwrapManyEvents;
