@@ -53,12 +53,18 @@ export function wrapEvent(
   senderPrivateKey: Uint8Array,
   recipient: Recipient,
   message: string,
+  tags: string[][],
   conversationTitle?: string,
   replyTo?: ReplyTo
 ): NostrEvent {
   const event = createEvent(recipient, message, conversationTitle, replyTo);
 
-  const wrap = nip59.wrapEvent(event, senderPrivateKey, recipient.publicKey);
+  const wrap = nip59.wrapEvent(
+    event,
+    senderPrivateKey,
+    recipient.publicKey,
+    tags
+  );
 
   return wrap;
 }
@@ -67,6 +73,7 @@ export function wrapManyEvents(
   senderPrivateKey: Uint8Array,
   recipients: Recipient[],
   message: string,
+  tags: string[][],
   conversationTitle?: string,
   replyTo?: ReplyTo
 ): NostrEvent[] {
@@ -80,6 +87,13 @@ export function wrapManyEvents(
 
   // wrap the event for the sender and then for each recipient
   return recipietsArray.map((recipient) =>
-    wrapEvent(senderPrivateKey, recipient, message, conversationTitle, replyTo)
+    wrapEvent(
+      senderPrivateKey,
+      recipient,
+      message,
+      tags,
+      conversationTitle,
+      replyTo
+    )
   );
 }

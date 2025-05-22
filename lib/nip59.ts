@@ -74,7 +74,8 @@ export function createSeal(
 
 export function createWrap(
   seal: NostrEvent,
-  recipientPublicKey: string
+  recipientPublicKey: string,
+  tags: string[][]
 ): NostrEvent {
   const randomKey = generateSecretKey();
   const kind = GiftWrap;
@@ -86,7 +87,7 @@ export function createWrap(
       kind,
       content,
       created_at,
-      tags: [["p", recipientPublicKey]],
+      tags: [["p", recipientPublicKey], ...tags],
     },
     randomKey
   ) as NostrEvent;
@@ -97,12 +98,13 @@ export function createWrap(
 export function wrapEvent(
   event: Partial<UnsignedEvent>,
   senderPrivateKey: Uint8Array,
-  recipientPublicKey: string
+  recipientPublicKey: string,
+  tags: string[][]
 ): NostrEvent {
   const rumor = createRumor(event, senderPrivateKey);
   const seal = createSeal(rumor, senderPrivateKey, recipientPublicKey);
 
-  const wrap = createWrap(seal, recipientPublicKey);
+  const wrap = createWrap(seal, recipientPublicKey, tags);
   console.log(`wrap: ${wrap}`);
 
   return wrap;

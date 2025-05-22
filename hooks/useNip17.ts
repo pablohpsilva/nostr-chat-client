@@ -51,6 +51,8 @@ export default function useNip17() {
       //     (event) => event
       //   );
 
+      //   console.log("cachedNip17ProfileEventsIds", cachedNip17ProfileEventsIds);
+
       //   if (cachedNip17ProfileEvents) {
       //     filter = {
       //       ...filter,
@@ -59,6 +61,7 @@ export default function useNip17() {
       //   }
 
       const events = Array.from(await ndk.fetchEvents(filter)) as Event[];
+      //   console.log("events", events);
 
       //   await saveToCache(CACHE_KEY_NIP17_PROFILE_EVENT_IDS, [
       //     ...(cachedNip17ProfileEventsIds ?? []),
@@ -73,6 +76,8 @@ export default function useNip17() {
         console.error("Error unwrapping gifts", err);
       }
 
+      //   console.log("unwrappedGifts", unwrappedGifts);
+
       const profilePromises = unwrappedGifts.map(async (rumor) => {
         const npub = nip19.npubEncode(rumor.pubkey);
         const pubKeyObj = { pubkey: rumor.pubkey, npub };
@@ -80,6 +85,7 @@ export default function useNip17() {
 
         try {
           const _profile = await profileUser.fetchProfile();
+          //   console.log("profile", _profile);
           const profile = _profile ? _profile : pubKeyObj;
           return { ...profile, pubkey: rumor.pubkey };
         } catch (err) {
@@ -88,6 +94,8 @@ export default function useNip17() {
           return pubKeyObj;
         }
       });
+
+      //   console.log("profilePromises", profilePromises);
 
       const profileResults = await Promise.allSettled(profilePromises);
       //   const _profiles: NIP17UserProfile[] = profileResults
@@ -100,6 +108,16 @@ export default function useNip17() {
           .map((result) => result.value)
           // Remove duplicates by creating a Map keyed by npub
           .reduce((unique, profile) => {
+            console.log(
+              "profile",
+              !unique.has(profile.npub) &&
+                (profile.pubkey !== currentUserPublicKey ||
+                  profile.npub !== currentUserNpub),
+              profile.pubkey,
+              profile.npub,
+              currentUserPublicKey,
+              currentUserNpub
+            );
             if (
               !unique.has(profile.npub) &&
               (profile.pubkey !== currentUserPublicKey ||
