@@ -3,7 +3,7 @@ import { sha256 } from "@noble/hashes/sha256";
 
 const DEFAULT_SALT = process.env.EXPO_PUBLIC_SALT || "nostr-tools";
 
-export async function generateUniqueDTag(
+export function generateUniqueDTag(
   pubkeys: string[],
   salt: string = DEFAULT_SALT
 ) {
@@ -18,10 +18,23 @@ export async function generateUniqueDTag(
   const dTag = Array.from(hashBytes)
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
-  // const array = sha256(chatKey);
-  // const dTag = await Crypto.digest(Crypto.CryptoDigestAlgorithm.SHA512, array);
 
-  // console.log("dTag", dTag);
-
+  // return `${dTag.slice(0, 12)}${dTag.slice(52)}`;
+  // return `tag:${dTag}`;
   return dTag;
+}
+
+export function randomizeString(
+  pubkeys: string[],
+  salt: string = DEFAULT_SALT
+): string {
+  const sortedPubkeys = pubkeys.sort().concat(salt);
+  const chatKey = sortedPubkeys.join(":");
+
+  const hashBytes = new TextEncoder().encode(chatKey);
+  const randomString = Array.from(hashBytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  return randomString;
 }

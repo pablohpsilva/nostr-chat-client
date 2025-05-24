@@ -38,35 +38,10 @@ export default function useNip17() {
       // Filter for NIP-17 (Private Direct Messages) events
       let filter: NDKFilter = {
         kinds: [NDKKind.GiftWrap],
-        "#p": [user.pubkey],
-        limit: 10,
-        // "#e": [
-        //   "d57548998f0a86ba0a96401db56b166db8c44b36f0fd58689d593e63ac3e4934",
-        // ],
+        // "#p": [user.pubkey],
       };
-      //   const cachedNip17ProfileEvents = await getFromCache<string[]>(
-      //     CACHE_KEY_NIP17_PROFILE_EVENT_IDS
-      //   );
-      //   const cachedNip17ProfileEventsIds = cachedNip17ProfileEvents?.map(
-      //     (event) => event
-      //   );
-
-      //   console.log("cachedNip17ProfileEventsIds", cachedNip17ProfileEventsIds);
-
-      //   if (cachedNip17ProfileEvents) {
-      //     filter = {
-      //       ...filter,
-      //       "#e": cachedNip17ProfileEventsIds,
-      //     };
-      //   }
 
       const events = Array.from(await ndk.fetchEvents(filter)) as Event[];
-      //   console.log("events", events);
-
-      //   await saveToCache(CACHE_KEY_NIP17_PROFILE_EVENT_IDS, [
-      //     ...(cachedNip17ProfileEventsIds ?? []),
-      //     ...events.map((event) => event.id),
-      //   ]);
 
       let unwrappedGifts: ReturnType<typeof nip17.unwrapManyEvents> = [];
 
@@ -76,18 +51,23 @@ export default function useNip17() {
         console.error("Error unwrapping gifts", err);
       }
 
-      //   console.log("unwrappedGifts", unwrappedGifts);
+      const pubKeysFromGifts = Array.from(
+        new Set(unwrappedGifts.map((r) => r.pubkey))
+      );
 
-      const profilePromises = unwrappedGifts.map(async (rumor) => {
-        const npub = nip19.npubEncode(rumor.pubkey);
-        const pubKeyObj = { pubkey: rumor.pubkey, npub };
+      const profilePromises = pubKeysFromGifts.map(async (pubkey) => {
+        const npub = nip19.npubEncode(pubkey);
+        const pubKeyObj = { pubkey, npub };
         const profileUser = ndk.getUser(pubKeyObj);
 
         try {
           const _profile = await profileUser.fetchProfile();
-          //   console.log("profile", _profile);
-          const profile = _profile ? _profile : pubKeyObj;
-          return { ...profile, pubkey: rumor.pubkey };
+
+          if (_profile) {
+            return { ..._profile, pubkey };
+          }
+
+          return pubKeyObj;
         } catch (err) {
           console.error("Error fetching profile", err);
           // If profile fetch fails, still include the user with just the pubkey
@@ -95,10 +75,7 @@ export default function useNip17() {
         }
       });
 
-      //   console.log("profilePromises", profilePromises);
-
       const profileResults = await Promise.allSettled(profilePromises);
-      //   const _profiles: NIP17UserProfile[] = profileResults
       const profiles: NIP17UserProfile[] = Array.from(
         profileResults
           .filter(
@@ -106,18 +83,18 @@ export default function useNip17() {
               result.status === "fulfilled"
           )
           .map((result) => result.value)
-          // Remove duplicates by creating a Map keyed by npub
           .reduce((unique, profile) => {
-            console.log(
-              "profile",
-              !unique.has(profile.npub) &&
+            console.log("profile", {
+              unique:
+                !unique.has(profile.npub) &&
                 (profile.pubkey !== currentUserPublicKey ||
                   profile.npub !== currentUserNpub),
-              profile.pubkey,
-              profile.npub,
+              pubkey: profile.pubkey,
+              npub: profile.npub,
               currentUserPublicKey,
-              currentUserNpub
-            );
+              currentUserNpub,
+            });
+
             if (
               !unique.has(profile.npub) &&
               (profile.pubkey !== currentUserPublicKey ||
@@ -130,11 +107,6 @@ export default function useNip17() {
           // Convert Map back to array
           .values()
       );
-
-      //   const profiles =
-      //     (await getFromCache<NIP17UserProfile[]>(CACHE_KEY_NIP17_PROFILE)) || [];
-
-      //   await saveToCache(CACHE_KEY_NIP17_PROFILE, [..._profiles, ...profiles]);
 
       setUserProfiles(profiles);
       return profiles;

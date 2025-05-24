@@ -1,11 +1,12 @@
 import { NDKEvent, useNDKCurrentUser } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Fragment, useEffect, useMemo } from "react";
+import { Fragment, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ROUTES } from "@/constants/routes";
 import useNip17Chat from "@/hooks/useNip17Chat";
+import useNip17StoreProfile from "@/hooks/useNip17StoreProfile";
 import { nip19 } from "nostr-tools";
 import ChatHeader from "./components/ChatHeader";
 import EmptyChat from "./components/EmptyChat";
@@ -18,14 +19,15 @@ export default function NIP17ChatPage() {
   const currentUser = useNDKCurrentUser();
   const { messages, getConversationMessagesWebhook, sendMessage } =
     useNip17Chat();
-  const destinatairePublicKey = useMemo(() => {
-    if ((npub as string).startsWith("npub")) {
-      const { data: publicKey } = nip19.decode(npub as string);
-      return publicKey as string;
-    } else {
-      return npub as string;
-    }
-  }, [npub]);
+  const { storeChatRoom, hasEverLoaded } = useNip17StoreProfile();
+  // const destinatairePublicKey = useMemo(() => {
+  //   if ((npub as string).startsWith("npub")) {
+  //     const { data: publicKey } = nip19.decode(npub as string);
+  //     return publicKey as string;
+  //   } else {
+  //     return npub as string;
+  //   }
+  // }, [npub]);
 
   const handleSendMessage = async (newMessage: string) => {
     if (!newMessage.trim() || !currentUser) {
@@ -43,10 +45,29 @@ export default function NIP17ChatPage() {
     router.replace(ROUTES.CHAT);
   };
 
+  const handleStoreChatRoom = async () => {
+    let publicKey = "";
+
+    if ((npub as string).startsWith("npub")) {
+      const { data: _publicKey } = nip19.decode(npub as string);
+      publicKey = _publicKey as string;
+    } else {
+      publicKey = npub as string;
+    }
+
+    await storeChatRoom({ publicKey });
+  };
+
   useEffect(() => {
+    debugger;
     getConversationMessagesWebhook(`${npub}`);
-    console.log("npub", npub);
   }, [npub]);
+
+  // useEffect(() => {
+  //   if (hasEverLoaded) {
+  //     handleStoreChatRoom();
+  //   }
+  // }, [hasEverLoaded]);
 
   return (
     <Fragment>

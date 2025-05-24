@@ -98,7 +98,7 @@ export default function Search({
               </div>
             ) : (
               <div className="text-gray-400 text-center mt-10">
-                Type to search on nostr
+                Type to search on nostrsss
               </div>
             )}
             {decryptedDirectMessages && decryptedDirectMessages.length > 0 ? (

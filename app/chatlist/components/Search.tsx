@@ -57,18 +57,14 @@ export const formatHighlightedContent = (
   // Highlight the search term
   const parts = formattedContent.split(new RegExp(`(${searchQuery})`, "gi"));
 
-  return (
-    <Text>
-      {parts.map((part, i) =>
-        part.toLowerCase() === searchQuery.toLowerCase() ? (
-          <Text key={i} style={styles.highlightedText}>
-            {part}
-          </Text>
-        ) : (
-          <Text key={i}>{part}</Text>
-        )
-      )}
-    </Text>
+  return parts.map((part, i) =>
+    part.toLowerCase() === searchQuery.toLowerCase() ? (
+      <Text key={i} style={styles.highlightedText}>
+        {part}
+      </Text>
+    ) : (
+      <Text key={i}>{part}</Text>
+    )
   );
 };
 
@@ -120,7 +116,7 @@ export default function Search() {
             pointerEvents="none"
           />
           <View style={styles.searchIconContainer}>
-            <Ionicons name="search" size={18} color="#666" />
+            <Ionicons name="search" size={18} color="#668" />
           </View>
         </TouchableOpacity>
       </View>
@@ -159,8 +155,6 @@ export default function Search() {
                   onClose={handleCloseOverlay}
                 />
               )}
-
-            {/* Commented out search results code would be converted here */}
 
             {searchQuery ? (
               <Text style={styles.noResultsText}>
