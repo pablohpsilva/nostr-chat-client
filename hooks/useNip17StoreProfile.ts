@@ -45,6 +45,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
   const ref = useRef<"loading" | "loaded" | null>(null);
 
   const storeChatRoom = async (
+    _chatRoomMap: Map<string, ChatRoom>,
     _recipient: Recipient | Recipient[],
     _currentUserPublicKey?: string
   ) => {
@@ -65,13 +66,18 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
       return [];
     }
 
-    const _recipients = (
-      Array.isArray(_recipient) ? _recipient : [_recipient]
-    ).concat({ publicKey: currentUserPublicKey });
+    const rawRecipients = Array.isArray(_recipient) ? _recipient : [_recipient];
+    const _rawRecipients = rawRecipients.map((r) => r.publicKey);
+    const _recipients = rawRecipients.concat({
+      publicKey: currentUserPublicKey,
+    });
     const recipients = _recipients.map((r) => r.publicKey);
     const recipientsNPubkeys = recipients.map((r) => nip19.npubEncode(r));
 
-    if (chatRoomMap.has(recipients.join(","))) {
+    if (
+      chatRoomMap.has(_rawRecipients.join(",")) ||
+      _chatRoomMap.has(_rawRecipients.join(","))
+    ) {
       console.log("chat room already exists: ", recipients.join(","));
       return;
     }
@@ -177,11 +183,9 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
           const unwrappedGifts = nip17.unwrapEvent(event as Event, privateKey);
           const chatRoom = JSON.parse(unwrappedGifts.content) as ChatRoom;
 
-          cloneChatRoomMap.set(dTag, chatRoom);
-
-          // chatRoom.recipients.forEach((recipient) => {
-          //   cloneChatRoomMap.set(recipient, chatRoom);
-          // });
+          chatRoom.recipients.forEach((recipient) => {
+            cloneChatRoomMap.set(recipient, chatRoom);
+          });
 
           await loadProfile(chatRoom.recipients);
         } catch (err) {
@@ -191,10 +195,12 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
 
       setChatRoomMap(cloneChatRoomMap);
 
-      return chatRoomMap;
+      console.log("cloneChatRoomMap", cloneChatRoomMap);
+
+      return cloneChatRoomMap;
     } catch (error) {
       console.error("Error loading chat rooms", error);
-      return () => {};
+      return new Map();
     } finally {
       setLoading(false);
       ref.current = "loaded";

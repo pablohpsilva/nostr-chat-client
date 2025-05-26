@@ -37,7 +37,7 @@ export default function NIP17ChatPage() {
     router.replace(ROUTES.CHAT);
   };
 
-  const handleStoreChatRoom = async () => {
+  const handleStoreChatRoom = async (chatRoomMap: Map<string, ChatRoom>) => {
     let publicKey = "";
 
     if ((npub as string).startsWith("npub")) {
@@ -47,18 +47,19 @@ export default function NIP17ChatPage() {
       publicKey = npub as string;
     }
 
-    await storeChatRoom({ publicKey });
+    await storeChatRoom(chatRoomMap, { publicKey });
   };
 
   useEffect(() => {
-    getConversationMessagesWebhook(`${npub}`);
+    // getConversationMessagesWebhook(`${npub}`);
     // getConversationMessagesWebhook(`${npub}`).then(() => {
     //   console.log("getConversationMessagesWebhook");
     //   handleStoreChatRoom();
     // });
-    loadChatRooms().then(() => {
-      console.log("loadChatRooms");
-      handleStoreChatRoom();
+    loadChatRooms().then((chatRoomMap) => {
+      getConversationMessagesWebhook(`${npub}`);
+      console.log("chatRoomMap", chatRoomMap);
+      handleStoreChatRoom(chatRoomMap);
     });
   }, [npub]);
 

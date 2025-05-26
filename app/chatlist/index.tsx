@@ -32,9 +32,10 @@ export default function ChatListPage() {
   };
 
   useEffect(() => {
-    getNip17UserProfilesFromChats().then(() =>
-      asyncGetNip17UserProfilesFromChats()
-    );
+    getNip17UserProfilesFromChats().then((data) => {
+      asyncGetNip17UserProfilesFromChats();
+      console.log("data", data);
+    });
     console.log("getNip17UserProfilesFromChats");
   }, []);
 

@@ -165,7 +165,6 @@ export default function useNip17Chat() {
         // console.log("Outgoing message received:", event);
         // For outgoing messages, the p tag contains the recipient
         // const recipientPubkey = event.tags.find((tag) => tag[0] === "p")?.[1];
-        debugger;
 
         // if (recipientPubkey) {
         // addMessageToConversation(event, recipientPubkey, privateKey!);
