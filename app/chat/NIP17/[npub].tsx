@@ -1,7 +1,7 @@
 import { NDKEvent, useNDKCurrentUser } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Fragment, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ROUTES } from "@/constants/routes";
@@ -17,8 +17,13 @@ export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();
   const router = useRouter();
   const currentUser = useNDKCurrentUser();
-  const { messages, getConversationMessagesWebhook, sendMessage } =
-    useNip17Chat();
+  const {
+    messages,
+    getConversationMessagesWebhook,
+    sendMessage,
+    isLoading,
+    isLoadingMessages,
+  } = useNip17Chat();
   const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
 
   const handleSendMessage = async (newMessage: string) => {
@@ -68,20 +73,34 @@ export default function NIP17ChatPage() {
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.container}>
         <View style={styles.innerContainer}>
-          <ChatHeader
-            userProfile={{ pubkey: `${npub}` }}
-            onBackClick={handleBackToList}
-          />
-
-          {messages.length ? (
-            <MessageList messages={messages as NDKEvent[]} />
+          {isLoading ? (
+            <Fragment>
+              <View style={styles.centerContainer}>
+                <ActivityIndicator size="large" color="#0066cc" />
+                <Text style={styles.loadingText}>Loading chats...</Text>
+              </View>
+            </Fragment>
           ) : (
-            <EmptyChat />
-          )}
+            <Fragment>
+              <ChatHeader
+                userProfile={{ pubkey: `${npub}` }}
+                onBackClick={handleBackToList}
+              />
 
-          <SafeAreaView style={styles.header} edges={["bottom"]}>
-            <MessageInput onSendMessage={handleSendMessage} />
-          </SafeAreaView>
+              {messages.length ? (
+                <MessageList messages={messages as NDKEvent[]} />
+              ) : (
+                <EmptyChat />
+              )}
+
+              <SafeAreaView style={styles.header} edges={["bottom"]}>
+                <MessageInput
+                  onSendMessage={handleSendMessage}
+                  isLoadingMessages={isLoadingMessages}
+                />
+              </SafeAreaView>
+            </Fragment>
+          )}
         </View>
       </View>
     </Fragment>
@@ -95,5 +114,15 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     flex: 1,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  loadingText: {
+    marginTop: 8,
+    color: "#666",
   },
 });

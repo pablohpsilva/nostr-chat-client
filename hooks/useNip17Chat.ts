@@ -13,14 +13,14 @@ import { getNDK } from "@/components/NDKHeadless";
 import { Recipient, ReplyTo } from "@/constants/types";
 import { generateUniqueDTag } from "@/lib/generateUniqueDTag";
 import { wrapManyEvents } from "@/lib/nip17";
-// import { unwrapEvent, wrapEvent } from "@/lib/nip17";
 
 let outgoingSub: NDKSubscription;
 let incomingSub: NDKSubscription;
 
 export default function useNip17Chat() {
   const currentUser = useNDKCurrentUser();
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
+  const [isLoadingMessages, setLoadingMessages] = useState(false);
   const [messagesByUser, setMessagesByUser] = useState<
     ReturnType<typeof nip17.unwrapEvent>[]
   >([]);
@@ -51,14 +51,14 @@ export default function useNip17Chat() {
     _recipients: string | string[],
     _options: NDKSubscriptionOptions = {}
   ) => {
-    if (!currentUser || !_recipients) {
-      return [];
-    }
-
-    setLoading(true);
-    setMessagesByUser([]);
-
     try {
+      setLoading(true);
+
+      if (!currentUser || !_recipients) {
+        return [];
+      }
+
+      setMessagesByUser([]);
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
       const recipients = Array.isArray(_recipients)
@@ -106,14 +106,14 @@ export default function useNip17Chat() {
     _recipients: string | string[],
     _options: NDKSubscriptionOptions = {}
   ) => {
-    if (!currentUser || !_recipients) {
-      return [];
-    }
-
-    setLoading(true);
-    setMessagesByUser([]);
-
     try {
+      setLoading(true);
+
+      if (!currentUser || !_recipients) {
+        return [];
+      }
+
+      setMessagesByUser([]);
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
       const recipients = Array.isArray(_recipients)
@@ -212,7 +212,7 @@ export default function useNip17Chat() {
     }
 
     try {
-      setLoading(true);
+      setLoadingMessages(true);
 
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
@@ -255,7 +255,7 @@ export default function useNip17Chat() {
       console.error("Error sending direct message:", error);
       throw error;
     } finally {
-      setLoading(false);
+      setLoadingMessages(false);
     }
   };
 
@@ -269,6 +269,7 @@ export default function useNip17Chat() {
 
   return {
     isLoading,
+    isLoadingMessages,
     messages: sortedMessagesByUser,
     sendMessage,
     getConversationMessages,

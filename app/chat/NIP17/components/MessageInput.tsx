@@ -9,9 +9,13 @@ import {
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
+  isLoadingMessages?: boolean;
 }
 
-const MessageInput = ({ onSendMessage }: MessageInputProps) => {
+const MessageInput = ({
+  onSendMessage,
+  isLoadingMessages,
+}: MessageInputProps) => {
   const [newMessage, setNewMessage] = useState("");
 
   const handleSend = () => {
@@ -29,10 +33,14 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
           placeholder="Type a message..."
           value={newMessage}
           onChangeText={setNewMessage}
-          onSubmitEditing={handleSend}
+          onSubmitEditing={!isLoadingMessages ? handleSend : () => {}}
           returnKeyType="send"
         />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+        <TouchableOpacity
+          style={styles.sendButton}
+          onPress={handleSend}
+          disabled={isLoadingMessages}
+        >
           <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
       </View>
