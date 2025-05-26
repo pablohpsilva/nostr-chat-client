@@ -6,6 +6,7 @@ import {
   NDKSubscriptionOptions,
   NDKUserProfile,
 } from "@nostr-dev-kit/ndk";
+import cloneDeep from "lodash.clonedeep";
 import { Event, nip17, nip19 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -42,43 +43,6 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
     [profilesMap.values()]
   );
   const ref = useRef<"loading" | "loaded" | null>(null);
-
-  // const findIfChatRoomDoesNotExist = async (recipients: string[]) => {
-  //   if (chatRoomMap.has(recipients.join(","))) {
-  //     return false;
-  //   }
-
-  //   const ndk = getNDK().getInstance();
-  //   // @ts-expect-error
-  //   const privateKey = ndk.signer?._privateKey ?? recipientPrivateKey;
-
-  //   if (!privateKey) {
-  //     console.log(new Error("No private key found"));
-  //     throw new Error("No private key found");
-  //   }
-
-  //   const currentUserPublicKey = ndk.activeUser?.pubkey;
-
-  //   if (!currentUserPublicKey) {
-  //     console.log(new Error("No current user public key found"));
-  //     return [];
-  //   }
-
-  //   const dTag = generateUniqueDTag([currentUserPublicKey]);
-
-  //   const filter: NDKFilter = {
-  //     kinds: [NDKKind.GiftWrap],
-  //     "#d": [dTag],
-  //   };
-
-  //   const events = Array.from(await ndk.fetchEvents(filter)) as Event[];
-
-  //   if (events.length > 0) {
-  //     return false;
-  //   }
-
-  //   return true;
-  // };
 
   const storeChatRoom = async (
     _recipient: Recipient | Recipient[],
@@ -149,15 +113,25 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
           .filter((pubkey) => pubkey !== ndk.activeUser?.pubkey)
           .map(async (pubkey) => {
             const profile = await ndk.getUser({ pubkey }).fetchProfile();
-            return { ...profile, pubkey, npub: nip19.npubEncode(pubkey) };
+            const defaultProfileValues = {
+              pubkey,
+              npub: nip19.npubEncode(pubkey),
+            };
+
+            if (profile) {
+              return { ...profile, ...defaultProfileValues };
+            }
+
+            return defaultProfileValues;
           })
       )
     ).filter(Boolean) as NIP17UserProfile[];
 
-    setProfilesMap((prev) => {
-      profiles.forEach((profile) => prev.set(profile.pubkey, profile));
-      return prev;
-    });
+    const cloneProfileMap = cloneDeep(profilesMap);
+
+    profiles.forEach((profile) => cloneProfileMap.set(profile.pubkey, profile));
+
+    setProfilesMap(cloneProfileMap);
   };
 
   /**
@@ -166,11 +140,6 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
    */
   const loadChatRooms = async (_options: NDKSubscriptionOptions = {}) => {
     try {
-      setLoading(true);
-      if (!ref.current) {
-        ref.current = "loading";
-      }
-
       const ndk = getNDK().getInstance();
       // @ts-expect-error
       const privateKey = ndk.signer?._privateKey ?? recipientPrivateKey;
@@ -178,6 +147,84 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
       if (!privateKey) {
         console.log(new Error("No private key found"));
         return [];
+      }
+
+      setLoading(true);
+      if (!ref.current) {
+        ref.current = "loading";
+      }
+      const currentUserPublicKey = ndk.activeUser?.pubkey;
+
+      if (!currentUserPublicKey) {
+        console.log(new Error("No current user public key found"));
+        return [];
+      }
+
+      const dTag = generateUniqueDTag([currentUserPublicKey]);
+      console.log("dTag", dTag);
+
+      const filter: NDKFilter = {
+        kinds: [NDKKind.GiftWrap],
+        "#d": [dTag],
+      };
+
+      const events = await ndk.fetchEvents(filter);
+
+      const cloneChatRoomMap = cloneDeep(chatRoomMap);
+
+      for (const event of events) {
+        try {
+          const unwrappedGifts = nip17.unwrapEvent(event as Event, privateKey);
+          const chatRoom = JSON.parse(unwrappedGifts.content) as ChatRoom;
+
+          cloneChatRoomMap.set(dTag, chatRoom);
+
+          // chatRoom.recipients.forEach((recipient) => {
+          //   cloneChatRoomMap.set(recipient, chatRoom);
+          // });
+
+          await loadProfile(chatRoom.recipients);
+        } catch (err) {
+          console.error("Error unwrapping gifts", err);
+        }
+      }
+
+      setChatRoomMap(cloneChatRoomMap);
+
+      return chatRoomMap;
+    } catch (error) {
+      console.error("Error loading chat rooms", error);
+      return () => {};
+    } finally {
+      setLoading(false);
+      ref.current = "loaded";
+    }
+  };
+
+  /**
+   * Get all the chat rooms for the current user, unless a recipient private key is provided
+   * @returns Rumor[]
+   */
+  const asyncLoadChatRooms = async (_options: NDKSubscriptionOptions = {}) => {
+    try {
+      console.log(`
+        
+        ALIVE
+        
+        
+        ---`);
+      const ndk = getNDK().getInstance();
+      // @ts-expect-error
+      const privateKey = ndk.signer?._privateKey ?? recipientPrivateKey;
+
+      if (!privateKey) {
+        console.log(new Error("No private key found"));
+        return [];
+      }
+
+      setLoading(true);
+      if (!ref.current) {
+        ref.current = "loading";
       }
 
       const currentUserPublicKey = ndk.activeUser?.pubkey;
@@ -188,7 +235,6 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
       }
 
       const dTag = generateUniqueDTag([currentUserPublicKey]);
-
       const filter: NDKFilter = {
         kinds: [NDKKind.GiftWrap],
         "#d": [dTag],
@@ -205,11 +251,13 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
         try {
           const unwrappedGifts = nip17.unwrapEvent(event as Event, privateKey);
           const chatRoom = JSON.parse(unwrappedGifts.content) as ChatRoom;
+          const cloneChatRoomMap = cloneDeep(chatRoomMap);
 
-          setChatRoomMap((prev) => {
-            prev.set(chatRoom.recipients.join(","), chatRoom);
-            return prev;
+          chatRoom.recipients.forEach((recipient) => {
+            cloneChatRoomMap.set(recipient, chatRoom);
           });
+
+          setChatRoomMap(cloneChatRoomMap);
 
           loadProfile(chatRoom.recipients);
         } catch (err) {
@@ -229,7 +277,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
     return () => {
       console.log(`
         
-        dead
+        DEAD
         
         
         ---`);
@@ -243,6 +291,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
     chatRooms,
     profiles,
     loadChatRooms,
+    asyncLoadChatRooms,
     storeChatRoom,
     hasEverLoaded: ref.current === "loaded",
   };

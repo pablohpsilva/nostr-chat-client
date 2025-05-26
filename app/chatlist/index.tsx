@@ -21,6 +21,7 @@ export default function ChatListPage() {
   const {
     profiles: nip17UserProfiles,
     loadChatRooms: getNip17UserProfilesFromChats,
+    asyncLoadChatRooms: asyncGetNip17UserProfilesFromChats,
     isLoading: isLoadingNip17UserProfiles,
   } = useNip17StoreProfile();
   const isLoading = isLoadingNip17UserProfiles || isLoadingNip04UserProfiles;
@@ -31,7 +32,9 @@ export default function ChatListPage() {
   };
 
   useEffect(() => {
-    getNip17UserProfilesFromChats();
+    getNip17UserProfilesFromChats().then(() =>
+      asyncGetNip17UserProfilesFromChats()
+    );
     console.log("getNip17UserProfilesFromChats");
   }, []);
 

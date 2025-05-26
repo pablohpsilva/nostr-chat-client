@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ROUTES } from "@/constants/routes";
 import useNip17Chat from "@/hooks/useNip17Chat";
-import useNip17StoreProfile from "@/hooks/useNip17StoreProfile";
+import useNip17StoreProfile, { ChatRoom } from "@/hooks/useNip17StoreProfile";
 import { nip19 } from "nostr-tools";
 import ChatHeader from "./components/ChatHeader";
 import EmptyChat from "./components/EmptyChat";
@@ -19,15 +19,7 @@ export default function NIP17ChatPage() {
   const currentUser = useNDKCurrentUser();
   const { messages, getConversationMessagesWebhook, sendMessage } =
     useNip17Chat();
-  const { storeChatRoom, hasEverLoaded } = useNip17StoreProfile();
-  // const destinatairePublicKey = useMemo(() => {
-  //   if ((npub as string).startsWith("npub")) {
-  //     const { data: publicKey } = nip19.decode(npub as string);
-  //     return publicKey as string;
-  //   } else {
-  //     return npub as string;
-  //   }
-  // }, [npub]);
+  const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
 
   const handleSendMessage = async (newMessage: string) => {
     if (!newMessage.trim() || !currentUser) {
@@ -59,15 +51,16 @@ export default function NIP17ChatPage() {
   };
 
   useEffect(() => {
-    debugger;
     getConversationMessagesWebhook(`${npub}`);
+    // getConversationMessagesWebhook(`${npub}`).then(() => {
+    //   console.log("getConversationMessagesWebhook");
+    //   handleStoreChatRoom();
+    // });
+    loadChatRooms().then(() => {
+      console.log("loadChatRooms");
+      handleStoreChatRoom();
+    });
   }, [npub]);
-
-  // useEffect(() => {
-  //   if (hasEverLoaded) {
-  //     handleStoreChatRoom();
-  //   }
-  // }, [hasEverLoaded]);
 
   return (
     <Fragment>
