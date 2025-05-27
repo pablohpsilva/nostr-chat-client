@@ -1,3 +1,6 @@
+import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { nip19 } from "nostr-tools";
+
 export type Platform = "web" | "ios" | "android";
 
 export type SyntheticPrivKey = "nip07" | "none";
@@ -116,3 +119,23 @@ export type ReplyTo = {
   eventId: string;
   relayUrl?: string;
 };
+
+export interface ChatRoom {
+  recipients: string[];
+  recipientsNPubkeys: string[];
+}
+
+export type NIP17UserProfile = NDKUserProfile & {
+  pubkey: string;
+  npub: string;
+};
+
+export type NIP17PossiblePublicKeys =
+  | string
+  | string[]
+  | nip19.NPub
+  | nip19.NPub[]
+  | Recipient
+  | Recipient[];
+
+export type NIP17PossiblePublicKey = string | nip19.NPub | Recipient;

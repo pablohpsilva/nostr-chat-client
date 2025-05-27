@@ -11,14 +11,15 @@ import { useEffect, useMemo, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
 import { Recipient, ReplyTo } from "@/constants/types";
-import { generateUniqueDTag } from "@/lib/generateUniqueDTag";
 import { wrapManyEvents } from "@/lib/nip17";
+import useTag from "./useTag";
 
 let outgoingSub: NDKSubscription;
 let incomingSub: NDKSubscription;
 
 export default function useNip17Chat() {
   const currentUser = useNDKCurrentUser();
+  const { createMessageTag } = useTag();
   const [isLoading, setLoading] = useState(true);
   const [isLoadingMessages, setLoadingMessages] = useState(false);
   const [messagesByUser, setMessagesByUser] = useState<
@@ -77,9 +78,7 @@ export default function useNip17Chat() {
         pubKeys = [publicKey as string];
       }
 
-      const dTag = generateUniqueDTag(
-        pubKeys.map((r) => r).concat(currentUser.pubkey)
-      );
+      const { tag: dTag } = createMessageTag(pubKeys);
 
       // Filter to get the conversation messages
       const filter: NDKFilter = {
@@ -132,9 +131,7 @@ export default function useNip17Chat() {
         pubKeys = [publicKey as string];
       }
 
-      const dTag = generateUniqueDTag(
-        pubKeys.map((r) => r).concat(currentUser.pubkey)
-      );
+      const { tag: dTag } = createMessageTag(pubKeys);
 
       // We need two filters to get the complete conversation:
       // 1. Messages sent BY current user TO recipients
@@ -217,26 +214,12 @@ export default function useNip17Chat() {
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
 
-      let recipient: Recipient[];
-
-      // THIS IS NEEDED!!! Do not remove it.
-      // You can only send events if you use the REAL public key.
-      if (_recipient.publicKey.startsWith("npub")) {
-        const { data: publicKey } = nip19.decode(_recipient.publicKey);
-        recipient = [{ publicKey: publicKey as string }];
-      } else {
-        recipient = [_recipient];
-      }
-      const _dTag = recipient
-        .map((r) => r.publicKey)
-        .concat(currentUser.pubkey);
-      const dTag = generateUniqueDTag(_dTag);
+      const { tag: dTag, recipients } = createMessageTag([_recipient]);
 
       const events = wrapManyEvents(
         privateKey,
-        recipient,
+        recipients,
         message,
-        // [["d", randomDTag]],
         [["d", dTag]],
         conversationTitle,
         replyTo

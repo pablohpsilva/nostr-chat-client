@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ROUTES } from "@/constants/routes";
 import useNip17Chat from "@/hooks/useNip17Chat";
-import useNip17StoreProfile, { ChatRoom } from "@/hooks/useNip17StoreProfile";
+import useNip17StoreProfile, { ChatRoom } from "@/hooks/useNip17ChatRooms";
 import { nip19 } from "nostr-tools";
 import ChatHeader from "./components/ChatHeader";
 import EmptyChat from "./components/EmptyChat";
