@@ -15,7 +15,6 @@ import { wrapManyEvents } from "@/lib/nip17";
 import useTag from "./useTag";
 
 let outgoingSub: NDKSubscription;
-let incomingSub: NDKSubscription;
 
 export default function useNip17Chat() {
   const currentUser = useNDKCurrentUser();
@@ -133,20 +132,10 @@ export default function useNip17Chat() {
 
       const { tag: dTag } = createMessageTag(pubKeys);
 
-      // We need two filters to get the complete conversation:
-      // 1. Messages sent BY current user TO recipients
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.GiftWrap],
-        // "#p": recipients,
         "#d": [dTag],
       };
-
-      // 2. Messages sent TO current user FROM recipients
-      // const incomingFilter: NDKFilter = {
-      //   kinds: [NDKKind.GiftWrap],
-      //   "#p": [currentUser.pubkey],
-      //   "#d": [dTag],
-      // };
 
       const options: NDKSubscriptionOptions = {
         closeOnEose: false, // Keep the subscription open
@@ -154,42 +143,16 @@ export default function useNip17Chat() {
       };
 
       outgoingSub = getNDK().getInstance().subscribe(outgoingFilter, options);
-      // incomingSub = getNDK()
-      //   .getInstance()
-      //   .subscribe(incomingFilter, options);
 
       outgoingSub.on("event", (event: NDKEvent) => {
-        // console.log("Outgoing message received:", event);
-        // For outgoing messages, the p tag contains the recipient
-        // const recipientPubkey = event.tags.find((tag) => tag[0] === "p")?.[1];
-
-        // if (recipientPubkey) {
-        // addMessageToConversation(event, recipientPubkey, privateKey!);
         addMessageToConversation(event, privateKey!);
-        // }
       });
-
-      // incomingSub.on("event", (event: NDKEvent) => {
-      //   // console.log("Incoming message received:", event);
-      //   // For incoming messages, the author is the sender
-      //   const senderPubkey = event.pubkey;
-
-      //   if (senderPubkey) {
-      //     // addMessageToConversation(event, senderPubkey, privateKey);
-      //     addMessageToConversation(event, privateKey);
-      //   }
-      // });
 
       // Handle EOSE (End of Stored Events)
       outgoingSub.on("eose", (event: any) => {
         console.log("Outgoing messages EOSE received", event);
         setLoading(false);
       });
-
-      // incomingSub.on("eose", (event: any) => {
-      //   console.log("Incoming messages EOSE received", event);
-      //   setLoading(false);
-      // });
     } catch (error) {
       console.error("Error fetching conversation messages:", error);
       return [];
@@ -246,7 +209,6 @@ export default function useNip17Chat() {
     return () => {
       // Clean up subscriptions when the hook unmounts
       outgoingSub?.stop?.();
-      // incomingSub?.stop?.();
     };
   }, []);
 

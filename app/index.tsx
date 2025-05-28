@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/Button";
-import { Stack, useRouter } from "expo-router";
+import {
+  H1,
+  TypographyBodyL,
+  TypographyCaptionS,
+} from "@/components/ui/Typography";
+import { Colors } from "@/constants/Colors";
+import { ROUTES } from "@/constants/routes";
+import { Link, Stack, useRouter } from "expo-router";
 import { Fragment } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,17 +22,31 @@ export default function HomeScreen() {
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.container}>
+        <View style={{ minHeight: 100 }} />
+
+        <H1>Welcome to the safest way to chat</H1>
         <View style={styles.content}>
-          <Text style={styles.title}>Welcome to NoStream</Text>
-
-          <Text style={styles.subtitle}>Your secure messaging platform</Text>
-
           <View style={styles.features}>
-            <Text style={styles.featureText}>• End-to-end encryption</Text>
-            <Text style={styles.featureText}>• Instant messaging</Text>
-            <Text style={styles.featureText}>• Group chats</Text>
-            <Text style={styles.featureText}>• Media sharing</Text>
-            <Text style={styles.featureText}>• Complete privacy</Text>
+            <TypographyBodyL>🌐 Decentralized</TypographyBodyL>
+            <TypographyBodyL>🔓 Permissionless</TypographyBodyL>
+            <TypographyBodyL>👤 Anonymous</TypographyBodyL>
+            <TypographyBodyL style={{ position: "relative" }}>
+              🔒 <Text style={styles.e2eRealTag}>REAL</Text> End-to-end
+              encryption
+            </TypographyBodyL>
+            <TypographyBodyL>🟣 Nostr based</TypographyBodyL>
+            <TypographyBodyL>⚡️ Lightning powered</TypographyBodyL>
+            <TypographyBodyL>
+              🚫 No tracking and no data collection
+            </TypographyBodyL>
+            <TypographyBodyL>🧅 Tor powered</TypographyBodyL>
+          </View>
+          <View>
+            <Link href={ROUTES.FEATURES}>
+              <TypographyCaptionS colorName="primary">
+                I want to know more!
+              </TypographyCaptionS>
+            </Link>
           </View>
         </View>
 
@@ -42,36 +63,20 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: "space-between",
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
     alignItems: "center",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 12,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 18,
-    marginBottom: 40,
-    textAlign: "center",
-    opacity: 0.8,
+  content: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   features: {
     alignSelf: "stretch",
     marginTop: 20,
   },
-  featureText: {
-    fontSize: 16,
-    marginBottom: 12,
-    paddingLeft: 10,
-  },
-  buttonText: {
-    color: "inherit",
-    fontSize: 18,
+  e2eRealTag: {
+    color: Colors.light.yellow,
+    fontSize: 8,
     fontWeight: "bold",
   },
 });

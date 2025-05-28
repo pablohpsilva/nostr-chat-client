@@ -1,5 +1,5 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import {
   Alert,
   StyleSheet,
@@ -55,7 +55,7 @@ export const ImportKeyForm: React.FC<ImportKeyFormProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <Fragment>
       <View style={styles.formGroup}>
         <Text style={styles.label}>Your nsec private key</Text>
         <TextInput
@@ -78,14 +78,11 @@ export const ImportKeyForm: React.FC<ImportKeyFormProps> = ({
       <TouchableOpacity onPress={onClickBack} style={styles.secondaryButton}>
         <Text style={styles.secondaryButtonText}>Back</Text>
       </TouchableOpacity>
-    </View>
+    </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    gap: 16,
-  },
   formGroup: {
     marginBottom: 8,
   },

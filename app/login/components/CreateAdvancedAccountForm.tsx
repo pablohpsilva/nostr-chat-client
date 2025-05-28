@@ -1,7 +1,7 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import * as Clipboard from "expo-clipboard";
 import { generateSeedWords, privateKeyFromSeedWords } from "nostr-tools/nip06";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -81,7 +81,7 @@ export const CreateAdvancedAccountForm: React.FC<
   }, []);
 
   return (
-    <View style={styles.container}>
+    <Fragment>
       <Text style={styles.description}>
         Be sure to save your <Text style={styles.bold}>seed words</Text> and
         your <Text style={styles.bold}>passphrase</Text> securely!
@@ -199,14 +199,11 @@ export const CreateAdvancedAccountForm: React.FC<
       <TouchableOpacity onPress={onClickBack} style={styles.secondaryButton}>
         <Text style={styles.secondaryButtonText}>Back</Text>
       </TouchableOpacity>
-    </View>
+    </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    gap: 16,
-  },
   description: {
     fontSize: 14,
     color: "#666",

@@ -3,6 +3,7 @@ export const ROUTES = {
   CHAT: "/chatlist",
   CHAT_ID: "/chat/{nip}/{npub}",
   LOGIN: "/login",
+  FEATURES: "/features",
 };
 
 export const fillRoute = (

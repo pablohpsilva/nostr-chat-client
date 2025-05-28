@@ -1,23 +1,22 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import { useNDKSessionLogin } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Fragment, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ThemedView } from "@/components/ThemedView";
+import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/constants/routes";
-import { useThemeColor } from "@/hooks/useThemeColor";
 // import { getKeys } from "@/libs/local-storage";
+import { H2, TypographyBodyL } from "@/components/ui/Typography";
 import { APP_NAME } from "@/constants";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { CreateAccountForm } from "./components/CreateAccountForm";
 import { CreateAdvancedAccountForm } from "./components/CreateAdvancedAccountForm";
 import { ImportKeyAdvancedForm } from "./components/ImportKeyAdvancedForm";
@@ -106,85 +105,91 @@ export default function LoginScreen() {
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
-      <ThemedView style={styles.container}>
-        <StatusBar style="auto" />
-        <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView edges={["top"]} style={styles.wrapper}>
+        <Button variant="small-close" size="unset" onPress={() => {}}>
+          <Ionicons name="arrow-back" size={24} color="#ffffff" />
+        </Button>
+      </SafeAreaView>
+
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <H2>Welcome to {APP_NAME}</H2>
+            <TypographyBodyL style={styles.subtitle}>
+              {mode === LoginMode.LOGIN &&
+                "Sign in with your Nostr key or create one"}
+              {mode === LoginMode.CREATE && "Create a new Nostr account"}
+              {mode === LoginMode.CREATE_ADVANCED &&
+                "Create a new Nostr account with advanced options"}
+              {mode === LoginMode.IMPORT && "Import your existing Nostr key"}
+              {mode === LoginMode.IMPORT_ADVANCED &&
+                "Import your existing Nostr key with advanced options"}
+            </TypographyBodyL>
+          </View>
+
           <KeyboardAvoidingView
-            style={styles.keyboardAvoidingView}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.keyboardAvoidingView}
           >
             <ScrollView
               contentContainerStyle={styles.scrollContent}
               keyboardShouldPersistTaps="handled"
             >
-              <View style={styles.formContainer}>
-                <View style={styles.header}>
-                  <Text style={styles.title}>{APP_NAME}</Text>
-                  <Text style={styles.subtitle}>
-                    {mode === LoginMode.LOGIN &&
-                      "Sign in with your Nostr key or create one"}
-                    {mode === LoginMode.CREATE && "Create a new Nostr account"}
-                    {mode === LoginMode.CREATE_ADVANCED &&
-                      "Create a new Nostr account with advanced options"}
-                    {mode === LoginMode.IMPORT &&
-                      "Import your existing Nostr key"}
-                    {mode === LoginMode.IMPORT_ADVANCED &&
-                      "Import your existing Nostr key with advanced options"}
-                  </Text>
-                </View>
-
-                <View style={styles.formWrapper}>
-                  {renderFormBasedOnMode()}
-                </View>
-              </View>
+              {renderFormBasedOnMode()}
             </ScrollView>
           </KeyboardAvoidingView>
-        </SafeAreaView>
-      </ThemedView>
+        </View>
+      </View>
     </Fragment>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  formContainer: {
+  wrapper: {
+    marginVertical: 24,
+    paddingHorizontal: 16,
     width: "100%",
-    padding: 20,
-    backgroundColor: "white",
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    gap: 16,
+    maxWidth: 800,
+    marginHorizontal: "auto",
+  },
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    width: "100%",
+    maxWidth: 800,
   },
   header: {
+    display: "flex",
+    flexDirection: "column",
     alignItems: "center",
-    marginBottom: 16,
+    justifyContent: "center",
+    gap: 12,
+    marginTop: 8,
+    marginBottom: 24,
+    width: "100%",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: "#333",
+  formContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    width: "100%",
+    gap: 16,
+    marginHorizontal: "auto",
   },
   subtitle: {
     marginTop: 8,
-    fontSize: 14,
-    color: "#666",
     textAlign: "center",
   },
-  formWrapper: {
-    marginTop: 24,
+  keyboardAvoidingView: {
+    width: "100%",
+  },
+  scrollContent: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+    gap: 16,
+    marginHorizontal: "auto",
   },
 });

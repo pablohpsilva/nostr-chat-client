@@ -1,6 +1,6 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import * as Clipboard from "expo-clipboard";
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -71,7 +71,7 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <Fragment>
       <Text style={styles.description}>
         We'll generate a new Nostr key for you.
       </Text>
@@ -167,14 +167,11 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
       <TouchableOpacity onPress={onClickBack} style={styles.secondaryButton}>
         <Text style={styles.secondaryButtonText}>Back</Text>
       </TouchableOpacity>
-    </View>
+    </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    gap: 16,
-  },
   description: {
     fontSize: 14,
     color: "#666",

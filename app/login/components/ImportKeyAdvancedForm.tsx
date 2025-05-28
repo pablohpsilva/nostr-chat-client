@@ -1,6 +1,6 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import { privateKeyFromSeedWords } from "nostr-tools/nip06";
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import {
   Alert,
   StyleSheet,
@@ -65,7 +65,7 @@ export const ImportKeyAdvancedForm: React.FC<ImportKeyAdvancedFormProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <Fragment>
       <View style={styles.formGroup}>
         <Text style={styles.label}>Seed words</Text>
         <TextInput
@@ -99,14 +99,11 @@ export const ImportKeyAdvancedForm: React.FC<ImportKeyAdvancedFormProps> = ({
       <TouchableOpacity onPress={onClickBack} style={styles.secondaryButton}>
         <Text style={styles.secondaryButtonText}>Back</Text>
       </TouchableOpacity>
-    </View>
+    </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    gap: 16,
-  },
   formGroup: {
     marginBottom: 8,
   },

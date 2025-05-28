@@ -1,6 +1,8 @@
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { Fragment } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
+import { Button } from "@/components/ui/Button";
+import { Colors } from "@/constants/Colors";
 import { LoginMode } from "../types";
 
 interface LoginFormProps {
@@ -9,20 +11,17 @@ interface LoginFormProps {
 
 export const LoginForm: React.FC<LoginFormProps> = ({ setMode }) => {
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => setMode(LoginMode.IMPORT)}
-        style={styles.primaryButton}
-      >
-        <Text style={styles.primaryButtonText}>Sign via Nostr Key</Text>
-      </TouchableOpacity>
+    <Fragment>
+      <Button variant="rounded" onPress={() => setMode(LoginMode.IMPORT)}>
+        Sign via Nostr Key
+      </Button>
 
-      <TouchableOpacity
+      <Button
+        variant="rounded"
         onPress={() => setMode(LoginMode.IMPORT_ADVANCED)}
-        style={styles.primaryButton}
       >
-        <Text style={styles.primaryButtonText}>Sign via Seed Words</Text>
-      </TouchableOpacity>
+        Sign via Seed Words
+      </Button>
 
       <View style={styles.dividerContainer}>
         <View style={styles.dividerLine} />
@@ -31,22 +30,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ setMode }) => {
         </View>
       </View>
 
-      <TouchableOpacity
-        onPress={() => setMode(LoginMode.CREATE)}
-        style={styles.secondaryButton}
-      >
-        <Text style={styles.secondaryButtonText}>Create New Account</Text>
-      </TouchableOpacity>
+      <Button variant="ghost-02" onPress={() => setMode(LoginMode.CREATE)}>
+        Create New Account
+      </Button>
 
-      <TouchableOpacity
+      <Button
+        variant="text-white"
         onPress={() => setMode(LoginMode.CREATE_ADVANCED)}
-        style={styles.tertiaryButton}
+        size="small"
       >
-        <Text style={styles.tertiaryButtonText}>
-          or Create New Advanced Account
-        </Text>
-      </TouchableOpacity>
-    </View>
+        or Create New Advanced Account
+      </Button>
+    </Fragment>
   );
 };
 
@@ -72,6 +67,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 8,
+    width: "100%",
   },
   dividerLine: {
     position: "absolute",
@@ -80,12 +76,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#e5e7eb", // gray-300 equivalent
   },
   dividerTextContainer: {
-    backgroundColor: "white",
+    backgroundColor: Colors.light.backgroundPrimary,
     paddingHorizontal: 8,
   },
   dividerText: {
     fontSize: 14,
     color: "#6b7280", // gray-500 equivalent
+    backgroundColor: "transparent",
   },
   secondaryButton: {
     width: "100%",
