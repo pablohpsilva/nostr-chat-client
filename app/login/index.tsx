@@ -2,18 +2,12 @@ import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import { useNDKSessionLogin } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useRouter } from "expo-router";
 import { Fragment, useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
-import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/constants/routes";
 // import { getKeys } from "@/libs/local-storage";
-import { H2, TypographyBodyL } from "@/components/ui/Typography";
+import { Button } from "@/components/ui/Button";
+import { H3, TypographyBodyL } from "@/components/ui/Typography";
 import { APP_NAME } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -102,44 +96,56 @@ export default function LoginScreen() {
   //   })();
   // }, []);
 
+  const isLoginMode = mode === LoginMode.LOGIN;
+
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView edges={["top"]} style={styles.wrapper}>
-        <Button variant="small-close" size="unset" onPress={() => {}}>
-          <Ionicons name="arrow-back" size={24} color="#ffffff" />
-        </Button>
+        {isLoginMode ? null : (
+          <Button
+            variant="small-close"
+            size="unset"
+            onPress={handleOnClickBack}
+          >
+            <Ionicons name="arrow-back" size={24} color="#ffffff" />
+          </Button>
+        )}
       </SafeAreaView>
 
-      <View style={styles.wrapper}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <H2>Welcome to {APP_NAME}</H2>
-            <TypographyBodyL style={styles.subtitle}>
-              {mode === LoginMode.LOGIN &&
-                "Sign in with your Nostr key or create one"}
-              {mode === LoginMode.CREATE && "Create a new Nostr account"}
-              {mode === LoginMode.CREATE_ADVANCED &&
-                "Create a new Nostr account with advanced options"}
-              {mode === LoginMode.IMPORT && "Import your existing Nostr key"}
-              {mode === LoginMode.IMPORT_ADVANCED &&
-                "Import your existing Nostr key with advanced options"}
-            </TypographyBodyL>
-          </View>
+      <ScrollView>
+        <View style={styles.wrapper}>
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <H3>Welcome to {APP_NAME}</H3>
+              <TypographyBodyL style={styles.subtitle}>
+                {mode === LoginMode.LOGIN &&
+                  "Sign in with your Nostr key or create one"}
+                {mode === LoginMode.CREATE && "Create a new Nostr account"}
+                {mode === LoginMode.CREATE_ADVANCED &&
+                  "Create a new Nostr account with advanced options"}
+                {mode === LoginMode.IMPORT && "Import your existing Nostr key"}
+                {mode === LoginMode.IMPORT_ADVANCED &&
+                  "Import your existing Nostr key with advanced options"}
+              </TypographyBodyL>
+            </View>
 
-          <KeyboardAvoidingView
+            <View style={styles.scrollContent}>{renderFormBasedOnMode()}</View>
+
+            {/* <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.keyboardAvoidingView}
-          >
-            <ScrollView
-              contentContainerStyle={styles.scrollContent}
-              keyboardShouldPersistTaps="handled"
             >
-              {renderFormBasedOnMode()}
+            <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            >
+            {renderFormBasedOnMode()}
             </ScrollView>
-          </KeyboardAvoidingView>
+            </KeyboardAvoidingView> */}
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </Fragment>
   );
 }
@@ -155,7 +161,8 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "flex-start",
+    alignItems: "center",
+    justifyContent: "center",
     width: "100%",
     maxWidth: 800,
   },

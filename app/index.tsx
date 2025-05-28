@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/Button";
 import {
   H1,
   TypographyBodyL,
-  TypographyCaptionS,
+  TypographyCaptionL,
 } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/routes";
@@ -41,11 +41,11 @@ export default function HomeScreen() {
             </TypographyBodyL>
             <TypographyBodyL>🧅 Tor powered</TypographyBodyL>
           </View>
-          <View>
+          <View style={{ marginTop: 20 }}>
             <Link href={ROUTES.FEATURES}>
-              <TypographyCaptionS colorName="primary">
+              <TypographyCaptionL colorName="primary">
                 I want to know more!
-              </TypographyCaptionS>
+              </TypographyCaptionL>
             </Link>
           </View>
         </View>
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
   features: {
     alignSelf: "stretch",
     marginTop: 20,
+    gap: 8,
   },
   e2eRealTag: {
     color: Colors.light.yellow,

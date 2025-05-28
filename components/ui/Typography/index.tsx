@@ -1,7 +1,8 @@
-import { Colors } from "@/constants/Colors";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import React from "react";
 import { StyleSheet, Text, TextProps } from "react-native";
+
+import { Colors } from "@/constants/Colors";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 // Poppins font variants
 export type PoppinsVariant =

@@ -1,15 +1,11 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import { privateKeyFromSeedWords } from "nostr-tools/nip06";
 import React, { Fragment, useState } from "react";
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 
+import { Button } from "@/components/ui/Button";
+import { TextField } from "@/components/ui/TextField";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { KeysType } from "../types";
 
 interface ImportKeyAdvancedFormProps {
@@ -67,20 +63,16 @@ export const ImportKeyAdvancedForm: React.FC<ImportKeyAdvancedFormProps> = ({
   return (
     <Fragment>
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Seed words</Text>
-        <TextInput
-          style={styles.input}
+        <TextField
+          label="Seed words"
           placeholder="Seed words separated by spaces..."
           onChangeText={handleOnChangeSeedWords}
           value={seedWordsText}
           secureTextEntry
         />
-      </View>
 
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Passphrase (if you have one)</Text>
-        <TextInput
-          style={styles.input}
+        <TextField
+          label="Passphrase (if you have one)"
           placeholder="Passphrase..."
           onChangeText={handleOnChangePassphrase}
           value={passphrase}
@@ -88,68 +80,24 @@ export const ImportKeyAdvancedForm: React.FC<ImportKeyAdvancedFormProps> = ({
         />
       </View>
 
-      <TouchableOpacity
-        onPress={handleOnClickLogin}
-        disabled={!seedWordsIsSet}
-        style={[styles.primaryButton, !seedWordsIsSet && styles.disabledButton]}
-      >
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={onClickBack} style={styles.secondaryButton}>
-        <Text style={styles.secondaryButtonText}>Back</Text>
-      </TouchableOpacity>
+      <SafeAreaView edges={["bottom"]}>
+        <Button
+          onPress={handleOnClickLogin}
+          disabled={!seedWordsIsSet}
+          // style={[styles.primaryButton, !seedWordsIsSet && styles.disabledButton]}
+        >
+          Login
+        </Button>
+      </SafeAreaView>
     </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
   formGroup: {
-    marginBottom: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#333",
-    marginBottom: 6,
-  },
-  input: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 32,
     width: "100%",
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    backgroundColor: "white",
-    marginTop: 4,
-  },
-  primaryButton: {
-    width: "100%",
-    padding: 12,
-    backgroundColor: "#3b82f6", // blue-600 equivalent
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  disabledButton: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  secondaryButton: {
-    width: "100%",
-    padding: 12,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  secondaryButtonText: {
-    color: "#333",
-    fontSize: 16,
   },
 });

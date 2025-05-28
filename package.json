@@ -45,6 +45,7 @@
     "expo-web-browser": "~14.1.6",
     "fast-text-encoding": "^1.0.6",
     "lodash.clonedeep": "^4.5.0",
+    "lodash.debounce": "^4.0.8",
     "nostr-nsec-seedphrase": "^0.6.5",
     "nostr-tools": "^2.13.0",
     "react": "19.0.0",
@@ -64,6 +65,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/lodash.clonedeep": "^4.5.9",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^19.1.4",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0",

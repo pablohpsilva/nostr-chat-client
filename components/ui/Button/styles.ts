@@ -13,8 +13,9 @@ export const elementStyleSheet = StyleSheet.create({
   },
   rounded: {
     backgroundColor: "#3b82f6",
-    borderRadius: 25,
-    borderWidth: 0,
+    borderColor: "#3b82f6",
+    borderRadius: 30,
+    borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -34,7 +35,7 @@ export const elementStyleSheet = StyleSheet.create({
   },
   "ghost-02": {
     backgroundColor: "transparent",
-    borderRadius: 25,
+    borderRadius: 30,
     borderWidth: 2,
     borderColor: "#3b82f6",
     alignItems: "center",
@@ -42,7 +43,7 @@ export const elementStyleSheet = StyleSheet.create({
   },
   "ghost-white": {
     backgroundColor: "transparent",
-    borderRadius: 25,
+    borderRadius: 30,
     borderWidth: 2,
     borderColor: "#ffffff",
     alignItems: "center",
@@ -50,7 +51,7 @@ export const elementStyleSheet = StyleSheet.create({
   },
   social: {
     backgroundColor: "#1f2937",
-    borderRadius: 25,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: "#374151",
     alignItems: "center",
@@ -58,15 +59,15 @@ export const elementStyleSheet = StyleSheet.create({
   },
   icon: {
     backgroundColor: "#3b82f6",
-    borderRadius: 25,
-    borderWidth: 0,
+    borderRadius: 30,
+    borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
   },
   "circle-add": {
     backgroundColor: "#3b82f6",
     borderRadius: 50,
-    borderWidth: 0,
+    borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
     width: 50,
@@ -75,7 +76,7 @@ export const elementStyleSheet = StyleSheet.create({
   "circle-attachment": {
     backgroundColor: "#3b82f6",
     borderRadius: 50,
-    borderWidth: 0,
+    borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
     width: 50,
@@ -98,29 +99,29 @@ export const elementStyleSheet = StyleSheet.create({
     fontSize: 10,
   },
   "text-size-small": {
-    fontSize: 14,
+    fontSize: 12,
   },
   "text-size-medium": {
-    fontSize: 16,
+    fontSize: 14,
   },
   "text-size-large": {
-    fontSize: 18,
+    fontSize: 16,
   },
   "size-unset": {
     paddingVertical: 0,
     paddingHorizontal: 0,
   },
   "size-small": {
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 24,
   },
   "size-medium": {
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    paddingVertical: 12,
+    paddingHorizontal: 28,
   },
   "size-large": {
-    paddingVertical: 18,
-    paddingHorizontal: 40,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
   },
 });
 

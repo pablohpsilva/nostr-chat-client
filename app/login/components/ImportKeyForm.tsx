@@ -1,14 +1,10 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import React, { Fragment, useState } from "react";
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 
+import { Button } from "@/components/ui/Button";
+import { TextField } from "@/components/ui/TextField";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { KeysType } from "../types";
 
 interface ImportKeyFormProps {
@@ -57,78 +53,27 @@ export const ImportKeyForm: React.FC<ImportKeyFormProps> = ({
   return (
     <Fragment>
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Your nsec private key</Text>
-        <TextInput
-          style={styles.input}
+        <TextField
+          label="Your nsec private key"
           value={nsec}
           onChangeText={handleOnChangeNsec}
-          placeholder="nsec1..."
-          secureTextEntry
         />
+
+        <SafeAreaView edges={["bottom"]}>
+          <Button onPress={handleOnClickLogin} disabled={!nsec}>
+            Login
+          </Button>
+        </SafeAreaView>
       </View>
-
-      <TouchableOpacity
-        onPress={handleOnClickLogin}
-        disabled={!nsec}
-        style={[styles.primaryButton, !nsec && styles.disabledButton]}
-      >
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={onClickBack} style={styles.secondaryButton}>
-        <Text style={styles.secondaryButtonText}>Back</Text>
-      </TouchableOpacity>
     </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
   formGroup: {
-    marginBottom: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#333",
-    marginBottom: 6,
-  },
-  input: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 32,
     width: "100%",
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    backgroundColor: "white",
-    marginTop: 4,
-  },
-  primaryButton: {
-    width: "100%",
-    padding: 12,
-    backgroundColor: "#3b82f6", // blue-600 equivalent
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  disabledButton: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  secondaryButton: {
-    width: "100%",
-    padding: 12,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  secondaryButtonText: {
-    color: "#333",
-    fontSize: 16,
   },
 });

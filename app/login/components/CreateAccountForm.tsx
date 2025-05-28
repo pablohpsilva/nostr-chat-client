@@ -1,16 +1,19 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import * as Clipboard from "expo-clipboard";
 import React, { Fragment, useState } from "react";
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import "react-native-get-random-values";
 
+import { Button } from "@/components/ui/Button";
+import {
+  TypographyBodyL,
+  TypographyBodyS,
+  TypographyBodySBold,
+  TypographyCaptionL,
+  TypographyCaptionS,
+} from "@/components/ui/Typography";
+import { Colors } from "@/constants/Colors";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { KeysType } from "../types";
 
 interface CreateAccountFormProps {
@@ -72,101 +75,90 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
   return (
     <Fragment>
-      <Text style={styles.description}>
-        We'll generate a new Nostr key for you.
-      </Text>
-      <Text style={styles.warningText}>
+      <TypographyBodyL>We'll generate a new Nostr key for you.</TypographyBodyL>
+      <TypographyBodyL>
         Be sure to save your private key securely!
-      </Text>
+      </TypographyBodyL>
 
       {hasGeneratedKeys && (
         <>
           <View style={styles.keysContainer}>
-            <Text style={[styles.label, styles.pulseAnimation]}>
-              Your Keys, <Text style={styles.bold}>Your Responsibility</Text>
-            </Text>
+            <TypographyCaptionL>
+              Your Keys,{" "}
+              <TypographyBodySBold>Your Responsibility</TypographyBodySBold>
+            </TypographyCaptionL>
             {keys && (
               <View style={styles.keysWrapper}>
                 <View style={styles.keySection}>
                   <View style={styles.keyHeader}>
-                    <Text style={styles.keyLabel}>Public Key (npub)</Text>
-                    <TouchableOpacity
+                    <TypographyBodyS>Public Key (npub)</TypographyBodyS>
+                    <Button
+                      size="small"
+                      variant="text-primary"
                       onPress={() => copyToClipboard(keys.npub)}
                     >
-                      <Text style={styles.copyButton}>Copy</Text>
-                    </TouchableOpacity>
+                      Copy
+                    </Button>
                   </View>
-                  <ScrollView horizontal style={styles.keyValue}>
-                    <Text style={styles.keyValueText}>{keys.npub}</Text>
-                  </ScrollView>
+                  <TypographyBodyS>{keys.npub}</TypographyBodyS>
                 </View>
 
                 <View style={styles.keySection}>
                   <View style={styles.keyHeader}>
-                    <Text style={styles.keyLabel}>Private Key (nsec)</Text>
-                    <TouchableOpacity
+                    <TypographyBodyS>Private Key (nsec)</TypographyBodyS>
+                    <Button
+                      size="small"
+                      variant="text-primary"
                       onPress={() => copyToClipboard(keys.nsec)}
                     >
-                      <Text style={styles.copyButton}>Copy</Text>
-                    </TouchableOpacity>
+                      Copy
+                    </Button>
                   </View>
-                  <ScrollView horizontal style={styles.keyValue}>
-                    <Text style={styles.keyValueText}>{keys.nsec}</Text>
-                  </ScrollView>
+                  <TypographyBodyS>{keys.nsec}</TypographyBodyS>
                 </View>
               </View>
             )}
           </View>
-          <Text style={styles.criticalWarning}>
+
+          <TypographyCaptionS style={styles.criticalWarning}>
             WARNING: Never share your private key with anyone! Save it somewhere
             secure.
-          </Text>
+          </TypographyCaptionS>
 
-          <Text style={styles.criticalWarning}>
+          <TypographyCaptionS style={styles.criticalWarning}>
             WARNING: If you lose/forget/give away your private key the following
             can happen:
-          </Text>
+          </TypographyCaptionS>
           <View style={styles.warningList}>
-            <Text style={styles.warningListItem}>• Lose your account</Text>
-            <Text style={styles.warningListItem}>
+            <TypographyCaptionS style={styles.warningListItem}>
+              • Lose your account
+            </TypographyCaptionS>
+            <TypographyCaptionS style={styles.warningListItem}>
               • Bad actors gain access to your account
-            </Text>
-            <Text style={styles.warningListItem}>
+            </TypographyCaptionS>
+            <TypographyCaptionS style={styles.warningListItem}>
               • Your privacy and anonymity are compromised
-            </Text>
-            <Text style={styles.warningListItem}>
+            </TypographyCaptionS>
+            <TypographyCaptionS style={styles.warningListItem}>
               • You can be watched by bad actors without your knowledge
-            </Text>
-            <Text style={styles.warningListItem}>
+            </TypographyCaptionS>
+            <TypographyCaptionS style={styles.warningListItem}>
               • You can potentially lose your funds (depends on the wallet you
               use)
-            </Text>
+            </TypographyCaptionS>
           </View>
         </>
       )}
 
-      {hasGeneratedKeys ? (
-        <TouchableOpacity
-          onPress={handleOnClickContinue}
-          disabled={!keys}
-          style={[styles.primaryButton, !keys && styles.disabledButton]}
-        >
-          <Text style={styles.buttonText}>Continue</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          onPress={handleOnClickGenerateKeys}
-          style={styles.primaryButton}
-        >
-          <Text style={styles.buttonText}>Create Account</Text>
-        </TouchableOpacity>
-      )}
-
-      <View style={styles.divider} />
-
-      <TouchableOpacity onPress={onClickBack} style={styles.secondaryButton}>
-        <Text style={styles.secondaryButtonText}>Back</Text>
-      </TouchableOpacity>
+      <SafeAreaView edges={["bottom"]}>
+        {hasGeneratedKeys ? (
+          <Button onPress={handleOnClickContinue} disabled={!keys}>
+            Continue
+          </Button>
+        ) : (
+          <Button onPress={handleOnClickGenerateKeys}>Create Account</Button>
+        )}
+      </SafeAreaView>
     </Fragment>
   );
 };
@@ -230,9 +222,10 @@ const styles = StyleSheet.create({
   },
   criticalWarning: {
     fontSize: 12,
-    color: "red",
+    color: Colors.dark.coral,
     fontWeight: "bold",
     marginBottom: 4,
+    textAlign: "left",
   },
   warningList: {
     paddingLeft: 8,
@@ -240,7 +233,7 @@ const styles = StyleSheet.create({
   },
   warningListItem: {
     fontSize: 12,
-    color: "red",
+    color: Colors.dark.cyan,
     marginBottom: 2,
   },
   primaryButton: {
