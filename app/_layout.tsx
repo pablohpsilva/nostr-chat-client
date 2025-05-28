@@ -11,12 +11,33 @@ import { ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { LogBox } from "react-native";
 import "react-native-reanimated";
 // import PolyfillCrypto from "react-native-webview-crypto";
 
 import NDKHeadless from "@/components/NDKHeadless";
 import { DarkTheme, DefaultTheme } from "@/constants/Theme";
 import { useColorScheme } from "@/hooks/useColorScheme";
+
+// Disable all LogBox notifications
+if (__DEV__) {
+  console.log("ignoreAllLogs");
+  console.log("ignoreAllLogs");
+  console.log("ignoreAllLogs");
+  console.log("ignoreAllLogs");
+  console.log("ignoreAllLogs");
+  LogBox.ignoreAllLogs(true);
+}
+
+// Alternative: Ignore specific warnings only (uncomment and modify as needed)
+// LogBox.ignoreLogs([
+//   'Warning: componentWillReceiveProps',
+//   'Warning: componentWillMount',
+//   'Module RCTImageLoader',
+//   'Non-serializable values were found in the navigation state',
+//   'VirtualizedLists should never be nested',
+//   'Setting a timer for a long period of time',
+// ]);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

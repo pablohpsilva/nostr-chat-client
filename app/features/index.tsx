@@ -1,3 +1,9 @@
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { Fragment } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import { LinkButton } from "@/components/ui/Button/LinkButton";
 import {
   H1,
@@ -6,15 +12,12 @@ import {
   TypographyCaptionL,
 } from "@/components/ui/Typography";
 import { ROUTES } from "@/constants/routes";
-import { Stack } from "expo-router";
-import { Fragment } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FeaturesScreen() {
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />;
+      <StatusBar style="light" />
       <View style={styles.container}>
         <SafeAreaView edges={["top"]} style={styles.header}>
           <H1>How It Works</H1>

@@ -1,5 +1,6 @@
 import { useNDKSessionLogout } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { Fragment, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -7,7 +8,6 @@ import { ROUTES } from "@/constants/routes";
 import useNip14 from "@/hooks/useNip04";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
 import List from "./components/List";
-// import List from "./components/List";
 
 export default function ChatListPage() {
   const logout = useNDKSessionLogout();
@@ -32,17 +32,20 @@ export default function ChatListPage() {
   };
 
   useEffect(() => {
+    console.log("START -> getNip17UserProfilesFromChats");
     getNip17UserProfilesFromChats();
     // getNip17UserProfilesFromChats().then((data) => {
     //   asyncGetNip17UserProfilesFromChats();
     //   console.log("data", data);
     // });
-    console.log("getNip17UserProfilesFromChats");
+    console.log("END -> getNip17UserProfilesFromChats");
   }, []);
 
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="light" />
+
       <View style={styles.container}>
         <List
           loading={isLoading}

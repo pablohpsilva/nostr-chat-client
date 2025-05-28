@@ -1,10 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { NDKKind } from "@nostr-dev-kit/ndk";
-import { Link } from "expo-router";
 import { Fragment } from "react";
 import {
   ActivityIndicator,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,7 +11,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { fillRoute, ROUTES } from "@/constants/routes";
+import ProfileListItem from "@/components/ui/ProfileListItem";
+import { Colors } from "@/constants/Colors";
 import { NIP17UserProfile } from "@/hooks/useNip17";
 import Search from "./Search";
 
@@ -37,10 +36,6 @@ export default function List({
   const hasPublicChats = Object.keys(nip04UserProfiles).length > 0;
   const hasConversations = hasPrivateChats || hasPublicChats;
 
-  const formatPublicKey = (value: string) => {
-    return `${value.substring(0, 6)}...${value.substring(value.length - 4)}`;
-  };
-
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.header} edges={["top"]}>
@@ -49,7 +44,11 @@ export default function List({
             style={styles.menuButton}
             onPress={handleOnClickLogout}
           >
-            <Ionicons name="log-out-outline" size={24} color="#666" />
+            <Ionicons
+              name="log-out-outline"
+              size={24}
+              color={Colors.dark.white}
+            />
           </TouchableOpacity>
 
           <Search />
@@ -76,48 +75,18 @@ export default function List({
               <Fragment>
                 {Object.values(nip17UserProfiles).map(
                   (
-                    { npub, pubkey, displayName, picture, image, created_at },
+                    { npub, pubkey, displayName, picture, created_at },
                     index
                   ) => (
-                    <Link
+                    <ProfileListItem
                       key={`${pubkey}-${npub}-${index}`}
-                      href={fillRoute(ROUTES.CHAT_ID, {
-                        nip: "NIP17",
-                        npub: `${npub}`,
-                      })}
-                      asChild
-                    >
-                      <TouchableOpacity style={styles.chatItem}>
-                        <View style={styles.chatItemContent}>
-                          <Image
-                            source={{ uri: image || picture }}
-                            style={styles.avatar}
-                            // defaultSource={require("@/assets/default-avatar.png")}
-                          />
-
-                          <View style={styles.chatInfo}>
-                            <Text style={styles.chatName}>
-                              {displayName || formatPublicKey(`${npub}`)}
-                            </Text>
-                            {created_at && (
-                              <Text style={styles.chatDate}>
-                                Created at:{" "}
-                                {new Date(created_at * 1000).toLocaleString()}
-                              </Text>
-                            )}
-                          </View>
-                        </View>
-
-                        <View style={styles.nipContainer}>
-                          <Text style={styles.nipTag}>NIP17</Text>
-                          <Ionicons
-                            name="chevron-forward-outline"
-                            size={24}
-                            color="#666"
-                          />
-                        </View>
-                      </TouchableOpacity>
-                    </Link>
+                      {...{
+                        npub,
+                        displayName,
+                        picture,
+                        tag: "NIP17",
+                      }}
+                    />
                   )
                 )}
               </Fragment>
@@ -126,47 +95,19 @@ export default function List({
             {hasPublicChats && (
               <Fragment>
                 {Object.values(nip04UserProfiles).map(
-                  ({ npub, displayName, picture, image, created_at }) => (
-                    <Link
-                      key={npub}
-                      href={fillRoute(ROUTES.CHAT_ID, {
-                        nip: `NIP${NDKKind.EncryptedDirectMessage}`,
-                        npub: `${npub}`,
-                      })}
-                      asChild
-                    >
-                      <TouchableOpacity style={styles.chatItem}>
-                        <View style={styles.chatItemContent}>
-                          <Image
-                            source={{ uri: image || picture }}
-                            style={styles.avatar}
-                            // defaultSource={require("@/assets/default-avatar.png")}
-                          />
-                          <View style={styles.chatInfo}>
-                            <Text style={styles.chatName}>
-                              {displayName || formatPublicKey(`${npub}`)}
-                            </Text>
-                            {created_at && (
-                              <Text style={styles.chatDate}>
-                                Created at:{" "}
-                                {new Date(created_at * 1000).toLocaleString()}
-                              </Text>
-                            )}
-                          </View>
-                        </View>
-
-                        <View style={styles.nipContainer}>
-                          <Text style={styles.nipTag}>
-                            {`NIP${NDKKind.EncryptedDirectMessage}`}
-                          </Text>
-                          <Ionicons
-                            name="chevron-forward-outline"
-                            size={24}
-                            color="#666"
-                          />
-                        </View>
-                      </TouchableOpacity>
-                    </Link>
+                  (
+                    { npub, displayName, picture, image, created_at },
+                    index
+                  ) => (
+                    <ProfileListItem
+                      key={`${npub}-${npub}-${index}`}
+                      {...{
+                        npub,
+                        displayName,
+                        picture,
+                        tag: `NIP${NDKKind.EncryptedDirectMessage}`,
+                      }}
+                    />
                   )
                 )}
               </Fragment>
@@ -181,12 +122,12 @@ export default function List({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
   },
   header: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: Colors.dark.deactive,
+    backgroundColor: Colors.dark.backgroundSecondary,
   },
   headerContent: {
     display: "flex",
@@ -199,6 +140,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingHorizontal: 16,
   },
   centerContainer: {
     flex: 1,
@@ -216,48 +158,5 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: "#666",
-  },
-  chatItem: {
-    flexDirection: "row",
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  chatItemContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#e5e7eb",
-  },
-  chatInfo: {
-    justifyContent: "center",
-  },
-  chatName: {
-    fontWeight: "500",
-    marginBottom: 4,
-  },
-  chatDate: {
-    fontSize: 12,
-    color: "#666",
-  },
-  nipContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  nipTag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: "#000",
-    borderRadius: 8,
-    fontSize: 12,
   },
 });

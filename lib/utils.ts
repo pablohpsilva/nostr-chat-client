@@ -135,3 +135,7 @@ export class Queue<V> {
     return target.value;
   }
 }
+
+export const formatPublicKey = (value: string) => {
+  return `${value.substring(0, 6)}...${value.substring(value.length - 4)}`;
+};

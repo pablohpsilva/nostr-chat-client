@@ -14,6 +14,8 @@ import {
 // import { useSearch } from "@/hooks/useSearch";
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 
+import { TypographyBodyL } from "@/components/ui/Typography";
+import { Colors } from "@/constants/Colors";
 import SearchStartChat from "./SearchStartChat";
 
 // const formatPubkey = (pubkey: string) => {
@@ -114,9 +116,10 @@ export default function Search() {
             placeholder="Search chats..."
             editable={false}
             pointerEvents="none"
+            placeholderTextColor={Colors.dark.deactive}
           />
           <View style={styles.searchIconContainer}>
-            <Ionicons name="search" size={18} color="#668" />
+            <Ionicons name="search" size={18} color={Colors.dark.white} />
           </View>
         </TouchableOpacity>
       </View>
@@ -132,7 +135,7 @@ export default function Search() {
               onPress={handleCloseOverlay}
               style={styles.backButton}
             >
-              <Ionicons name="arrow-back" size={24} color="#666" />
+              <Ionicons name="arrow-back" size={24} color={Colors.dark.white} />
             </TouchableOpacity>
             <TextInput
               style={styles.modalSearchInput}
@@ -157,11 +160,13 @@ export default function Search() {
               )}
 
             {searchQuery ? (
-              <Text style={styles.noResultsText}>
+              <TypographyBodyL style={styles.noResultsText}>
                 No results found for "{searchQuery}"
-              </Text>
+              </TypographyBodyL>
             ) : (
-              <Text style={styles.noResultsText}>Type to search on nostr</Text>
+              <TypographyBodyL style={styles.noResultsText}>
+                Type to search on nostr
+              </TypographyBodyL>
             )}
           </ScrollView>
         </SafeAreaView>
@@ -193,9 +198,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingRight: 40,
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    color: Colors.dark.white,
+    borderColor: Colors.dark.backgroundPrimary,
     borderRadius: 8,
-    backgroundColor: "white",
+    backgroundColor: Colors.dark.backgroundPrimary,
+    outline: "none",
+    outlineWidth: 0,
   },
   searchIconContainer: {
     position: "absolute",
@@ -206,14 +214,15 @@ const styles = StyleSheet.create({
   },
   modalSafeArea: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: Colors.dark.backgroundPrimary,
   },
   searchHeader: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: Colors.dark.deactive,
+    backgroundColor: Colors.dark.backgroundSecondary,
   },
   backButton: {
     marginRight: 16,
@@ -223,8 +232,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    color: Colors.dark.white,
+    borderColor: Colors.dark.backgroundPrimary,
+    backgroundColor: Colors.dark.backgroundPrimary,
     borderRadius: 8,
+    outline: "none",
+    outlineWidth: 0,
   },
   searchResults: {
     flex: 1,
@@ -239,6 +252,5 @@ const styles = StyleSheet.create({
   noResultsText: {
     textAlign: "center",
     marginTop: 32,
-    color: "#666",
   },
 });

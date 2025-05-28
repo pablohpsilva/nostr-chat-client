@@ -1,11 +1,9 @@
+import { Button } from "@/components/ui/Button";
+import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
@@ -25,25 +23,57 @@ const MessageInput = ({
     }
   };
 
+  const handleOnClickLightning = () => {
+    alert("Soon... :)");
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type a message..."
-          value={newMessage}
-          onChangeText={setNewMessage}
-          onSubmitEditing={!isLoadingMessages ? handleSend : () => {}}
-          returnKeyType="send"
-        />
-        <TouchableOpacity
-          style={styles.sendButton}
-          onPress={handleSend}
-          disabled={isLoadingMessages}
-        >
-          <Text style={styles.sendButtonText}>Send</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView edges={["bottom"]}>
+        <View style={styles.inputContainer}>
+          <Button
+            variant="small-close"
+            size="unset"
+            onPress={handleOnClickLightning}
+          >
+            <Ionicons
+              name="attach-outline"
+              size={20}
+              color={Colors.dark.white}
+            />
+          </Button>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Type a message..."
+            value={newMessage}
+            onChangeText={setNewMessage}
+            onSubmitEditing={!isLoadingMessages ? handleSend : () => {}}
+            returnKeyType="send"
+            placeholderTextColor={Colors.dark.deactive}
+          />
+
+          <Button
+            variant="small-close"
+            size="unset"
+            onPress={handleOnClickLightning}
+          >
+            <Ionicons
+              name="flash-outline"
+              size={20}
+              color={Colors.dark.white}
+            />
+          </Button>
+
+          <Button
+            variant="small-close"
+            size="unset"
+            onPress={handleOnClickLightning}
+          >
+            <Ionicons name="mic-outline" size={20} color={Colors.dark.white} />
+          </Button>
+        </View>
+      </SafeAreaView>
     </View>
   );
 };
@@ -51,31 +81,28 @@ const MessageInput = ({
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
+    backgroundColor: Colors.dark.backgroundSecondary,
   },
   inputContainer: {
     flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   input: {
     flex: 1,
-    padding: 8,
+    backgroundColor: Colors.dark.backgroundPrimary,
+    fontSize: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRightWidth: 0,
-    borderTopLeftRadius: 6,
-    borderBottomLeftRadius: 6,
-  },
-  sendButton: {
-    backgroundColor: "#3b82f6",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderTopRightRadius: 6,
-    borderBottomRightRadius: 6,
-    justifyContent: "center",
+    color: Colors.dark.white,
+    borderColor: Colors.dark.backgroundPrimary,
+    outline: "none",
+    outlineWidth: 0,
   },
   sendButtonText: {
-    color: "#ffffff",
+    color: Colors.dark.white,
     fontWeight: "500",
   },
 });

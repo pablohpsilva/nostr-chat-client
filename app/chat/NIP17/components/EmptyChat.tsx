@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { TypographyBodyL } from "@/components/ui/Typography";
+import { StyleSheet, View } from "react-native";
 
 export interface EmptyChatProps {
   onBackClick?: () => void;
@@ -8,7 +9,7 @@ const EmptyChat = () => {
   return (
     <View style={styles.container}>
       <View style={styles.messageContainer}>
-        <Text style={styles.messageText}>No messages shared so far.</Text>
+        <TypographyBodyL>No messages shared so far.</TypographyBodyL>
       </View>
     </View>
   );
@@ -22,9 +23,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  messageText: {
-    color: "#6b7280", // text-gray-500 equivalent
   },
 });
 

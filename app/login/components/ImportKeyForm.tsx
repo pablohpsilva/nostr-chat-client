@@ -57,6 +57,7 @@ export const ImportKeyForm: React.FC<ImportKeyFormProps> = ({
           label="Your nsec private key"
           value={nsec}
           onChangeText={handleOnChangeNsec}
+          secureTextEntry
         />
 
         <SafeAreaView edges={["bottom"]}>

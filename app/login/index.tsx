@@ -1,14 +1,14 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import { useNDKSessionLogin } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { Fragment, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
-import { ROUTES } from "@/constants/routes";
-// import { getKeys } from "@/libs/local-storage";
 import { Button } from "@/components/ui/Button";
 import { H3, TypographyBodyL } from "@/components/ui/Typography";
 import { APP_NAME } from "@/constants";
+import { ROUTES } from "@/constants/routes";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CreateAccountForm } from "./components/CreateAccountForm";
@@ -101,6 +101,7 @@ export default function LoginScreen() {
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="light" />
       <SafeAreaView edges={["top"]} style={styles.wrapper}>
         {isLoginMode ? null : (
           <Button

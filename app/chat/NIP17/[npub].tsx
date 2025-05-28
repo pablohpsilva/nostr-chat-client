@@ -1,13 +1,15 @@
 import { NDKEvent, useNDKCurrentUser } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Fragment, useEffect } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { ROUTES } from "@/constants/routes";
-import useNip17Chat from "@/hooks/useNip17Chat";
-import useNip17StoreProfile, { ChatRoom } from "@/hooks/useNip17ChatRooms";
+import { StatusBar } from "expo-status-bar";
 import { nip19 } from "nostr-tools";
+import { Fragment, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+
+import { TypographyBodyL } from "@/components/ui/Typography";
+import { ROUTES } from "@/constants/routes";
+import { ChatRoom } from "@/constants/types";
+import useNip17Chat from "@/hooks/useNip17Chat";
+import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
 import ChatHeader from "./components/ChatHeader";
 import EmptyChat from "./components/EmptyChat";
 import MessageInput from "./components/MessageInput";
@@ -71,13 +73,15 @@ export default function NIP17ChatPage() {
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="light" />
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           {isLoading ? (
             <Fragment>
               <View style={styles.centerContainer}>
-                <ActivityIndicator size="large" color="#0066cc" />
-                <Text style={styles.loadingText}>Loading chats...</Text>
+                <TypographyBodyL style={styles.loadingText}>
+                  Loading chats...
+                </TypographyBodyL>
               </View>
             </Fragment>
           ) : (
@@ -93,12 +97,10 @@ export default function NIP17ChatPage() {
                 <EmptyChat />
               )}
 
-              <SafeAreaView style={styles.header} edges={["bottom"]}>
-                <MessageInput
-                  onSendMessage={handleSendMessage}
-                  isLoadingMessages={isLoadingMessages}
-                />
-              </SafeAreaView>
+              <MessageInput
+                onSendMessage={handleSendMessage}
+                isLoadingMessages={isLoadingMessages}
+              />
             </Fragment>
           )}
         </View>
@@ -108,7 +110,6 @@ export default function NIP17ChatPage() {
 }
 
 const styles = StyleSheet.create({
-  header: {},
   container: {
     flex: 1,
   },

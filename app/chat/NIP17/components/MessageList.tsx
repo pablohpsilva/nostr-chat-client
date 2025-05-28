@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 16,
-    gap: 16,
+    gap: 1,
   },
   emptyContainer: {
     alignItems: "center",

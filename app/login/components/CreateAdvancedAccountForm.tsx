@@ -205,55 +205,16 @@ export const CreateAdvancedAccountForm: React.FC<
 };
 
 const styles = StyleSheet.create({
-  description: {
-    fontSize: 14,
-    color: "#666",
-  },
-  bold: {
-    fontWeight: "bold",
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#333",
-    marginBottom: 8,
-  },
-  pulseAnimation: {
-    // Note: actual animation would need to be implemented with Animated API
-  },
   formGroup: {
     gap: 4,
     width: "100%",
   },
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: "rgba(0,0,0,0.5)",
-  },
-  textInput: {
-    width: "100%",
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    fontSize: 14,
-  },
-
   keyHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 4,
     width: "100%",
-  },
-  keyLabel: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: "rgba(0,0,0,0.5)",
-  },
-  copyButton: {
-    fontSize: 12,
-    color: "#0066cc",
   },
   seedWordsGrid: {
     flexDirection: "row",
@@ -268,24 +229,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.dark.deactive,
     borderRadius: 8,
   },
-  seedWordText: {
-    fontFamily: "monospace",
-    fontSize: 12,
-    textAlign: "center",
-  },
   keysWrapper: {
     gap: 12,
     marginTop: 8,
   },
   keySection: {
     marginBottom: 8,
-  },
-  keyValue: {
-    padding: 8,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 4,
   },
   keyValueText: {
     fontFamily: "monospace",
@@ -294,50 +243,5 @@ const styles = StyleSheet.create({
   regenerateButtonContainer: {
     alignItems: "center",
     marginTop: 4,
-  },
-  regenerateButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: "#0066cc",
-    borderRadius: 6,
-  },
-  regenerateButtonText: {
-    fontSize: 12,
-    color: "#0066cc",
-  },
-  primaryButton: {
-    width: "100%",
-    padding: 12,
-    backgroundColor: "#4ade80", // green-600 equivalent
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  disabledButton: {
-    opacity: 0.5,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "rgba(0,0,0,0.1)",
-    marginVertical: 16,
-  },
-  secondaryButton: {
-    width: "100%",
-    padding: 12,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  secondaryButtonText: {
-    color: "#333",
-    fontSize: 16,
   },
 });

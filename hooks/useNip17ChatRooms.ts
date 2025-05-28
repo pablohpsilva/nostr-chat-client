@@ -4,7 +4,6 @@ import {
   NDKKind,
   NDKSubscription,
   NDKSubscriptionOptions,
-  NDKUserProfile,
 } from "@nostr-dev-kit/ndk";
 import cloneDeep from "lodash.clonedeep";
 import { Event, nip17, nip19 } from "nostr-tools";

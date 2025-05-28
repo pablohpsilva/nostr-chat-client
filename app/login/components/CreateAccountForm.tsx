@@ -164,29 +164,8 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 };
 
 const styles = StyleSheet.create({
-  description: {
-    fontSize: 14,
-    color: "#666",
-  },
-  warningText: {
-    fontSize: 14,
-    color: "#666",
-    fontWeight: "bold",
-  },
   keysContainer: {
     marginBottom: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#333",
-    marginBottom: 8,
-  },
-  bold: {
-    fontWeight: "bold",
-  },
-  pulseAnimation: {
-    // Note: actual animation would need to be implemented with Animated API
   },
   keysWrapper: {
     gap: 12,
@@ -199,26 +178,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 4,
-  },
-  keyLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#666",
-  },
-  copyButton: {
-    fontSize: 12,
-    color: "#0066cc",
-  },
-  keyValue: {
-    padding: 8,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 4,
-  },
-  keyValueText: {
-    fontFamily: "monospace",
-    fontSize: 12,
   },
   criticalWarning: {
     fontSize: 12,
@@ -235,39 +194,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.dark.cyan,
     marginBottom: 2,
-  },
-  primaryButton: {
-    width: "100%",
-    padding: 12,
-    backgroundColor: "#4ade80", // green-600 equivalent
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  disabledButton: {
-    opacity: 0.5,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "rgba(0,0,0,0.1)",
-    marginVertical: 16,
-  },
-  secondaryButton: {
-    width: "100%",
-    padding: 12,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  secondaryButtonText: {
-    color: "#333",
-    fontSize: 16,
   },
 });
