@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     marginHorizontal: 16,
     marginVertical: 8,
-    width: "80%",
+    width: "65%",
   },
   searchInputWrapper: {
     position: "relative",

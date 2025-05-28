@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import ContextMenu from "react-native-context-menu-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import ProfileListItem from "@/components/ui/ProfileListItem";
@@ -45,15 +46,33 @@ export default function List({
             onPress={handleOnClickLogout}
           >
             <Ionicons
-              name="log-out-outline"
-              size={24}
+              name="person-circle-outline"
+              size={32}
               color={Colors.dark.white}
             />
           </TouchableOpacity>
 
           <Search />
+
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => alert("Soon... :)")}
+          >
+            <Ionicons name="add-outline" size={24} color={Colors.dark.white} />
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
+
+      <ContextMenu
+        actions={[{ title: "Title 1" }, { title: "Title 2" }]}
+        onPress={(e) => {
+          console.warn(
+            `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`
+          );
+        }}
+      >
+        <View style={styles.container} />
+      </ContextMenu>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {loading ? (
