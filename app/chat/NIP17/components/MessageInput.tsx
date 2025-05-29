@@ -1,19 +1,16 @@
 import { Button } from "@/components/ui/Button";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
-  isLoadingMessages?: boolean;
+  disable?: boolean;
 }
 
-const MessageInput = ({
-  onSendMessage,
-  isLoadingMessages,
-}: MessageInputProps) => {
+const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
   const [newMessage, setNewMessage] = useState("");
 
   const handleSend = () => {
@@ -48,30 +45,44 @@ const MessageInput = ({
             placeholder="Type a message..."
             value={newMessage}
             onChangeText={setNewMessage}
-            onSubmitEditing={!isLoadingMessages ? handleSend : () => {}}
+            onSubmitEditing={!disable ? handleSend : () => {}}
             returnKeyType="send"
             placeholderTextColor={Colors.dark.deactive}
+            multiline
+            numberOfLines={10}
           />
 
-          <Button
-            variant="small-close"
-            size="unset"
-            onPress={handleOnClickLightning}
-          >
-            <Ionicons
-              name="flash-outline"
-              size={20}
-              color={Colors.dark.white}
-            />
+          <Button variant="small-close" size="unset" onPress={handleSend}>
+            <Ionicons name="send-outline" size={20} color={Colors.dark.white} />
           </Button>
 
-          <Button
-            variant="small-close"
-            size="unset"
-            onPress={handleOnClickLightning}
-          >
-            <Ionicons name="mic-outline" size={20} color={Colors.dark.white} />
-          </Button>
+          {!newMessage?.length && (
+            <Fragment>
+              <Button
+                variant="small-close"
+                size="unset"
+                onPress={handleOnClickLightning}
+              >
+                <Ionicons
+                  name="flash-outline"
+                  size={20}
+                  color={Colors.dark.white}
+                />
+              </Button>
+
+              <Button
+                variant="small-close"
+                size="unset"
+                onPress={handleOnClickLightning}
+              >
+                <Ionicons
+                  name="mic-outline"
+                  size={20}
+                  color={Colors.dark.white}
+                />
+              </Button>
+            </Fragment>
+          )}
         </View>
       </SafeAreaView>
     </View>

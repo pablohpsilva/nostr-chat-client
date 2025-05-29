@@ -24,6 +24,7 @@ export default function HomeScreen() {
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
       <StatusBar style="light" />
+
       <View style={styles.container}>
         <View style={{ minHeight: 100 }} />
 

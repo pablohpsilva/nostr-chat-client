@@ -1,10 +1,8 @@
 import dayjs from "dayjs";
 import { StyleSheet, View } from "react-native";
 
-import {
-  TypographyBodyL,
-  TypographyCaptionS,
-} from "@/components/ui/Typography";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
+import { TypographyCaptionS } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 
 interface ChatMessageProps {
@@ -22,7 +20,7 @@ const ChatMessage = ({ isFromMe, content, timestamp }: ChatMessageProps) => {
         isFromMe ? styles.myMessage : styles.otherMessage,
       ]}
     >
-      <TypographyBodyL>{content}</TypographyBodyL>
+      <MarkdownRenderer text={content} />
       <TypographyCaptionS
         style={[styles.timestamp, isFromMe && styles.myTimestamp]}
       >

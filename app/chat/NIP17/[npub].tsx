@@ -24,7 +24,7 @@ export default function NIP17ChatPage() {
     getConversationMessagesWebhook,
     sendMessage,
     isLoading,
-    isLoadingMessages,
+    isSendingMessage,
   } = useNip17Chat();
   const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
 
@@ -58,14 +58,8 @@ export default function NIP17ChatPage() {
   };
 
   useEffect(() => {
-    // getConversationMessagesWebhook(`${npub}`);
-    // getConversationMessagesWebhook(`${npub}`).then(() => {
-    //   console.log("getConversationMessagesWebhook");
-    //   handleStoreChatRoom();
-    // });
     loadChatRooms().then((chatRoomMap) => {
       getConversationMessagesWebhook(`${npub}`);
-      console.log("chatRoomMap", chatRoomMap);
       handleStoreChatRoom(chatRoomMap);
     });
   }, [npub]);
@@ -76,33 +70,29 @@ export default function NIP17ChatPage() {
       <StatusBar style="light" />
       <View style={styles.container}>
         <View style={styles.innerContainer}>
-          {isLoading ? (
-            <Fragment>
+          <Fragment>
+            <ChatHeader
+              userProfile={{ pubkey: `${npub}` }}
+              onBackClick={handleBackToList}
+            />
+
+            {isLoading ? (
               <View style={styles.centerContainer}>
                 <TypographyBodyL style={styles.loadingText}>
                   Loading chats...
                 </TypographyBodyL>
               </View>
-            </Fragment>
-          ) : (
-            <Fragment>
-              <ChatHeader
-                userProfile={{ pubkey: `${npub}` }}
-                onBackClick={handleBackToList}
-              />
+            ) : messages.length ? (
+              <MessageList messages={messages as NDKEvent[]} />
+            ) : (
+              <EmptyChat />
+            )}
 
-              {messages.length ? (
-                <MessageList messages={messages as NDKEvent[]} />
-              ) : (
-                <EmptyChat />
-              )}
-
-              <MessageInput
-                onSendMessage={handleSendMessage}
-                isLoadingMessages={isLoadingMessages}
-              />
-            </Fragment>
-          )}
+            <MessageInput
+              onSendMessage={handleSendMessage}
+              disable={isLoading || isSendingMessage}
+            />
+          </Fragment>
         </View>
       </View>
     </Fragment>

@@ -2,44 +2,25 @@ import { useNDKSessionLogout } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Fragment, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { ROUTES } from "@/constants/routes";
 import useNip14 from "@/hooks/useNip04";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
 import List from "./components/List";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import Search from "./components/Search";
+import { Colors } from "@/constants/Colors";
 
 export default function ChatListPage() {
   const logout = useNDKSessionLogout();
   const router = useRouter();
 
-  const {
-    getUserProfilesFromChats: getNip04UserProfilesFromChats,
-    userProfiles: nip04UserProfiles,
-    isLoading: isLoadingNip04UserProfiles,
-  } = useNip14();
-  const {
-    profiles: nip17UserProfiles,
-    loadChatRooms: getNip17UserProfilesFromChats,
-    asyncLoadChatRooms: asyncGetNip17UserProfilesFromChats,
-    isLoading: isLoadingNip17UserProfiles,
-  } = useNip17StoreProfile();
-  const isLoading = isLoadingNip17UserProfiles || isLoadingNip04UserProfiles;
-
   const handleOnClickLogout = () => {
     logout();
     router.replace(ROUTES.LOGIN);
   };
-
-  useEffect(() => {
-    console.log("START -> getNip17UserProfilesFromChats");
-    getNip17UserProfilesFromChats();
-    // getNip17UserProfilesFromChats().then((data) => {
-    //   asyncGetNip17UserProfilesFromChats();
-    //   console.log("data", data);
-    // });
-    console.log("END -> getNip17UserProfilesFromChats");
-  }, []);
 
   return (
     <Fragment>
@@ -47,11 +28,35 @@ export default function ChatListPage() {
       <StatusBar style="light" />
 
       <View style={styles.container}>
+        <SafeAreaView style={styles.header} edges={["top"]}>
+          <View style={styles.headerContent}>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={handleOnClickLogout}
+            >
+              <Ionicons
+                name="person-circle-outline"
+                size={32}
+                color={Colors.dark.white}
+              />
+            </TouchableOpacity>
+
+            <Search />
+
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={() => alert("Soon... :)")}
+            >
+              <Ionicons
+                name="add-outline"
+                size={24}
+                color={Colors.dark.white}
+              />
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+
         <List
-          loading={isLoading}
-          error={null}
-          nip04UserProfiles={nip04UserProfiles}
-          nip17UserProfiles={nip17UserProfiles}
           onChatClick={() => {}}
           handleOnClickLogout={handleOnClickLogout}
         />
@@ -63,5 +68,20 @@ export default function ChatListPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.dark.deactive,
+    backgroundColor: Colors.dark.backgroundSecondary,
+  },
+  headerContent: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  menuButton: {
+    padding: 8,
   },
 });

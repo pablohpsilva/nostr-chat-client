@@ -7,10 +7,11 @@ import { NIP17UserProfile } from "@/constants/types";
 import useTag from "./useTag";
 
 export default function useNip17Profiles() {
-  const { removeDuplicates } = useTag();
+  const [isLoading, setLoading] = useState(false);
   const [profilesMap, setProfilesMap] = useState<Map<string, NIP17UserProfile>>(
     new Map()
   );
+  const { removeDuplicates } = useTag();
   const profiles = useMemo(
     () => Array.from(profilesMap.values()),
     [profilesMap.values()]
@@ -56,10 +57,18 @@ export default function useNip17Profiles() {
   };
 
   const loadAndUpdateProfiles = async (pubkeys: string[] | nip19.NPub[]) => {
-    const profiles = await loadProfile(pubkeys);
-    await handleUpdateProfiles(profiles);
+    try {
+      setLoading(true);
+      const profiles = await loadProfile(pubkeys);
+      await handleUpdateProfiles(profiles);
 
-    return profiles;
+      return profiles;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
@@ -67,5 +76,6 @@ export default function useNip17Profiles() {
     handleUpdateProfiles,
     loadAndUpdateProfiles,
     profiles,
+    isLoading,
   };
 }

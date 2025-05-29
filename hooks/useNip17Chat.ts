@@ -20,7 +20,7 @@ export default function useNip17Chat() {
   const currentUser = useNDKCurrentUser();
   const { createMessageTag } = useTag();
   const [isLoading, setLoading] = useState(true);
-  const [isLoadingMessages, setLoadingMessages] = useState(false);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [messagesByUser, setMessagesByUser] = useState<
     ReturnType<typeof nip17.unwrapEvent>[]
   >([]);
@@ -105,7 +105,7 @@ export default function useNip17Chat() {
     _options: NDKSubscriptionOptions = {}
   ) => {
     try {
-      setLoading(true);
+      // setLoading(true);
 
       if (!currentUser || !_recipients) {
         return [];
@@ -157,7 +157,7 @@ export default function useNip17Chat() {
       console.error("Error fetching conversation messages:", error);
       return [];
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -172,7 +172,7 @@ export default function useNip17Chat() {
     }
 
     try {
-      setLoadingMessages(true);
+      setIsSendingMessage(true);
 
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
@@ -201,7 +201,7 @@ export default function useNip17Chat() {
       console.error("Error sending direct message:", error);
       throw error;
     } finally {
-      setLoadingMessages(false);
+      setIsSendingMessage(false);
     }
   };
 
@@ -214,7 +214,7 @@ export default function useNip17Chat() {
 
   return {
     isLoading,
-    isLoadingMessages,
+    isSendingMessage,
     messages: sortedMessagesByUser,
     sendMessage,
     getConversationMessages,

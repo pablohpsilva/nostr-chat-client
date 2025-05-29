@@ -20,7 +20,11 @@ let sub: NDKSubscription | null = null;
 export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
   const { createChatTag, normalizeRecipients, normalizeRecipientsNPub } =
     useTag();
-  const { loadAndUpdateProfiles, profiles } = useNip17Profiles();
+  const {
+    loadAndUpdateProfiles,
+    profiles,
+    isLoading: isLoadingNip17Profiles,
+  } = useNip17Profiles();
   const [isLoading, setLoading] = useState(false);
   const [chatRoomMap, setChatRoomMap] = useState<Map<string, ChatRoom>>(
     new Map()
@@ -248,6 +252,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
 
   return {
     isLoading,
+    isLoadingNip17Profiles,
     chatRooms,
     profiles,
     loadChatRooms,
