@@ -9,7 +9,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.nostream-chat-client",
+      "appleTeamId": "DGLKF29HPV"
     },
     "android": {
       "adaptiveIcon": {
@@ -37,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2e2c1d63-334e-42e1-913d-1757e4df2294"
+      }
     }
   }
 }

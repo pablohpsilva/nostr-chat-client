@@ -34,6 +34,12 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
     [chatRoomMap.values()]
   );
 
+  console.log(
+    "useNip17ChatRooms isLoadingNip17Profiles",
+    isLoadingNip17Profiles
+  );
+  console.log("useNip17ChatRooms isLoading", isLoading);
+
   const storeChatRoom = async (
     _chatRoomMap: Map<string, ChatRoom>,
     possibleRecipients:
@@ -195,8 +201,6 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
         throw new Error("No private key found");
       }
 
-      setLoading(true);
-
       const currentUserPublicKey = ndk.activeUser?.pubkey;
 
       if (!currentUserPublicKey) {
@@ -233,7 +237,6 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
     } catch (error) {
       console.error("Error loading chat rooms", error);
     } finally {
-      setLoading(false);
     }
   };
 

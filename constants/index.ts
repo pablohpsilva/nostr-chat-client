@@ -7,7 +7,8 @@ export const DEFAULT_RELAYS: RelayDict = {
   // "wss://relay.damus.io": { read: true, write: true },
   // "wss://relay.snort.social": { read: true, write: false },
   // "wss://nos.lol": { read: true, write: true },
-  "ws://localhost:8008": { read: true, write: true },
+  // "ws://localhost:8008": { read: true, write: true },
+  "wss://nostream-production-0ee9.up.railway.app": { read: true, write: true },
 };
 
 export const MESSAGE_PER_PAGE = 30;

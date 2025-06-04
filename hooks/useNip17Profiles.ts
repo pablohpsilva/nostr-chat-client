@@ -71,6 +71,8 @@ export default function useNip17Profiles() {
     }
   };
 
+  console.log("useNip17Profiles", isLoading);
+
   return {
     loadProfile,
     handleUpdateProfiles,

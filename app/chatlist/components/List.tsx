@@ -5,11 +5,11 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 
 import ProfileListItem from "@/components/ui/ProfileListItem";
+import { TypographyBodyS } from "@/components/ui/Typography";
 import useNip14 from "@/hooks/useNip04";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
 
@@ -34,6 +34,12 @@ export default function List({ handleOnClickLogout }: ListProps) {
     isLoadingNip17UserProfiles ||
     isLoadingNip04UserProfiles ||
     isLoadingNip17Profiles;
+
+  console.log({
+    isLoadingNip17UserProfiles,
+    isLoadingNip04UserProfiles,
+    isLoadingNip17Profiles,
+  });
   const hasPrivateChats = Object.keys(nip17UserProfiles).length > 0;
   const hasPublicChats = Object.keys(nip04UserProfiles).length > 0;
   const hasConversations = hasPrivateChats || hasPublicChats;
@@ -63,7 +69,9 @@ export default function List({ handleOnClickLogout }: ListProps) {
       {isLoading ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#0066cc" />
-          <Text style={styles.loadingText}>Loading chats...</Text>
+          <TypographyBodyS style={styles.loadingText}>
+            Loading chats...
+          </TypographyBodyS>
         </View>
       ) : // error ? (
       //   <View style={styles.centerContainer}>
@@ -72,7 +80,9 @@ export default function List({ handleOnClickLogout }: ListProps) {
       // ) :
       !hasConversations ? (
         <View style={styles.centerContainer}>
-          <Text style={styles.emptyText}>No conversations yet</Text>
+          <TypographyBodyS style={styles.emptyText}>
+            No conversations yet
+          </TypographyBodyS>
         </View>
       ) : (
         <Fragment>

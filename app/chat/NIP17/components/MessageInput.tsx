@@ -12,6 +12,7 @@ interface MessageInputProps {
 
 const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
   const [newMessage, setNewMessage] = useState("");
+  const [maxTextInputLines, setMaxTextInputLines] = useState(0);
 
   const handleSend = () => {
     if (newMessage.trim()) {
@@ -22,6 +23,10 @@ const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
 
   const handleOnClickLightning = () => {
     alert("Soon... :)");
+  };
+
+  const handleOnPressExpandTextInput = () => {
+    setMaxTextInputLines(maxTextInputLines ? 0 : 10);
   };
 
   return (
@@ -40,17 +45,25 @@ const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
             />
           </Button>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Type a message..."
-            value={newMessage}
-            onChangeText={setNewMessage}
-            onSubmitEditing={!disable ? handleSend : () => {}}
-            returnKeyType="send"
-            placeholderTextColor={Colors.dark.deactive}
-            multiline
-            numberOfLines={10}
-          />
+          <View style={styles.inputWrapper}>
+            <Ionicons
+              name="ellipsis-horizontal-outline"
+              size={20}
+              color={Colors.dark.white}
+              onPress={handleOnPressExpandTextInput}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Type a message..."
+              value={newMessage}
+              onChangeText={setNewMessage}
+              onSubmitEditing={!disable ? handleSend : () => {}}
+              returnKeyType="send"
+              placeholderTextColor={Colors.dark.deactive}
+              multiline
+              numberOfLines={maxTextInputLines}
+            />
+          </View>
 
           <Button variant="small-close" size="unset" onPress={handleSend}>
             <Ionicons name="send-outline" size={20} color={Colors.dark.white} />
@@ -99,6 +112,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
+  inputWrapper: {
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 0,
+    flex: 1,
+  },
   input: {
     flex: 1,
     backgroundColor: Colors.dark.backgroundPrimary,
@@ -111,6 +130,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.dark.backgroundPrimary,
     outline: "none",
     outlineWidth: 0,
+    width: "100%",
   },
   sendButtonText: {
     color: Colors.dark.white,

@@ -1,10 +1,16 @@
 import { getNDK } from "@/components/NDKHeadless";
+import {
+  TypographyBodyS,
+  TypographyBodySBold,
+  TypographyBodySRegular,
+} from "@/components/ui/Typography";
+import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { Link } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
-import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 
 const formatPubkey = (pubkey: string) => {
   return `${pubkey.substring(0, 8)}...${pubkey.substring(pubkey.length - 8)}`;
@@ -69,20 +75,22 @@ export default function SearchStartChat({
               />
             </View>
             <View style={styles.textContainer}>
-              <Text style={styles.label}>Text this user:</Text>
+              <TypographyBodySRegular>Text this user:</TypographyBodySRegular>
               <View>
-                <Text style={styles.userName}>
+                <TypographyBodySBold>
                   {userProfiles?.displayName ||
                     userProfiles?.name ||
-                    "UnknownUser"}
-                </Text>
-                <Text style={styles.pubkey}>{formatPubkey(npub)}</Text>
+                    `Anonymous user: ${formatPubkey(npub)}`}
+                </TypographyBodySBold>
+                <TypographyBodyS style={styles.pubkey}>
+                  {formatPubkey(npub)}
+                </TypographyBodyS>
               </View>
             </View>
           </View>
 
           <View style={styles.nipContainer}>
-            <Ionicons name="chevron-forward-outline" size={24} color="#666" />
+            <Ionicons name="chevron-forward-outline" size={20} color="#fff" />
           </View>
         </View>
       </Link>
@@ -90,13 +98,17 @@ export default function SearchStartChat({
       {isLoading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color="#0066cc" />
-          <Text style={styles.statusText}>Loading...</Text>
+          <TypographyBodyS style={styles.statusText}>
+            Loading...
+          </TypographyBodyS>
         </View>
       )}
 
       {error && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Error: {error}</Text>
+          <TypographyBodyS style={styles.errorText}>
+            Error: {error}
+          </TypographyBodyS>
         </View>
       )}
     </Fragment>
@@ -106,7 +118,7 @@ export default function SearchStartChat({
 const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: Colors.dark.deactive,
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
