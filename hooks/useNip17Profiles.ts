@@ -3,19 +3,13 @@ import { nip19 } from "nostr-tools";
 import { useMemo, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
-import { NIP17UserProfile } from "@/constants/types";
-import useTag from "./useTag";
+import { AppUserProfile } from "@/constants/types";
+import { useProfileStore } from "@/store/profiles";
+import { removeDuplicates } from "./useTag";
 
 export default function useNip17Profiles() {
   const [isLoading, setLoading] = useState(false);
-  const [profilesMap, setProfilesMap] = useState<Map<string, NIP17UserProfile>>(
-    new Map()
-  );
-  const { removeDuplicates } = useTag();
-  const profiles = useMemo(
-    () => Array.from(profilesMap.values()),
-    [profilesMap.values()]
-  );
+  const { profiles: profilesMap, setProfilesFromArray } = useProfileStore();
 
   const loadProfile = async (pubkeys: string[] | nip19.NPub[]) => {
     const ndk = getNDK().getInstance();
@@ -30,6 +24,7 @@ export default function useNip17Profiles() {
             const defaultProfileValues = {
               pubkey,
               npub: nip19.npubEncode(pubkey),
+              nip: "NIP17",
             };
 
             if (profile) {
@@ -39,19 +34,19 @@ export default function useNip17Profiles() {
             return defaultProfileValues;
           })
       )
-    ).filter(Boolean) as NIP17UserProfile[];
+    ).filter(Boolean) as AppUserProfile[];
 
     return profiles;
   };
 
-  const handleUpdateProfiles = async (profiles: NIP17UserProfile[]) => {
+  const handleUpdateProfiles = async (profiles: AppUserProfile[]) => {
     const cloneProfilesMap = cloneDeep(profilesMap);
 
     profiles.forEach((profile) => {
       cloneProfilesMap.set(profile.pubkey, profile);
     });
 
-    setProfilesMap(cloneProfilesMap);
+    setProfilesFromArray(profiles);
 
     return cloneProfilesMap;
   };
@@ -71,13 +66,10 @@ export default function useNip17Profiles() {
     }
   };
 
-  console.log("useNip17Profiles", isLoading);
-
   return {
     loadProfile,
     handleUpdateProfiles,
     loadAndUpdateProfiles,
-    profiles,
     isLoading,
   };
 }

@@ -125,9 +125,10 @@ export interface ChatRoom {
   recipientsNPubkeys: string[];
 }
 
-export type NIP17UserProfile = NDKUserProfile & {
+export type AppUserProfile = NDKUserProfile & {
   pubkey: string;
   npub: string;
+  nip: "NIP17" | "NIP04";
 };
 
 export type NIP17PossiblePublicKeys =

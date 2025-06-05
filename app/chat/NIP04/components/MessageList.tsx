@@ -3,7 +3,7 @@ import { useNDKCurrentUser } from "@nostr-dev-kit/ndk-hooks";
 import { useEffect, useRef } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import ChatMessage from "./ChatMessage";
+import ChatMessage from "../../NIP17/components/ChatMessage";
 
 interface MessageListProps {
   messages: NDKEvent[];

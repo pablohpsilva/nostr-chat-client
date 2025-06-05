@@ -1,5 +1,5 @@
 import { NDKKind } from "@nostr-dev-kit/ndk";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useMemo } from "react";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -10,8 +10,9 @@ import {
 
 import ProfileListItem from "@/components/ui/ProfileListItem";
 import { TypographyBodyS } from "@/components/ui/Typography";
-import useNip14 from "@/hooks/useNip04";
+import useNip14Profiles from "@/hooks/useNip04Profiles";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
+import { useProfileStore } from "@/store/profiles";
 
 interface ListProps {
   onChatClick: (kind: `NIP${NDKKind}`, pubkey: string) => void;
@@ -21,37 +22,28 @@ interface ListProps {
 export default function List({ handleOnClickLogout }: ListProps) {
   const {
     getUserProfilesFromChats: getNip04UserProfilesFromChats,
-    userProfiles: nip04UserProfiles,
     isLoading: isLoadingNip04UserProfiles,
-  } = useNip14();
+  } = useNip14Profiles();
   const {
-    profiles: nip17UserProfiles,
     loadChatRooms: getNip17UserProfilesFromChats,
     isLoading: isLoadingNip17UserProfiles,
-    isLoadingNip17Profiles,
+    isLoadingProfiles,
   } = useNip17StoreProfile();
+  const { profiles: userProfiles, getChatRoomList } = useProfileStore();
+  const { nip04: nip04UserProfiles, nip17: nip17UserProfiles } = useMemo(() => {
+    return getChatRoomList();
+  }, [userProfiles]);
   const isLoading =
     isLoadingNip17UserProfiles ||
     isLoadingNip04UserProfiles ||
-    isLoadingNip17Profiles;
-
-  console.log({
-    isLoadingNip17UserProfiles,
-    isLoadingNip04UserProfiles,
-    isLoadingNip17Profiles,
-  });
+    isLoadingProfiles;
   const hasPrivateChats = Object.keys(nip17UserProfiles).length > 0;
   const hasPublicChats = Object.keys(nip04UserProfiles).length > 0;
   const hasConversations = hasPrivateChats || hasPublicChats;
 
   useEffect(() => {
-    console.log("START -> getNip17UserProfilesFromChats");
     getNip17UserProfilesFromChats();
-    // getNip17UserProfilesFromChats().then((data) => {
-    //   asyncGetNip17UserProfilesFromChats();
-    //   console.log("data", data);
-    // });
-    console.log("END -> getNip17UserProfilesFromChats");
+    getNip04UserProfilesFromChats();
   }, []);
 
   return (
@@ -107,14 +99,14 @@ export default function List({ handleOnClickLogout }: ListProps) {
           {hasPublicChats && (
             <Fragment>
               {Object.values(nip04UserProfiles).map(
-                ({ npub, displayName, picture, image, created_at }, index) => (
+                ({ npub, displayName, picture, created_at }, index) => (
                   <ProfileListItem
-                    key={`${npub}-${npub}-${index}`}
+                    key={`${npub}-${npub}-${index}-${created_at}`}
                     {...{
                       npub,
                       displayName,
                       picture,
-                      tag: `NIP${NDKKind.EncryptedDirectMessage}`,
+                      tag: "NIP04",
                     }}
                   />
                 )

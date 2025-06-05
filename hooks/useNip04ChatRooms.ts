@@ -18,7 +18,7 @@ import useTag from "./useTag";
 
 let sub: NDKSubscription | null = null;
 
-export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
+export default function useNip04ChatRooms(recipientPrivateKey?: Uint8Array) {
   const { createChatTag, normalizeRecipients, normalizeRecipientsNPub } =
     useTag();
   const {

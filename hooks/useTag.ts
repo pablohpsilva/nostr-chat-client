@@ -8,35 +8,59 @@ import {
 } from "@/constants/types";
 import { generateUniqueDTag } from "@/lib/generateUniqueDTag";
 
-export default function useTag() {
-  /**
-   * This function will remove duplicates from an array.
-   * It will also normalize the recipients.
-   *
-   * @param value - The array to remove duplicates from.
-   * @returns The array with duplicates removed.
-   */
-  const removeDuplicates = <T extends NIP17PossiblePublicKey>(
-    value: T[]
-  ): T[] => {
-    const seen = new Set<string>();
-    return value.filter((item) => {
-      let key: string;
-      if (typeof item === "string") {
-        key = item;
-      } else if (typeof item === "object" && "publicKey" in item) {
-        key = item.publicKey;
-      } else {
-        key = String(item);
-      }
+/**
+ * This function will remove duplicates from an array.
+ * It will also normalize the recipients.
+ *
+ * @param value - The array to remove duplicates from.
+ * @returns The array with duplicates removed.
+ */
+export function removeDuplicates<T extends NIP17PossiblePublicKey>(
+  value: T[]
+): T[] {
+  const seen = new Set<string>();
+  return value.filter((item) => {
+    let key: string;
+    if (typeof item === "string") {
+      key = item;
+    } else if (typeof item === "object" && "publicKey" in item) {
+      key = item.publicKey;
+    } else {
+      key = String(item);
+    }
 
-      if (seen.has(key)) {
-        return false;
-      }
-      seen.add(key);
-      return true;
-    });
-  };
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
+export function removeDuplicateEventsViaId<T extends { id: string | number }>(
+  value: T[]
+): T[] {
+  const seen = new Set<string>();
+  return value.filter((item) => {
+    let key: string;
+    if (typeof item === "string") {
+      key = item;
+    } else if (typeof item === "object" && "publicKey" in item) {
+      // @ts-expect-error
+      key = item.id;
+    } else {
+      key = String(item);
+    }
+
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
+export default function useTag() {
   /**
    * This function will normalize the recipients.
    * It will convert string-like npub recipients to the format that is expected by the NDK.

@@ -43,11 +43,12 @@ export default function useNip04Chat() {
     _recipients: string | string[],
     _options: NDKSubscriptionOptions = {}
   ) => {
+    setLoading(true);
+
     if (!currentUser || !_recipients) {
       return [];
     }
 
-    setLoading(true);
     setMessagesByUser([]);
 
     try {
@@ -81,6 +82,7 @@ export default function useNip04Chat() {
       outgoingSub.on("event", (event: NDKEvent) => {
         // For outgoing messages, the p tag contains the recipient
         const recipientPubkey = event.tags.find((tag) => tag[0] === "p")?.[1];
+        console.log("recipientPubkey", recipientPubkey);
 
         if (recipientPubkey) {
           // addMessageToConversation(event, recipientPubkey, privateKey!);
@@ -91,6 +93,7 @@ export default function useNip04Chat() {
       incomingSub.on("event", (event: NDKEvent) => {
         // For incoming messages, the author is the sender
         const senderPubkey = event.pubkey;
+        console.log("senderPubkey", senderPubkey);
 
         if (senderPubkey) {
           // addMessageToConversation(event, senderPubkey, privateKey);
@@ -100,18 +103,14 @@ export default function useNip04Chat() {
 
       // Handle EOSE (End of Stored Events)
       outgoingSub.on("eose", (event: any) => {
+        console.log("Outgoing messages EOSE received", event);
         setLoading(false);
       });
 
       incomingSub.on("eose", (event: any) => {
+        console.log("Incoming messages EOSE received", event);
         setLoading(false);
       });
-
-      return () => {
-        // Clean up subscriptions when the hook unmounts
-        outgoingSub.stop();
-        incomingSub.stop();
-      };
     } catch (error) {
       console.error("Error fetching conversation messages:", error);
       return [];
@@ -149,8 +148,6 @@ export default function useNip04Chat() {
       event.content = nip04.encrypt(privateKey!, recipient.publicKey, message);
       event.tags = [["p", recipient.publicKey]];
 
-      console.log("event", event);
-
       // Publish the event
       await event.publish();
     } catch (error) {
@@ -163,8 +160,8 @@ export default function useNip04Chat() {
 
   useEffect(() => {
     return () => {
-      outgoingSub.stop();
-      incomingSub.stop();
+      outgoingSub?.stop?.();
+      incomingSub?.stop?.();
     };
   }, []);
 

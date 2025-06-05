@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { StyleSheet, View } from "react-native";
 
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
-import { TypographyCaptionS } from "@/components/ui/Typography";
+import { TypographyCaptionXS } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 
 interface ChatMessageProps {
@@ -21,11 +21,11 @@ const ChatMessage = ({ isFromMe, content, timestamp }: ChatMessageProps) => {
       ]}
     >
       <MarkdownRenderer text={content} />
-      <TypographyCaptionS
+      <TypographyCaptionXS
         style={[styles.timestamp, isFromMe && styles.myTimestamp]}
       >
         {dayjs(new Date(timestamp * 1000)).format("YYYY-MM-DD HH:mm")}
-      </TypographyCaptionS>
+      </TypographyCaptionXS>
     </View>
   );
 };
@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.dark.backgroundSecondary,
   },
   timestamp: {
-    fontSize: 12,
     marginTop: 4,
     opacity: 0.5,
   },

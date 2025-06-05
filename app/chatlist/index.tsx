@@ -1,17 +1,15 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useNDKSessionLogout } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-
-import { ROUTES } from "@/constants/routes";
-import useNip14 from "@/hooks/useNip04";
-import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
-import List from "./components/List";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import Search from "./components/Search";
+
 import { Colors } from "@/constants/Colors";
+import { ROUTES } from "@/constants/routes";
+import List from "./components/List";
+import Search from "./components/Search";
 
 export default function ChatListPage() {
   const logout = useNDKSessionLogout();

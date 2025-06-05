@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: Colors.dark.white,
     backgroundColor: Colors.dark.primary,
-    width: 40,
+    width: 42,
     fontWeight: "700",
+    textAlign: "center",
   },
 });

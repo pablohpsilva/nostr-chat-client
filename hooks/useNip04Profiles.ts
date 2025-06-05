@@ -1,23 +1,17 @@
-import { NDKFilter, NDKKind, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
+import { Event, nip19 } from "nostr-tools";
 import { useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
-import { Event, nip19 } from "nostr-tools";
+import { AppUserProfile } from "@/constants/types";
+import { useProfileStore } from "@/store/profiles";
 
-const CACHE_KEY_NIP04_PROFILE_EVENT_IDS = "nip04-profile-events";
-const CACHE_KEY_NIP04_PROFILE = "nip04-profile";
-
-export type NIP04UserProfile = NDKUserProfile & {
-  pubkey: string;
-  npub: string;
-};
-
-export default function useNip14() {
+export default function useNip14Profiles() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [userProfiles, setUserProfiles] = useState<NIP04UserProfile[]>([]);
+  const { setProfilesFromArray } = useProfileStore();
 
-  const getUserProfilesFromChats = async (): Promise<NIP04UserProfile[]> => {
+  const getUserProfilesFromChats = async (): Promise<AppUserProfile[]> => {
     try {
       setIsLoading(true);
       setError(null);
@@ -32,7 +26,7 @@ export default function useNip14() {
       const currentUserPublicKey = user.pubkey;
       const currentUserNpub = user.npub;
 
-      // Filter for NIP-17 (Private Direct Messages) events
+      // Filter for NIP-04 (Private Direct Messages) events
       let filter: NDKFilter = {
         kinds: [NDKKind.EncryptedDirectMessage],
         "#p": [user.pubkey],
@@ -49,7 +43,7 @@ export default function useNip14() {
         try {
           const _profile = await profileUser.fetchProfile();
           const profile = _profile ? _profile : pubKeyObj;
-          return { ...profile, pubkey: rumor.pubkey };
+          return { ...profile, npub, pubkey: rumor.pubkey, nip: "NIP04" };
         } catch (err) {
           console.error("Error fetching profile", err);
           // If profile fetch fails, still include the user with just the pubkey
@@ -59,25 +53,15 @@ export default function useNip14() {
 
       const profileResults = await Promise.allSettled(profilePromises);
       //   const _profiles: NIP04UserProfile[] = profileResults
-      const profiles: NIP04UserProfile[] = Array.from(
+      const profiles: AppUserProfile[] = Array.from(
         profileResults
           .filter(
-            (result): result is PromiseFulfilledResult<NIP04UserProfile> =>
+            (result): result is PromiseFulfilledResult<AppUserProfile> =>
               result.status === "fulfilled"
           )
           .map((result) => result.value)
           // Remove duplicates by creating a Map keyed by npub
           .reduce((unique, profile) => {
-            console.log(
-              "profile",
-              !unique.has(profile.npub) &&
-                (profile.pubkey !== currentUserPublicKey ||
-                  profile.npub !== currentUserNpub),
-              profile.pubkey,
-              profile.npub,
-              currentUserPublicKey,
-              currentUserNpub
-            );
             if (
               !unique.has(profile.npub) &&
               (profile.pubkey !== currentUserPublicKey ||
@@ -86,12 +70,13 @@ export default function useNip14() {
               unique.set(profile.npub, profile);
             }
             return unique;
-          }, new Map<string, NIP04UserProfile>())
+          }, new Map<string, AppUserProfile>())
           // Convert Map back to array
           .values()
       );
 
-      setUserProfiles(profiles);
+      setProfilesFromArray(profiles);
+
       return profiles;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
@@ -106,6 +91,6 @@ export default function useNip14() {
     getUserProfilesFromChats,
     isLoading,
     error,
-    userProfiles,
+    userProfiles: [],
   };
 }

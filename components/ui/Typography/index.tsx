@@ -28,6 +28,7 @@ export type InterVariant =
   | "body-s-regular"
   | "caption-l"
   | "caption-s"
+  | "caption-xs"
   | "overline";
 
 export type TypographyVariant = PoppinsVariant | InterVariant;
@@ -174,6 +175,12 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     letterSpacing: 0,
   },
+  "caption-xs": {
+    fontFamily: "Inter-Medium",
+    fontSize: 10,
+    lineHeight: 16,
+    letterSpacing: 0,
+  },
   overline: {
     fontFamily: "Inter-Bold",
     fontSize: 10,
@@ -258,6 +265,10 @@ export const TypographyCaptionL = (props: Omit<TypographyProps, "variant">) => (
 export const TypographyCaptionS = (props: Omit<TypographyProps, "variant">) => (
   <Typography variant="caption-s" {...props} />
 );
+
+export const TypographyCaptionXS = (
+  props: Omit<TypographyProps, "variant">
+) => <Typography variant="caption-xs" {...props} />;
 
 export const TypographyOverline = (props: Omit<TypographyProps, "variant">) => (
   <Typography variant="overline" {...props} />

@@ -12,22 +12,49 @@ import { useEffect, useMemo, useState } from "react";
 import { getNDK } from "@/components/NDKHeadless";
 import { Recipient, ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/lib/nip17";
+import { useChatStore } from "@/store/chat";
 import useTag from "./useTag";
 
 let outgoingSub: NDKSubscription;
 
-export default function useNip17Chat() {
+export default function useNip17Chat(_recipients: string | string[]) {
   const currentUser = useNDKCurrentUser();
   const { createMessageTag } = useTag();
   const [isLoading, setLoading] = useState(true);
   const [isSendingMessage, setIsSendingMessage] = useState(false);
-  const [messagesByUser, setMessagesByUser] = useState<
-    ReturnType<typeof nip17.unwrapEvent>[]
-  >([]);
-  const sortedMessagesByUser = useMemo(
-    () => messagesByUser.sort((a, b) => a.created_at - b.created_at),
-    [messagesByUser]
+  const recipients = useMemo(
+    () => (Array.isArray(_recipients) ? _recipients : [_recipients]),
+    [_recipients]
   );
+  const chatPubkeys = useMemo(() => {
+    if (Array.isArray(recipients)) {
+      return recipients.map((r) => {
+        const { data: publicKey } = nip19.decode(r);
+        return publicKey as string;
+      });
+    } else {
+      const { data: publicKey } = nip19.decode(recipients);
+      return [publicKey as string];
+    }
+  }, [recipients]);
+  const { tag: dTag, recipients: chatRecipients } = useMemo(() => {
+    return createMessageTag(chatPubkeys);
+  }, [chatPubkeys]);
+  const { addChat, getChat } = useChatStore();
+  const {
+    chat: messagesByUser,
+    filterSince,
+    filterUntil,
+  } = useMemo(() => {
+    return getChat(dTag);
+  }, [dTag]);
+  // const [messagesByUser, setMessagesByUser] = useState<
+  //   ReturnType<typeof nip17.unwrapEvent>[]
+  // >([]);
+  // const sortedMessagesByUser = useMemo(
+  //   () => messagesByUser.sort((a, b) => a.created_at - b.created_at),
+  //   [messagesByUser]
+  // );
 
   const addMessageToConversation = (
     event: NDKEvent,
@@ -36,19 +63,18 @@ export default function useNip17Chat() {
   ) => {
     try {
       if (raw) {
-        setMessagesByUser((prev) => [...prev, event]);
+        addChat(dTag, event);
         return;
       }
 
       const unwrappedEvent = nip17.unwrapEvent(event as Event, privateKey);
-      setMessagesByUser((prev) => [...prev, unwrappedEvent]);
+      addChat(dTag, unwrappedEvent);
     } catch (error) {
       console.error(error);
     }
   };
 
   const getConversationMessages = async (
-    _recipients: string | string[],
     _options: NDKSubscriptionOptions = {}
   ) => {
     try {
@@ -58,31 +84,15 @@ export default function useNip17Chat() {
         return [];
       }
 
-      setMessagesByUser([]);
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
-      const recipients = Array.isArray(_recipients)
-        ? _recipients
-        : [_recipients];
-
-      let pubKeys: string[] = [];
-
-      if (Array.isArray(recipients)) {
-        pubKeys = recipients.map((r) => {
-          const { data: publicKey } = nip19.decode(r);
-          return publicKey as string;
-        });
-      } else {
-        const { data: publicKey } = nip19.decode(recipients);
-        pubKeys = [publicKey as string];
-      }
-
-      const { tag: dTag } = createMessageTag(pubKeys);
 
       // Filter to get the conversation messages
       const filter: NDKFilter = {
         kinds: [NDKKind.GiftWrap],
         "#d": [dTag],
+        // since: filterSince,
+        // until: filterUntil,
       };
 
       const events = await getNDK().getInstance().fetchEvents(filter);
@@ -101,7 +111,6 @@ export default function useNip17Chat() {
   };
 
   const getConversationMessagesWebhook = async (
-    _recipients: string | string[],
     _options: NDKSubscriptionOptions = {}
   ) => {
     try {
@@ -111,30 +120,14 @@ export default function useNip17Chat() {
         return [];
       }
 
-      setMessagesByUser([]);
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
-      const recipients = Array.isArray(_recipients)
-        ? _recipients
-        : [_recipients];
-
-      let pubKeys: string[] = [];
-
-      if (Array.isArray(recipients)) {
-        pubKeys = recipients.map((r) => {
-          const { data: publicKey } = nip19.decode(r);
-          return publicKey as string;
-        });
-      } else {
-        const { data: publicKey } = nip19.decode(recipients);
-        pubKeys = [publicKey as string];
-      }
-
-      const { tag: dTag } = createMessageTag(pubKeys);
 
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.GiftWrap],
         "#d": [dTag],
+        // since: filterSince,
+        // until: filterUntil,
       };
 
       const options: NDKSubscriptionOptions = {
@@ -156,8 +149,6 @@ export default function useNip17Chat() {
     } catch (error) {
       console.error("Error fetching conversation messages:", error);
       return [];
-    } finally {
-      // setLoading(false);
     }
   };
 
@@ -177,11 +168,9 @@ export default function useNip17Chat() {
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
 
-      const { tag: dTag, recipients } = createMessageTag([_recipient]);
-
       const events = wrapManyEvents(
         privateKey,
-        recipients,
+        chatRecipients,
         message,
         [["d", dTag]],
         conversationTitle,
@@ -192,7 +181,9 @@ export default function useNip17Chat() {
 
       await Promise.allSettled(
         events.map(async (event, index) => {
+          console.log(`publishing event ${index + 1} of ${events.length}...`);
           await event.publish();
+          console.log(`event ${index + 1} of ${events.length} published!`);
         })
       );
     } catch (error) {
@@ -213,7 +204,7 @@ export default function useNip17Chat() {
   return {
     isLoading,
     isSendingMessage,
-    messages: sortedMessagesByUser,
+    messages: messagesByUser,
     sendMessage,
     getConversationMessages,
     getConversationMessagesWebhook,

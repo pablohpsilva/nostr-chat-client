@@ -26,7 +26,7 @@ const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
   };
 
   const handleOnPressExpandTextInput = () => {
-    setMaxTextInputLines(maxTextInputLines ? 0 : 10);
+    setMaxTextInputLines(maxTextInputLines ? 0 : 15);
   };
 
   return (
@@ -51,6 +51,7 @@ const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
               size={20}
               color={Colors.dark.white}
               onPress={handleOnPressExpandTextInput}
+              style={styles.expandButton}
             />
             <TextInput
               style={styles.input}
@@ -60,7 +61,7 @@ const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
               onSubmitEditing={!disable ? handleSend : () => {}}
               returnKeyType="send"
               placeholderTextColor={Colors.dark.deactive}
-              multiline
+              multiline={!!maxTextInputLines}
               numberOfLines={maxTextInputLines}
             />
           </View>
@@ -104,15 +105,19 @@ const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 8,
+    paddingTop: 20,
+    paddingBottom: 12,
     backgroundColor: Colors.dark.backgroundSecondary,
   },
   inputContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
+    justifyContent: "center",
     gap: 8,
   },
   inputWrapper: {
+    position: "relative",
     flexDirection: "column",
     alignItems: "center",
     gap: 0,
@@ -135,6 +140,10 @@ const styles = StyleSheet.create({
   sendButtonText: {
     color: Colors.dark.white,
     fontWeight: "500",
+  },
+  expandButton: {
+    position: "absolute",
+    top: -20,
   },
 });
 
