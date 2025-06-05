@@ -135,7 +135,7 @@ export default function Search() {
               onPress={handleCloseOverlay}
               style={styles.backButton}
             >
-              <Ionicons name="arrow-back" size={24} color={Colors.dark.white} />
+              <Ionicons name="arrow-back" size={20} color={Colors.dark.white} />
             </TouchableOpacity>
             <TextInput
               style={styles.modalSearchInput}
