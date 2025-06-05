@@ -19,14 +19,6 @@ export default function NIP17ChatPage() {
   const currentUser = useNDKCurrentUser();
   const { messages, getConversationMessagesWebhook, sendMessage, isLoading } =
     useNip04Chat();
-  // const destinatairePublicKey = useMemo(() => {
-  //   if ((npub as string).startsWith("npub")) {
-  //     const { data: publicKey } = nip19.decode(npub as string);
-  //     return publicKey as string;
-  //   } else {
-  //     return npub as string;
-  //   }
-  // }, [npub]);
 
   const handleSendMessage = async (newMessage: string) => {
     if (!newMessage.trim() || !currentUser) {

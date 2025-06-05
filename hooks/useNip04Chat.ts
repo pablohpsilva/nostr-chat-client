@@ -54,9 +54,17 @@ export default function useNip04Chat() {
     try {
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
-      const recipients = Array.isArray(_recipients)
-        ? _recipients
-        : [_recipients];
+      let recipients: string[] = [];
+
+      if (Array.isArray(_recipients)) {
+        recipients = _recipients.map((r) => {
+          const { data: publicKey } = nip19.decode(r);
+          return publicKey as string;
+        });
+      } else {
+        const { data: publicKey } = nip19.decode(_recipients);
+        recipients = [publicKey as string];
+      }
 
       // We need two filters to get the complete conversation:
       // 1. Messages sent BY current user TO recipients
@@ -73,6 +81,11 @@ export default function useNip04Chat() {
 
       const options: NDKSubscriptionOptions = {
         closeOnEose: false, // Keep the subscription open
+        relayUrls: [
+          "wss://relay.damus.io",
+          "wss://relay.snort.social",
+          "wss://nos.lol",
+        ],
         ..._options,
       };
 
@@ -149,7 +162,9 @@ export default function useNip04Chat() {
       event.tags = [["p", recipient.publicKey]];
 
       // Publish the event
+      console.log("Sending event...");
       await event.publish();
+      console.log("Event sent");
     } catch (error) {
       console.error("Error sending direct message:", error);
       throw error;
