@@ -30,7 +30,7 @@ export default function LoginScreen() {
 
     await login(signer);
     // Redirect to the app after successful login
-    router.push("/chatlist");
+    router.replace(ROUTES.CHAT);
   };
 
   const handleCreateAccount = async (keys: KeysType) => {

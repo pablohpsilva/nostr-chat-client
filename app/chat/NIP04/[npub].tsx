@@ -2,8 +2,7 @@ import { NDKEvent, useNDKCurrentUser } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Fragment, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 
 import ChatHeader from "@/components/Chat/ChatHeader";
 import EmptyChat from "@/components/Chat/EmptyChat";
@@ -48,38 +47,42 @@ export default function NIP17ChatPage() {
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
       <StatusBar style="light" />
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      >
         <View style={styles.innerContainer}>
           <ChatHeader
             userProfile={{ pubkey: `${npub}` }}
             onBackClick={handleBackToList}
           />
 
-          {isLoading ? (
-            <View style={styles.centerContainer}>
-              <TypographyBodyL style={styles.loadingText}>
-                Loading chats...
-              </TypographyBodyL>
-            </View>
-          ) : messages.length ? (
-            <MessageList messages={messages as NDKEvent[]} />
-          ) : (
-            <EmptyChat />
-          )}
+          <View style={styles.contentContainer}>
+            {isLoading ? (
+              <View style={styles.centerContainer}>
+                <TypographyBodyL style={styles.loadingText}>
+                  Loading chats...
+                </TypographyBodyL>
+              </View>
+            ) : messages.length ? (
+              <MessageList messages={messages as NDKEvent[]} />
+            ) : (
+              <EmptyChat />
+            )}
+          </View>
 
-          <SafeAreaView style={styles.header} edges={["bottom"]}>
-            <View style={styles.warningContainer}>
-              <TypographyOverline
-                lightColor={Colors.dark.white}
-                darkColor={Colors.dark.white}
-              >
-                This chat is unsafe. Use NIP17 chat instead.
-              </TypographyOverline>
-            </View>
-            <MessageInput onSendMessage={handleSendMessage} />
-          </SafeAreaView>
+          <View style={styles.warningContainer}>
+            <TypographyOverline
+              lightColor={Colors.dark.white}
+              darkColor={Colors.dark.white}
+            >
+              This chat is unsafe. Use NIP17 chat instead.
+            </TypographyOverline>
+          </View>
+          <MessageInput onSendMessage={handleSendMessage} />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Fragment>
   );
 }
@@ -90,6 +93,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   innerContainer: {
+    flex: 1,
+  },
+  contentContainer: {
     flex: 1,
   },
   centerContainer: {

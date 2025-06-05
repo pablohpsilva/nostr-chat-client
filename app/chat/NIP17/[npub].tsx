@@ -3,7 +3,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { nip19 } from "nostr-tools";
 import { Fragment, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 
 import ChatHeader from "@/components/Chat/ChatHeader";
 import EmptyChat from "@/components/Chat/EmptyChat";
@@ -68,14 +68,18 @@ export default function NIP17ChatPage() {
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
       <StatusBar style="light" />
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      >
         <View style={styles.innerContainer}>
-          <Fragment>
-            <ChatHeader
-              userProfile={{ pubkey: `${npub}` }}
-              onBackClick={handleBackToList}
-            />
+          <ChatHeader
+            userProfile={{ pubkey: `${npub}` }}
+            onBackClick={handleBackToList}
+          />
 
+          <View style={styles.contentContainer}>
             {isLoading ? (
               <View style={styles.centerContainer}>
                 <TypographyBodyL style={styles.loadingText}>
@@ -87,14 +91,14 @@ export default function NIP17ChatPage() {
             ) : (
               <EmptyChat />
             )}
+          </View>
 
-            <MessageInput
-              onSendMessage={handleSendMessage}
-              disable={isLoading || isSendingMessage}
-            />
-          </Fragment>
+          <MessageInput
+            onSendMessage={handleSendMessage}
+            disable={isLoading || isSendingMessage}
+          />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Fragment>
   );
 }
@@ -104,6 +108,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   innerContainer: {
+    flex: 1,
+  },
+  contentContainer: {
     flex: 1,
   },
   centerContainer: {
