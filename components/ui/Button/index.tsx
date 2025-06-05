@@ -35,7 +35,9 @@ export function Button({
   return (
     <TouchableOpacity style={style} {...props}>
       {typeof children === "string" ? (
-        <TypographyButtonS style={textStyle}>{children}</TypographyButtonS>
+        <TypographyButtonS style={textStyle} selectable={false}>
+          {children}
+        </TypographyButtonS>
       ) : (
         children
       )}

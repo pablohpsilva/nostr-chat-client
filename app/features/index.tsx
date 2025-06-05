@@ -1,10 +1,10 @@
-import { Stack } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Fragment } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { LinkButton } from "@/components/ui/Button/LinkButton";
+import { Button } from "@/components/ui/Button";
 import {
   H1,
   H5,
@@ -14,6 +14,13 @@ import {
 import { ROUTES } from "@/constants/routes";
 
 export default function FeaturesScreen() {
+  const { redirect } = useLocalSearchParams();
+  const router = useRouter();
+
+  const handleGotIt = () => {
+    router.push(redirect ?? ROUTES.ROOT);
+  };
+
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />;
@@ -38,6 +45,31 @@ export default function FeaturesScreen() {
             >
               If you don't like or don't trust our relays, you can run your own
               relay and use it in the application.
+            </TypographyCaptionL>
+            <TypographyCaptionL
+              style={styles.featureDescription}
+              colorName="lime"
+            >
+              If you like our service, but you don't want to use our free relays
+              and want extra privacy without the headache of maintaining your
+              own relay, you can use our paid relays.
+            </TypographyCaptionL>
+            <View style={styles.featureDescription}>
+              <Button
+                variant="ghost-02"
+                size="small"
+                onPress={() => alert("soon")}
+              >
+                Rent a relay
+              </Button>
+            </View>
+
+            <TypographyCaptionL
+              style={styles.featureDescription}
+              colorName="magenta"
+            >
+              Just make sure the following NIPs are supported by your relay: 1,
+              2, 4, 9, 11, 12, 15, 16, 17, 20, 22, 28, 33, 40, 44, 59
             </TypographyCaptionL>
           </View>
 
@@ -78,6 +110,16 @@ export default function FeaturesScreen() {
               Messages are encrypted on your device before sending and can only
               be decrypted by the intended recipient. Even relay operators
               cannot read your conversations - true privacy by design.
+            </TypographyBodyL>
+            <TypographyBodyL style={styles.featureDescription}>
+              This application is a client-side application. This means that all
+              the encryption and decryption is done on your device. We only send
+              encrypted messages. Nobody can see who and to whom nor the message
+              sent.
+            </TypographyBodyL>
+            <TypographyBodyL style={styles.featureDescription}>
+              Your keys are stored on your device. We don't store them. As long
+              as you don't share them, nobody can decrypt your messages.
             </TypographyBodyL>
             <TypographyCaptionL
               style={styles.featureDescription}
@@ -169,7 +211,9 @@ export default function FeaturesScreen() {
         </ScrollView>
 
         <SafeAreaView edges={["bottom"]} style={styles.footer}>
-          <LinkButton href={ROUTES.ROOT}>Got it!</LinkButton>
+          <Button variant="rounded" onPress={handleGotIt}>
+            Got it
+          </Button>
         </SafeAreaView>
       </View>
     </Fragment>
@@ -199,7 +243,7 @@ const styles = StyleSheet.create({
   },
   featureSection: {
     marginBottom: 24,
-    gap: 8,
+    gap: 12,
   },
   featureDescription: {
     marginLeft: 32,

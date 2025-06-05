@@ -1,24 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useNDKSessionLogout } from "@nostr-dev-kit/ndk-hooks";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/Colors";
-import { ROUTES } from "@/constants/routes";
 import List from "./components/List";
 import Search from "./components/Search";
+import SettingsModal from "./components/SettingsModal";
 
 export default function ChatListPage() {
-  const logout = useNDKSessionLogout();
-  const router = useRouter();
-
-  const handleOnClickLogout = () => {
-    logout();
-    router.replace(ROUTES.LOGIN);
-  };
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   return (
     <Fragment>
@@ -30,7 +23,7 @@ export default function ChatListPage() {
           <View style={styles.headerContent}>
             <TouchableOpacity
               style={styles.menuButton}
-              onPress={handleOnClickLogout}
+              onPress={() => setIsSettingsModalOpen(true)}
             >
               <Ionicons
                 name="person-circle-outline"
@@ -54,9 +47,11 @@ export default function ChatListPage() {
           </View>
         </SafeAreaView>
 
-        <List
-          onChatClick={() => {}}
-          handleOnClickLogout={handleOnClickLogout}
+        <List onChatClick={() => {}} />
+
+        <SettingsModal
+          isOverlayOpen={isSettingsModalOpen}
+          handleCloseOverlay={() => setIsSettingsModalOpen(false)}
         />
       </View>
     </Fragment>

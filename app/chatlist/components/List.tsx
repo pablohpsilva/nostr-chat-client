@@ -16,10 +16,9 @@ import { useProfileStore } from "@/store/profiles";
 
 interface ListProps {
   onChatClick: (kind: `NIP${NDKKind}`, pubkey: string) => void;
-  handleOnClickLogout: () => void;
 }
 
-export default function List({ handleOnClickLogout }: ListProps) {
+export default function List(props: ListProps) {
   const {
     getUserProfilesFromChats: getNip04UserProfilesFromChats,
     isLoading: isLoadingNip04UserProfiles,
@@ -65,12 +64,7 @@ export default function List({ handleOnClickLogout }: ListProps) {
             Loading chats...
           </TypographyBodyS>
         </View>
-      ) : // error ? (
-      //   <View style={styles.centerContainer}>
-      //     <Text style={styles.errorText}>Error loading chats</Text>
-      //   </View>
-      // ) :
-      !hasConversations ? (
+      ) : !hasConversations ? (
         <View style={styles.centerContainer}>
           <TypographyBodyS style={styles.emptyText}>
             No conversations yet
