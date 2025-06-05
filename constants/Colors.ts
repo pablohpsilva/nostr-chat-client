@@ -18,6 +18,7 @@ export const Colors = {
     lime: "#A5F59C",
     yellow: "#FFDD72",
     coral: "#FF968E",
+    danger: "#cc453a",
   },
   dark: {
     primary: "#246BFD",
@@ -33,5 +34,6 @@ export const Colors = {
     lime: "#A5F59C",
     yellow: "#FFDD72",
     coral: "#FF968E",
+    danger: "#cc453a",
   },
 };

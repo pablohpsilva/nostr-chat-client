@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { Link } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { TypographyBodyL } from "../Typography";
+import { TypographyBodyL, TypographyCaptionXS } from "../Typography";
 
 interface ProfileListItemProps {
   npub?: string;
@@ -37,7 +37,29 @@ export default function ProfileListItem({
               <TypographyBodyL>
                 {displayName || formatPublicKey(`${npub}`)}
               </TypographyBodyL>
-              <Text style={styles.nipTag}>{tag}</Text>
+
+              <View style={styles.nipContainer}>
+                <Text
+                  style={[
+                    styles.nipTag,
+                    {
+                      borderColor:
+                        tag === "NIP17"
+                          ? Colors.dark.primary
+                          : Colors.dark.danger,
+                      backgroundColor:
+                        tag === "NIP17"
+                          ? Colors.dark.primary
+                          : Colors.dark.danger,
+                    },
+                  ]}
+                >
+                  {tag}
+                </Text>
+                {tag && tag === "NIP04" && (
+                  <TypographyCaptionXS>Not safe</TypographyCaptionXS>
+                )}
+              </View>
             </View>
           </View>
 
@@ -91,11 +113,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     paddingVertical: 2,
     borderWidth: 1,
-    borderColor: Colors.dark.primary,
     borderRadius: 8,
     fontSize: 10,
     color: Colors.dark.white,
-    backgroundColor: Colors.dark.primary,
     width: 42,
     fontWeight: "700",
     textAlign: "center",
