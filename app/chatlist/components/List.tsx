@@ -83,7 +83,7 @@ export default function List({ handleOnClickLogout }: ListProps) {
               {Object.values(nip17UserProfiles).map(
                 ({ npub, pubkey, displayName, picture, created_at }, index) => (
                   <ProfileListItem
-                    key={`${pubkey}-${npub}-${index}`}
+                    key={`${pubkey}-${npub}-${index}-${created_at}`}
                     {...{
                       npub,
                       displayName,
@@ -122,7 +122,7 @@ export default function List({ handleOnClickLogout }: ListProps) {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
   },
   centerContainer: {
     flex: 1,
