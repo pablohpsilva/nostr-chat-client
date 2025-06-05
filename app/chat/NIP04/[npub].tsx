@@ -5,13 +5,17 @@ import { Fragment, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { TypographyBodyL } from "@/components/ui/Typography";
+import ChatHeader from "@/components/Chat/ChatHeader";
+import EmptyChat from "@/components/Chat/EmptyChat";
+import MessageInput from "@/components/Chat/MessageInput";
+import MessageList from "@/components/Chat/MessageList";
+import {
+  TypographyBodyL,
+  TypographyOverline,
+} from "@/components/ui/Typography";
+import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/routes";
 import useNip04Chat from "@/hooks/useNip04Chat";
-import MessageInput from "../NIP17/components/MessageInput";
-import ChatHeader from "./components/ChatHeader";
-import EmptyChat from "./components/EmptyChat";
-import MessageList from "./components/MessageList";
 
 export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();
@@ -64,6 +68,14 @@ export default function NIP17ChatPage() {
           )}
 
           <SafeAreaView style={styles.header} edges={["bottom"]}>
+            <View style={styles.warningContainer}>
+              <TypographyOverline
+                lightColor={Colors.dark.white}
+                darkColor={Colors.dark.white}
+              >
+                This chat is unsafe. Use NIP17 chat instead.
+              </TypographyOverline>
+            </View>
             <MessageInput onSendMessage={handleSendMessage} />
           </SafeAreaView>
         </View>
@@ -89,5 +101,14 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 8,
     color: "#666",
+  },
+  warningContainer: {
+    padding: 8,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: Colors.dark.coral,
   },
 });

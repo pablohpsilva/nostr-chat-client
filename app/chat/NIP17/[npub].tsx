@@ -5,15 +5,15 @@ import { nip19 } from "nostr-tools";
 import { Fragment, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
+import ChatHeader from "@/components/Chat/ChatHeader";
+import EmptyChat from "@/components/Chat/EmptyChat";
+import MessageInput from "@/components/Chat/MessageInput";
+import MessageList from "@/components/Chat/MessageList";
 import { TypographyBodyL } from "@/components/ui/Typography";
 import { ROUTES } from "@/constants/routes";
 import { ChatRoom } from "@/constants/types";
 import useNip17Chat from "@/hooks/useNip17Chat";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
-import ChatHeader from "./components/ChatHeader";
-import EmptyChat from "./components/EmptyChat";
-import MessageInput from "./components/MessageInput";
-import MessageList from "./components/MessageList";
 
 export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();

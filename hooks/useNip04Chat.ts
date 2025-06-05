@@ -36,6 +36,7 @@ export default function useNip04Chat() {
 
     const content = nip04.decrypt(privateKey, event.pubkey, event.content);
     const unwrappedEvent: NDKEvent = Object.assign(event, { content });
+
     setMessagesByUser((prev) => [...prev, unwrappedEvent]);
   };
 
@@ -67,13 +68,13 @@ export default function useNip04Chat() {
       }
 
       // We need two filters to get the complete conversation:
-      // 1. Messages sent BY current user TO recipients
+      // 1. Messages sent FROM current user TO recipients
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.EncryptedDirectMessage],
         "#p": recipients,
       };
 
-      // 2. Messages sent TO current user FROM recipients
+      // 2. Messages sent FROM recipients TO current user
       const incomingFilter: NDKFilter = {
         kinds: [NDKKind.EncryptedDirectMessage],
         "#p": [currentUser.pubkey],
@@ -81,11 +82,11 @@ export default function useNip04Chat() {
 
       const options: NDKSubscriptionOptions = {
         closeOnEose: false, // Keep the subscription open
-        relayUrls: [
-          "wss://relay.damus.io",
-          "wss://relay.snort.social",
-          "wss://nos.lol",
-        ],
+        // relayUrls: [
+        //   "wss://relay.damus.io",
+        //   "wss://relay.snort.social",
+        //   "wss://nos.lol",
+        // ],
         ..._options,
       };
 
@@ -93,9 +94,10 @@ export default function useNip04Chat() {
       incomingSub = getNDK().getInstance().subscribe(incomingFilter, options);
 
       outgoingSub.on("event", (event: NDKEvent) => {
+        // console.log("outgoingSub", event);
         // For outgoing messages, the p tag contains the recipient
         const recipientPubkey = event.tags.find((tag) => tag[0] === "p")?.[1];
-        console.log("recipientPubkey", recipientPubkey);
+        // console.log("recipientPubkey", recipientPubkey);
 
         if (recipientPubkey) {
           // addMessageToConversation(event, recipientPubkey, privateKey!);
@@ -104,9 +106,10 @@ export default function useNip04Chat() {
       });
 
       incomingSub.on("event", (event: NDKEvent) => {
+        // console.log("incomingSub", event);
         // For incoming messages, the author is the sender
         const senderPubkey = event.pubkey;
-        console.log("senderPubkey", senderPubkey);
+        // console.log("senderPubkey", senderPubkey);
 
         if (senderPubkey) {
           // addMessageToConversation(event, senderPubkey, privateKey);
