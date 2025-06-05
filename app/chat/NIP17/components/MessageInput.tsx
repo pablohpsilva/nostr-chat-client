@@ -18,6 +18,7 @@ const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
     if (newMessage.trim()) {
       onSendMessage(newMessage);
       setNewMessage("");
+      setMaxTextInputLines(0);
     }
   };
 
