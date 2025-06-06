@@ -30,12 +30,16 @@ const MessageList = ({
 
     const latestMessage = messages[messages.length - 1];
     const latestTimestamp = latestMessage.created_at || 0;
+    const isFromCurrentUser = latestMessage.pubkey === currentUser?.pubkey;
 
-    if (latestTimestamp > lastMessageTimestampRef.current) {
+    if (
+      latestTimestamp > lastMessageTimestampRef.current &&
+      isFromCurrentUser
+    ) {
       lastMessageTimestampRef.current = latestTimestamp;
       scrollToBottom();
     }
-  }, [messages]);
+  }, [messages, currentUser?.pubkey]);
 
   return (
     <ScrollView
