@@ -30,7 +30,6 @@ export default function RelayManagementScreen() {
   const [newRelayUrl, setNewRelayUrl] = useState("");
 
   const {
-    relays,
     isLoading,
     isSaving,
     error,
