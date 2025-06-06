@@ -153,6 +153,18 @@ export default function FeaturesScreen() {
               decentralized social networks. This ensures interoperability with
               other Nostr applications and long-term sustainability.
             </TypographyBodyL>
+            <TypographyCaptionL
+              style={styles.featureDescription}
+              colorName="yellow"
+            >
+              This is a true decentralized application that operates entirely on
+              your device, with no traditional backend servers. Instead, it
+              connects directly to the Nostr protocol - an open,
+              censorship-resistant network of relay servers. Your data flows
+              freely through this decentralized infrastructure without any
+              intermediary services or central points of control, ensuring
+              complete sovereignty over your communications.
+            </TypographyCaptionL>
           </View>
 
           <View style={styles.featureSection}>
