@@ -7,77 +7,99 @@ import {
   useNDKCurrentUser,
 } from "@nostr-dev-kit/ndk-hooks";
 import { Event, nip17, nip19 } from "nostr-tools";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
 import { Recipient, ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/lib/nip17";
+import { useChatStore } from "@/store/chat";
 import useTag from "./useTag";
 
 let outgoingSub: NDKSubscription;
 
-export default function useNip17Chat() {
+export default function useNip17Chat(_recipients: string | string[]) {
   const currentUser = useNDKCurrentUser();
-  const { createMessageTag } = useTag();
-  const [isLoading, setLoading] = useState(true);
   const [isSendingMessage, setIsSendingMessage] = useState(false);
-  const [messagesByUser, setMessagesByUser] = useState<
-    ReturnType<typeof nip17.unwrapEvent>[]
-  >([]);
-  const sortedMessagesByUser = useMemo(
-    () => messagesByUser.sort((a, b) => a.created_at - b.created_at),
-    [messagesByUser]
-  );
+  const [isLoading, setLoading] = useState(false);
+  const { createMessageTag } = useTag();
+  const debouncedMessageCache = useRef<any[]>([]);
+  const debounceTimer = useRef<number>(0);
+  const { dTag, recipients } = useMemo(() => {
+    const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
+
+    let pubKeys: string[] = [];
+
+    if (Array.isArray(recipients)) {
+      pubKeys = recipients.map((r) => {
+        const { data: publicKey } = nip19.decode(r);
+        return publicKey as string;
+      });
+    } else {
+      const { data: publicKey } = nip19.decode(recipients);
+      pubKeys = [publicKey as string];
+    }
+
+    const { tag: dTag, recipients: dRecipients } = createMessageTag(pubKeys);
+
+    return {
+      dTag,
+      pubKeys,
+      recipients: dRecipients,
+    };
+  }, [_recipients]);
+  const {
+    getMessages,
+    addMessages,
+    getTimeRange,
+    getMissingRanges,
+    markFetched,
+    updateTimeRange,
+  } = useChatStore();
+
+  const unwrapMessages = (
+    event: NDKEvent[],
+    privateKey: Uint8Array<ArrayBuffer>
+  ): ReturnType<typeof nip17.unwrapEvent>[] => {
+    const events = Array.isArray(event) ? event : [event];
+
+    return events
+      .map((e) => {
+        try {
+          return nip17.unwrapEvent(e as Event, privateKey);
+        } catch (error) {
+          return undefined;
+        }
+      })
+      .filter(
+        (item): item is ReturnType<typeof nip17.unwrapEvent> =>
+          item !== undefined
+      );
+  };
 
   const addMessageToConversation = (
-    event: NDKEvent,
-    privateKey: Uint8Array<ArrayBuffer>,
-    raw?: boolean
+    event: NDKEvent | NDKEvent[],
+    privateKey: Uint8Array<ArrayBuffer>
   ) => {
     try {
-      if (raw) {
-        setMessagesByUser((prev) => [...prev, event]);
-        return;
-      }
+      const events = Array.isArray(event) ? event : [event];
 
-      const unwrappedEvent = nip17.unwrapEvent(event as Event, privateKey);
-      setMessagesByUser((prev) => [...prev, unwrappedEvent]);
+      const unwrappedEvent = unwrapMessages(events, privateKey);
+      addMessages(dTag, unwrappedEvent);
     } catch (error) {
       console.error(error);
     }
   };
 
   const getConversationMessages = async (
-    _recipients: string | string[],
     _options: NDKSubscriptionOptions = {}
   ) => {
     try {
-      setLoading(true);
-
       if (!currentUser || !_recipients) {
         return [];
       }
 
-      setMessagesByUser([]);
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
-      const recipients = Array.isArray(_recipients)
-        ? _recipients
-        : [_recipients];
-
-      let pubKeys: string[] = [];
-
-      if (Array.isArray(recipients)) {
-        pubKeys = recipients.map((r) => {
-          const { data: publicKey } = nip19.decode(r);
-          return publicKey as string;
-        });
-      } else {
-        const { data: publicKey } = nip19.decode(recipients);
-        pubKeys = [publicKey as string];
-      }
-
-      const { tag: dTag } = createMessageTag(pubKeys);
 
       // Filter to get the conversation messages
       const filter: NDKFilter = {
@@ -87,54 +109,49 @@ export default function useNip17Chat() {
 
       const events = await getNDK().getInstance().fetchEvents(filter);
 
-      events.forEach((event: NDKEvent) => {
-        addMessageToConversation(event, privateKey!);
-      });
+      addMessageToConversation(Array.from(events), privateKey!);
 
       return events;
     } catch (error) {
       console.error("Error fetching conversation messages:", error);
       return [];
     } finally {
-      setLoading(false);
     }
   };
 
+  const debouncedAddMessages =
+    (privateKey: Uint8Array<ArrayBuffer>) => (event: any) => {
+      debouncedMessageCache.current.push(event);
+      console.count("HIT");
+
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+
+      debounceTimer.current = setTimeout(() => {
+        if (debouncedMessageCache.current.length > 0) {
+          addMessageToConversation(debouncedMessageCache.current, privateKey);
+          debouncedMessageCache.current = [];
+        }
+      }, 500);
+    };
+
   const getConversationMessagesWebhook = async (
-    _recipients: string | string[],
     _options: NDKSubscriptionOptions = {}
   ) => {
     try {
-      setLoading(true);
-
       if (!currentUser || !_recipients) {
         return [];
       }
 
-      setMessagesByUser([]);
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
-      const recipients = Array.isArray(_recipients)
-        ? _recipients
-        : [_recipients];
-
-      let pubKeys: string[] = [];
-
-      if (Array.isArray(recipients)) {
-        pubKeys = recipients.map((r) => {
-          const { data: publicKey } = nip19.decode(r);
-          return publicKey as string;
-        });
-      } else {
-        const { data: publicKey } = nip19.decode(recipients);
-        pubKeys = [publicKey as string];
-      }
-
-      const { tag: dTag } = createMessageTag(pubKeys);
 
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.GiftWrap],
         "#d": [dTag],
+        // We only want to fetch messages that are newer than the last fetched message
+        since: getTimeRange(dTag).until,
       };
 
       const options: NDKSubscriptionOptions = {
@@ -145,19 +162,79 @@ export default function useNip17Chat() {
       outgoingSub = getNDK().getInstance().subscribe(outgoingFilter, options);
 
       outgoingSub.on("event", (event: NDKEvent) => {
-        addMessageToConversation(event, privateKey!);
+        console.log("FOUND EVENT", event?.id);
+        // addMessageToConversation(event, privateKey!);
+        debouncedAddMessages(privateKey!)(event);
       });
 
       // Handle EOSE (End of Stored Events)
       outgoingSub.on("eose", (event: any) => {
         console.log("Outgoing messages EOSE received", event);
-        setLoading(false);
       });
     } catch (error) {
       console.error("Error fetching conversation messages:", error);
       return [];
+    }
+  };
+
+  const getHistoricalMessages = async (
+    _options: NDKSubscriptionOptions = {}
+  ) => {
+    try {
+      setLoading(true);
+
+      if (!currentUser || !_recipients) {
+        return [];
+      }
+
+      // @ts-expect-error
+      const privateKey = getNDK().getInstance().signer?._privateKey;
+
+      // Get missing time ranges we need to fetch
+      const missingRanges = getMissingRanges(dTag);
+      console.log(
+        "missingRanges",
+        missingRanges.map((r) => new Date(r.since * 1000))
+      );
+
+      for (const { since, until } of missingRanges) {
+        const filter: NDKFilter = {
+          kinds: [NDKKind.GiftWrap],
+          "#d": [dTag],
+          since,
+          until,
+        };
+
+        const events = await getNDK().getInstance().fetchEvents(filter);
+
+        if (events.size > 0) {
+          addMessageToConversation(Array.from(events), privateKey!);
+        }
+      }
+      const { since, until } = missingRanges.reduce(
+        (acc, curr) => {
+          if (curr.since < acc.since) {
+            acc.since = curr.since;
+          }
+          if (curr.until > acc.until) {
+            acc.until = curr.until;
+          }
+          return acc;
+        },
+        { since: Infinity, until: -Infinity }
+      );
+
+      updateTimeRange(dTag, since, until);
+
+      // Mark this chat as fetched
+      markFetched(dTag);
+
+      return true;
+    } catch (error) {
+      console.error("Error fetching historical messages:", error);
+      return false;
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -177,8 +254,6 @@ export default function useNip17Chat() {
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
 
-      const { tag: dTag, recipients } = createMessageTag([_recipient]);
-
       const events = wrapManyEvents(
         privateKey,
         recipients,
@@ -190,9 +265,16 @@ export default function useNip17Chat() {
         Object.assign(new NDKEvent(getNDK().getInstance()), event)
       );
 
+      console.log(
+        "events",
+        events?.map((e) => e.created_at)
+      );
+
       await Promise.allSettled(
         events.map(async (event, index) => {
+          console.log(`Publishing event ${index + 1} of ${events.length}`);
           await event.publish();
+          console.log(`Published event ${index + 1} of ${events.length}`);
         })
       );
     } catch (error) {
@@ -213,8 +295,9 @@ export default function useNip17Chat() {
   return {
     isLoading,
     isSendingMessage,
-    messages: sortedMessagesByUser,
+    messages: getMessages(dTag),
     sendMessage,
+    getHistoricalMessages,
     getConversationMessages,
     getConversationMessagesWebhook,
     chat: null,

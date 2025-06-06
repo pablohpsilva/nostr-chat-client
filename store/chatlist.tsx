@@ -7,6 +7,7 @@ export const useChatListStore = create<{
   setChatRooms: (chatRooms: Map<string, ChatRoom>) => void;
   removeChatRoom: (pubkey: string) => void;
   clearChatRoom: () => void;
+  wipeCleanChatRooms: () => void;
 }>((set) => ({
   chatRooms: new Map(),
   setChatRooms: (_chatRooms: Map<string, ChatRoom>) =>
@@ -28,4 +29,11 @@ export const useChatListStore = create<{
       ...state,
       chatRooms: new Map(),
     })),
+
+  wipeCleanChatRooms: () =>
+    set((state) => {
+      const newChatRooms = new Map(state.chatRooms);
+      newChatRooms.clear();
+      return { chatRooms: newChatRooms };
+    }),
 }));

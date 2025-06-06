@@ -45,7 +45,7 @@ export function removeDuplicateEventsViaId<T extends { id: string | number }>(
     let key: string;
     if (typeof item === "string") {
       key = item;
-    } else if (typeof item === "object" && "publicKey" in item) {
+    } else if (typeof item === "object" && "id" in item) {
       // @ts-expect-error
       key = item.id;
     } else {

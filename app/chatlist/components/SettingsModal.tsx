@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/Button";
 import { TypographyBodyL, TypographyTitle } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
+import { useChatStore } from "@/store/chat";
+import { useChatListStore } from "@/store/chatlist";
 import { useNDKSessionLogout } from "@nostr-dev-kit/ndk-hooks";
 import { Link, useRouter } from "expo-router";
 
@@ -22,13 +24,23 @@ export default function SettingsModal({
   isOverlayOpen: boolean;
   handleCloseOverlay: () => void;
 }) {
+  const { wipeCleanMessages } = useChatStore();
+  const { wipeCleanChatRooms } = useChatListStore();
   const logout = useNDKSessionLogout();
   const router = useRouter();
 
   const handleOnClickLogout = () => {
-    handleCloseOverlay();
-    logout();
-    router.replace(ROUTES.LOGIN);
+    if (
+      window.confirm(
+        "Logging out will wipe clean your device's data. Are you sure you want to continue?"
+      )
+    ) {
+      handleCloseOverlay();
+      logout();
+      wipeCleanMessages();
+      wipeCleanChatRooms();
+      router.replace(ROUTES.LOGIN);
+    }
   };
 
   const handleScroll = (event: any) => {

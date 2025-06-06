@@ -9,7 +9,6 @@ import ChatHeader from "@/components/Chat/ChatHeader";
 import EmptyChat from "@/components/Chat/EmptyChat";
 import MessageInput from "@/components/Chat/MessageInput";
 import MessageList from "@/components/Chat/MessageList";
-import { TypographyBodyL } from "@/components/ui/Typography";
 import { ROUTES } from "@/constants/routes";
 import { ChatRoom } from "@/constants/types";
 import useNip17Chat from "@/hooks/useNip17Chat";
@@ -25,7 +24,8 @@ export default function NIP17ChatPage() {
     sendMessage,
     isLoading,
     isSendingMessage,
-  } = useNip17Chat();
+    getHistoricalMessages,
+  } = useNip17Chat([npub as string]);
   const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
 
   const handleSendMessage = async (newMessage: string) => {
@@ -62,6 +62,7 @@ export default function NIP17ChatPage() {
       getConversationMessagesWebhook(`${npub}`);
       handleStoreChatRoom(chatRoomMap);
     });
+    getHistoricalMessages();
   }, [npub]);
 
   return (
@@ -79,19 +80,20 @@ export default function NIP17ChatPage() {
             onBackClick={handleBackToList}
           />
 
-          <View style={styles.contentContainer}>
-            {isLoading ? (
-              <View style={styles.centerContainer}>
-                <TypographyBodyL style={styles.loadingText}>
-                  Loading chats...
-                </TypographyBodyL>
-              </View>
-            ) : messages.length ? (
-              <MessageList messages={messages as NDKEvent[]} />
-            ) : (
-              <EmptyChat />
-            )}
-          </View>
+          {messages.length === 0 && (
+            <EmptyChat
+              isLoading={isLoading}
+              loadPreviousMessages={getHistoricalMessages}
+            />
+          )}
+
+          {messages.length > 0 && (
+            <MessageList
+              messages={messages as NDKEvent[]}
+              isLoading={isLoading}
+              loadPreviousMessages={getHistoricalMessages}
+            />
+          )}
 
           <MessageInput
             onSendMessage={handleSendMessage}
