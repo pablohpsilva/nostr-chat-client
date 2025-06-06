@@ -4,6 +4,7 @@ export const ROUTES = {
   CHAT_ID: "/chat/{nip}/{npub}",
   LOGIN: "/login",
   FEATURES: "/features",
+  RELAYS: "/relays",
 };
 
 export const fillRoute = (
