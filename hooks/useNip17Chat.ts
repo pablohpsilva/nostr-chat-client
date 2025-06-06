@@ -6,11 +6,11 @@ import {
   NDKSubscriptionOptions,
   useNDKCurrentUser,
 } from "@nostr-dev-kit/ndk-hooks";
-import { Event, nip17, nip19 } from "nostr-tools";
+import { Event, nip17 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
-import { Recipient, ReplyTo } from "@/constants/types";
+import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/lib/nip17";
 import { useChatStore } from "@/store/chat";
 import useTag from "./useTag";
@@ -82,6 +82,23 @@ export default function useNip17Chat(_recipients: string | string[]) {
     }
   };
 
+  const debouncedAddMessages =
+    (privateKey: Uint8Array<ArrayBuffer>) => (event: any) => {
+      debouncedMessageCache.current.push(event);
+      console.count("HIT");
+
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+
+      debounceTimer.current = setTimeout(() => {
+        if (debouncedMessageCache.current.length > 0) {
+          addMessageToConversation(debouncedMessageCache.current, privateKey);
+          debouncedMessageCache.current = [];
+        }
+      }, 200);
+    };
+
   const getConversationMessages = async (
     _options: NDKSubscriptionOptions = {}
   ) => {
@@ -110,23 +127,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
     } finally {
     }
   };
-
-  const debouncedAddMessages =
-    (privateKey: Uint8Array<ArrayBuffer>) => (event: any) => {
-      debouncedMessageCache.current.push(event);
-      console.count("HIT");
-
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-
-      debounceTimer.current = setTimeout(() => {
-        if (debouncedMessageCache.current.length > 0) {
-          addMessageToConversation(debouncedMessageCache.current, privateKey);
-          debouncedMessageCache.current = [];
-        }
-      }, 500);
-    };
 
   const getConversationMessagesWebhook = async (
     _options: NDKSubscriptionOptions = {}

@@ -8,10 +8,7 @@ import ChatHeader from "@/components/Chat/ChatHeader";
 import EmptyChat from "@/components/Chat/EmptyChat";
 import MessageInput from "@/components/Chat/MessageInput";
 import MessageList from "@/components/Chat/MessageList";
-import {
-  TypographyBodyL,
-  TypographyOverline,
-} from "@/components/ui/Typography";
+import { TypographyOverline } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/routes";
 import useNip04Chat from "@/hooks/useNip04Chat";
@@ -20,8 +17,13 @@ export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();
   const router = useRouter();
   const currentUser = useNDKCurrentUser();
-  const { messages, getConversationMessagesWebhook, sendMessage, isLoading } =
-    useNip04Chat([npub as string]);
+  const {
+    messages,
+    getConversationMessagesWebhook,
+    sendMessage,
+    getHistoricalMessages,
+    isLoading,
+  } = useNip04Chat([npub as string]);
 
   const handleSendMessage = async (newMessage: string) => {
     if (!newMessage.trim() || !currentUser) {
@@ -41,6 +43,7 @@ export default function NIP17ChatPage() {
 
   useEffect(() => {
     getConversationMessagesWebhook();
+    getHistoricalMessages();
   }, [npub]);
 
   return (
@@ -58,19 +61,20 @@ export default function NIP17ChatPage() {
             onBackClick={handleBackToList}
           />
 
-          <View style={styles.contentContainer}>
-            {isLoading ? (
-              <View style={styles.centerContainer}>
-                <TypographyBodyL style={styles.loadingText}>
-                  Loading chats...
-                </TypographyBodyL>
-              </View>
-            ) : messages.length ? (
-              <MessageList messages={messages as NDKEvent[]} />
-            ) : (
-              <EmptyChat />
-            )}
-          </View>
+          {messages.length === 0 && (
+            <EmptyChat
+              isLoading={isLoading}
+              loadPreviousMessages={getHistoricalMessages}
+            />
+          )}
+
+          {messages.length > 0 && (
+            <MessageList
+              messages={messages as NDKEvent[]}
+              isLoading={isLoading}
+              loadPreviousMessages={getHistoricalMessages}
+            />
+          )}
 
           <View style={styles.warningContainer}>
             <TypographyOverline

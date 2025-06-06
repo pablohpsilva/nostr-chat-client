@@ -7,7 +7,7 @@ import {
   useNDKCurrentUser,
 } from "@nostr-dev-kit/ndk-hooks";
 import { nip04 } from "nostr-tools";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
 import { useChatStore } from "@/store/chat";
@@ -20,6 +20,8 @@ export default function useNip04Chat(_recipients: string | string[]) {
   const currentUser = useNDKCurrentUser();
   const [isLoading, setLoading] = useState(false);
   const { createMessageTag } = useTag();
+  const debouncedMessageCache = useRef<any[]>([]);
+  const debounceTimer = useRef<number>(0);
   const { recipients, chatKey, pubKeys } = useMemo(() => {
     const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
 
@@ -47,10 +49,17 @@ export default function useNip04Chat(_recipients: string | string[]) {
   ) => {
     const events = Array.isArray(event) ? event : [event];
 
-    return events.map((e) => {
-      const content = nip04.decrypt(privateKey, e.pubkey, e.content);
-      return Object.assign(e, { content });
-    });
+    return events
+      .map((e) => {
+        try {
+          const content = nip04.decrypt(privateKey, e.pubkey, e.content);
+          return { ...e, content };
+        } catch (error) {
+          console.log("error", error);
+          return undefined;
+        }
+      })
+      .filter((e) => e !== undefined);
   };
 
   const addMessageToConversation = (
@@ -59,10 +68,101 @@ export default function useNip04Chat(_recipients: string | string[]) {
     raw?: boolean
   ) => {
     const events = Array.isArray(event) ? event : [event];
+    if (raw) {
+      addMessages(chatKey, events);
+      return;
+    }
+
+    console.log("events", events);
 
     const decryptedEvents = decryptMessages(events, privateKey);
 
     addMessages(chatKey, decryptedEvents);
+  };
+
+  const debouncedAddMessages =
+    (privateKey: Uint8Array<ArrayBuffer>) => (event: any) => {
+      debouncedMessageCache.current.push(event);
+      console.count("HIT");
+
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+
+      debounceTimer.current = setTimeout(() => {
+        if (debouncedMessageCache.current.length > 0) {
+          addMessageToConversation(debouncedMessageCache.current, privateKey);
+          debouncedMessageCache.current = [];
+        }
+      }, 200);
+    };
+
+  const getHistoricalMessages = async (
+    _options: NDKSubscriptionOptions = {}
+  ) => {
+    try {
+      setLoading(true);
+
+      if (!currentUser || !_recipients) {
+        return [];
+      }
+
+      // @ts-expect-error
+      const privateKey = getNDK().getInstance().signer?._privateKey;
+
+      // Get missing time ranges we need to fetch
+      const missingRanges = getMissingRanges(chatKey);
+
+      for (const { since, until } of missingRanges) {
+        const outgoingFilter: NDKFilter = {
+          kinds: [NDKKind.EncryptedDirectMessage],
+          "#p": pubKeys,
+          since,
+          until,
+        };
+        const incomingFilter: NDKFilter = {
+          kinds: [NDKKind.EncryptedDirectMessage],
+          "#p": [currentUser.pubkey],
+          since,
+          until,
+        };
+
+        const [outgoingEvents, incomingEvents] = await Promise.all([
+          getNDK().getInstance().fetchEvents(outgoingFilter),
+          getNDK().getInstance().fetchEvents(incomingFilter),
+        ]);
+
+        const events = new Set([...outgoingEvents, ...incomingEvents]);
+
+        if (events.size > 0) {
+          addMessageToConversation(Array.from(events), privateKey!);
+        }
+      }
+      const { since, until } = missingRanges.reduce(
+        (acc, curr) => {
+          if (curr.since < acc.since) {
+            acc.since = curr.since;
+          }
+          if (curr.until > acc.until) {
+            acc.until = curr.until;
+          }
+          return acc;
+        },
+        { since: Infinity, until: -Infinity }
+      );
+
+      updateTimeRange(chatKey, since, until);
+
+      // Mark this chat as fetched
+      markFetched(chatKey);
+
+      return true;
+    } catch (error) {
+      console.error("Error fetching historical messages:", error);
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getConversationMessagesWebhook = async (
@@ -81,12 +181,14 @@ export default function useNip04Chat(_recipients: string | string[]) {
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.EncryptedDirectMessage],
         "#p": pubKeys,
+        since: getTimeRange(chatKey).until,
       };
 
       // 2. Messages sent FROM recipients TO current user
       const incomingFilter: NDKFilter = {
         kinds: [NDKKind.EncryptedDirectMessage],
         "#p": [currentUser.pubkey],
+        since: getTimeRange(chatKey).until,
       };
 
       const options: NDKSubscriptionOptions = {
@@ -103,7 +205,6 @@ export default function useNip04Chat(_recipients: string | string[]) {
       incomingSub = getNDK().getInstance().subscribe(incomingFilter, options);
 
       outgoingSub.on("event", (event: NDKEvent) => {
-        // // console.log("outgoingSub", event);
         // // For outgoing messages, the p tag contains the recipient
         // const recipientPubkey = event.tags.find((tag) => tag[0] === "p")?.[1];
         // // console.log("recipientPubkey", recipientPubkey);
@@ -112,11 +213,10 @@ export default function useNip04Chat(_recipients: string | string[]) {
         //   // addMessageToConversation(event, recipientPubkey, privateKey!);
         //   addMessageToConversation(event, privateKey!);
         // }
-        addMessageToConversation(event, privateKey!);
+        debouncedAddMessages(privateKey!)(event);
       });
 
       incomingSub.on("event", (event: NDKEvent) => {
-        // // console.log("incomingSub", event);
         // // For incoming messages, the author is the sender
         // const senderPubkey = event.pubkey;
         // // console.log("senderPubkey", senderPubkey);
@@ -125,7 +225,7 @@ export default function useNip04Chat(_recipients: string | string[]) {
         //   // addMessageToConversation(event, senderPubkey, privateKey);
         //   addMessageToConversation(event, privateKey);
         // }
-        addMessageToConversation(event, privateKey);
+        debouncedAddMessages(privateKey!)(event);
       });
 
       // Handle EOSE (End of Stored Events)
@@ -147,29 +247,29 @@ export default function useNip04Chat(_recipients: string | string[]) {
   };
 
   const sendMessage = async (message: string) => {
-    if (!currentUser) {
-      return;
-    }
-
     try {
+      if (!currentUser) {
+        return;
+      }
+
       setLoading(true);
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
 
-      const events = recipients.map((recipient) => {
-        // Create a new DM event
-        const event = new NDKEvent(getNDK().getInstance());
-        event.kind = NDKKind.EncryptedDirectMessage;
-        // event.content = content;
-        event.content = nip04.encrypt(
-          privateKey!,
-          recipient.publicKey,
-          message
+      const events = recipients
+        .map((recipient) => {
+          const event = {
+            pubkey: currentUser.pubkey,
+            kind: NDKKind.EncryptedDirectMessage,
+            content: nip04.encrypt(privateKey!, currentUser.pubkey, message),
+            tags: [["p", recipient.publicKey]],
+            created_at: Math.floor(Date.now() / 1000),
+          };
+          return event;
+        })
+        .map((event) =>
+          Object.assign(new NDKEvent(getNDK().getInstance()), event)
         );
-        event.tags = [["p", recipient.publicKey]];
-
-        return event;
-      });
 
       await Promise.allSettled(
         events.map(async (event, index) => {
@@ -198,6 +298,7 @@ export default function useNip04Chat(_recipients: string | string[]) {
     messages: getMessages(chatKey),
     sendMessage,
     getConversationMessagesWebhook,
+    getHistoricalMessages,
     chat: null,
   };
 }
