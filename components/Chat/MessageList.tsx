@@ -19,14 +19,23 @@ const MessageList = ({
 }: MessageListProps) => {
   const currentUser = useNDKCurrentUser();
   const scrollViewRef = useRef<ScrollView>(null);
+  const lastMessageTimestampRef = useRef<number>(0);
 
   const scrollToBottom = () => {
     scrollViewRef.current?.scrollToEnd({ animated: false });
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, []);
+    if (messages.length === 0) return;
+
+    const latestMessage = messages[messages.length - 1];
+    const latestTimestamp = latestMessage.created_at || 0;
+
+    if (latestTimestamp > lastMessageTimestampRef.current) {
+      lastMessageTimestampRef.current = latestTimestamp;
+      scrollToBottom();
+    }
+  }, [messages]);
 
   return (
     <ScrollView
