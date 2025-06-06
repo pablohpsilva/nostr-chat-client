@@ -33,7 +33,7 @@ export default function NIP17ChatPage() {
       return;
     }
 
-    await sendMessage({ publicKey: `${npub}` }, newMessage);
+    await sendMessage(newMessage);
   };
 
   const handleBackToList = () => {

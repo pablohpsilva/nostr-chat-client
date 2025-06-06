@@ -6,72 +6,81 @@ import {
   NDKSubscriptionOptions,
   useNDKCurrentUser,
 } from "@nostr-dev-kit/ndk-hooks";
-import { nip04, nip19 } from "nostr-tools";
+import { nip04 } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
-import { Recipient } from "@/constants/types";
+import { useChatStore } from "@/store/chat";
+import useTag from "./useTag";
 
 let outgoingSub: NDKSubscription;
 let incomingSub: NDKSubscription;
 
-export default function useNip04Chat() {
+export default function useNip04Chat(_recipients: string | string[]) {
   const currentUser = useNDKCurrentUser();
   const [isLoading, setLoading] = useState(false);
-  const [messagesByUser, setMessagesByUser] = useState<NDKEvent[]>([]);
-  const sortedMessagesByUser = useMemo(
-    () => messagesByUser.sort((a, b) => a.created_at - b.created_at),
-    [messagesByUser]
-  );
+  const { createMessageTag } = useTag();
+  const { recipients, chatKey, pubKeys } = useMemo(() => {
+    const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
+
+    const { recipients: dRecipients, recipientsPublicKeys: pubKeys } =
+      createMessageTag(recipients);
+
+    return {
+      pubKeys: pubKeys.filter((key) => key !== currentUser?.pubkey),
+      chatKey: pubKeys.join(","),
+      recipients: dRecipients,
+    };
+  }, [_recipients]);
+  const {
+    getMessages,
+    addMessages,
+    getTimeRange,
+    getMissingRanges,
+    markFetched,
+    updateTimeRange,
+  } = useChatStore();
+
+  const decryptMessages = (
+    event: NDKEvent[],
+    privateKey: Uint8Array<ArrayBuffer>
+  ) => {
+    const events = Array.isArray(event) ? event : [event];
+
+    return events.map((e) => {
+      const content = nip04.decrypt(privateKey, e.pubkey, e.content);
+      return Object.assign(e, { content });
+    });
+  };
 
   const addMessageToConversation = (
-    event: NDKEvent,
+    event: NDKEvent | NDKEvent[],
     privateKey: Uint8Array<ArrayBuffer>,
     raw?: boolean
   ) => {
-    if (raw) {
-      setMessagesByUser((prev) => [...prev, event]);
-      return;
-    }
+    const events = Array.isArray(event) ? event : [event];
 
-    const content = nip04.decrypt(privateKey, event.pubkey, event.content);
-    const unwrappedEvent: NDKEvent = Object.assign(event, { content });
+    const decryptedEvents = decryptMessages(events, privateKey);
 
-    setMessagesByUser((prev) => [...prev, unwrappedEvent]);
+    addMessages(chatKey, decryptedEvents);
   };
 
   const getConversationMessagesWebhook = async (
-    _recipients: string | string[],
     _options: NDKSubscriptionOptions = {}
   ) => {
-    setLoading(true);
-
-    if (!currentUser || !_recipients) {
-      return [];
-    }
-
-    setMessagesByUser([]);
-
     try {
+      if (!currentUser || !_recipients) {
+        return [];
+      }
+
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
-      let recipients: string[] = [];
-
-      if (Array.isArray(_recipients)) {
-        recipients = _recipients.map((r) => {
-          const { data: publicKey } = nip19.decode(r);
-          return publicKey as string;
-        });
-      } else {
-        const { data: publicKey } = nip19.decode(_recipients);
-        recipients = [publicKey as string];
-      }
 
       // We need two filters to get the complete conversation:
       // 1. Messages sent FROM current user TO recipients
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.EncryptedDirectMessage],
-        "#p": recipients,
+        "#p": pubKeys,
       };
 
       // 2. Messages sent FROM recipients TO current user
@@ -94,27 +103,29 @@ export default function useNip04Chat() {
       incomingSub = getNDK().getInstance().subscribe(incomingFilter, options);
 
       outgoingSub.on("event", (event: NDKEvent) => {
-        // console.log("outgoingSub", event);
-        // For outgoing messages, the p tag contains the recipient
-        const recipientPubkey = event.tags.find((tag) => tag[0] === "p")?.[1];
-        // console.log("recipientPubkey", recipientPubkey);
+        // // console.log("outgoingSub", event);
+        // // For outgoing messages, the p tag contains the recipient
+        // const recipientPubkey = event.tags.find((tag) => tag[0] === "p")?.[1];
+        // // console.log("recipientPubkey", recipientPubkey);
 
-        if (recipientPubkey) {
-          // addMessageToConversation(event, recipientPubkey, privateKey!);
-          addMessageToConversation(event, privateKey!);
-        }
+        // if (recipientPubkey) {
+        //   // addMessageToConversation(event, recipientPubkey, privateKey!);
+        //   addMessageToConversation(event, privateKey!);
+        // }
+        addMessageToConversation(event, privateKey!);
       });
 
       incomingSub.on("event", (event: NDKEvent) => {
-        // console.log("incomingSub", event);
-        // For incoming messages, the author is the sender
-        const senderPubkey = event.pubkey;
-        // console.log("senderPubkey", senderPubkey);
+        // // console.log("incomingSub", event);
+        // // For incoming messages, the author is the sender
+        // const senderPubkey = event.pubkey;
+        // // console.log("senderPubkey", senderPubkey);
 
-        if (senderPubkey) {
-          // addMessageToConversation(event, senderPubkey, privateKey);
-          addMessageToConversation(event, privateKey);
-        }
+        // if (senderPubkey) {
+        //   // addMessageToConversation(event, senderPubkey, privateKey);
+        //   addMessageToConversation(event, privateKey);
+        // }
+        addMessageToConversation(event, privateKey);
       });
 
       // Handle EOSE (End of Stored Events)
@@ -135,7 +146,7 @@ export default function useNip04Chat() {
     }
   };
 
-  const sendMessage = async (_recipient: Recipient, message: string) => {
+  const sendMessage = async (message: string) => {
     if (!currentUser) {
       return;
     }
@@ -145,29 +156,28 @@ export default function useNip04Chat() {
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
 
-      let recipient: Recipient;
-      // THIS IS NEEDED!!! Do not remove it.
-      // You can only send events if you use the REAL public key.
-      if (_recipient.publicKey.startsWith("npub")) {
-        const { data: publicKey } = nip19.decode(_recipient.publicKey);
-        recipient = { publicKey: publicKey as string };
-        // recipient = { publicKey: publicKey as string };
-      } else {
-        recipient = _recipient;
-        // recipient = _recipient;
-      }
+      const events = recipients.map((recipient) => {
+        // Create a new DM event
+        const event = new NDKEvent(getNDK().getInstance());
+        event.kind = NDKKind.EncryptedDirectMessage;
+        // event.content = content;
+        event.content = nip04.encrypt(
+          privateKey!,
+          recipient.publicKey,
+          message
+        );
+        event.tags = [["p", recipient.publicKey]];
 
-      // Create a new DM event
-      const event = new NDKEvent(getNDK().getInstance());
-      event.kind = NDKKind.EncryptedDirectMessage;
-      // event.content = content;
-      event.content = nip04.encrypt(privateKey!, recipient.publicKey, message);
-      event.tags = [["p", recipient.publicKey]];
+        return event;
+      });
 
-      // Publish the event
-      console.log("Sending event...");
-      await event.publish();
-      console.log("Event sent");
+      await Promise.allSettled(
+        events.map(async (event, index) => {
+          console.log(`Publishing event ${index + 1} of ${events.length}`);
+          await event.publish();
+          console.log(`Published event ${index + 1} of ${events.length}`);
+        })
+      );
     } catch (error) {
       console.error("Error sending direct message:", error);
       throw error;
@@ -185,7 +195,7 @@ export default function useNip04Chat() {
 
   return {
     isLoading,
-    messages: sortedMessagesByUser,
+    messages: getMessages(chatKey),
     sendMessage,
     getConversationMessagesWebhook,
     chat: null,

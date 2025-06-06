@@ -27,19 +27,11 @@ export default function useNip17Chat(_recipients: string | string[]) {
   const { dTag, recipients } = useMemo(() => {
     const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
 
-    let pubKeys: string[] = [];
-
-    if (Array.isArray(recipients)) {
-      pubKeys = recipients.map((r) => {
-        const { data: publicKey } = nip19.decode(r);
-        return publicKey as string;
-      });
-    } else {
-      const { data: publicKey } = nip19.decode(recipients);
-      pubKeys = [publicKey as string];
-    }
-
-    const { tag: dTag, recipients: dRecipients } = createMessageTag(pubKeys);
+    const {
+      tag: dTag,
+      recipients: dRecipients,
+      recipientsPublicKeys: pubKeys,
+    } = createMessageTag(recipients);
 
     return {
       dTag,
@@ -239,7 +231,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
   };
 
   const sendMessage = async (
-    _recipient: Recipient,
     message: string,
     conversationTitle?: string,
     replyTo?: ReplyTo

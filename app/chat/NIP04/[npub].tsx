@@ -21,14 +21,14 @@ export default function NIP17ChatPage() {
   const router = useRouter();
   const currentUser = useNDKCurrentUser();
   const { messages, getConversationMessagesWebhook, sendMessage, isLoading } =
-    useNip04Chat();
+    useNip04Chat([npub as string]);
 
   const handleSendMessage = async (newMessage: string) => {
     if (!newMessage.trim() || !currentUser) {
       return;
     }
 
-    await sendMessage({ publicKey: `${npub}` }, newMessage);
+    await sendMessage(newMessage);
   };
 
   const handleBackToList = () => {
@@ -40,7 +40,7 @@ export default function NIP17ChatPage() {
   };
 
   useEffect(() => {
-    getConversationMessagesWebhook(`${npub}`);
+    getConversationMessagesWebhook();
   }, [npub]);
 
   return (
