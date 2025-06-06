@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/Button";
-import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Fragment, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { Button } from "@/components/ui/Button";
+import { Colors } from "@/constants/Colors";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;

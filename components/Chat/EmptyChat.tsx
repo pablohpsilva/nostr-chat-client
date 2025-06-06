@@ -1,6 +1,7 @@
-import { TypographyBodyL } from "@/components/ui/Typography";
 import { StyleSheet, View } from "react-native";
-import { Button } from "../ui/Button";
+
+import { Button } from "@/components/ui/Button";
+import { TypographyBodyL } from "@/components/ui/Typography";
 
 export interface EmptyChatProps {
   onBackClick?: () => void;

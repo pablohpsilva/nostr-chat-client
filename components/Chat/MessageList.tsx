@@ -3,8 +3,8 @@ import { useNDKCurrentUser } from "@nostr-dev-kit/ndk-hooks";
 import { useEffect, useRef } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { Button } from "../ui/Button";
-import ChatMessage from "./ChatMessage";
+import ChatMessage from "@/components/Chat/ChatMessage";
+import { Button } from "@/components/ui/Button";
 
 interface MessageListProps {
   messages: NDKEvent[];
@@ -26,15 +26,17 @@ const MessageList = ({
   };
 
   useEffect(() => {
-    if (messages.length === 0) return;
+    if (messages.length === 0) {
+      return;
+    }
 
     const latestMessage = messages[messages.length - 1];
     const latestTimestamp = latestMessage.created_at || 0;
-    const isFromCurrentUser = latestMessage.pubkey === currentUser?.pubkey;
+    // const isFromCurrentUser = latestMessage.pubkey === currentUser?.pubkey;
 
     if (
-      latestTimestamp > lastMessageTimestampRef.current &&
-      isFromCurrentUser
+      latestTimestamp > lastMessageTimestampRef.current
+      // && isFromCurrentUser
     ) {
       lastMessageTimestampRef.current = latestTimestamp;
       scrollToBottom();
