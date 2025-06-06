@@ -7,12 +7,14 @@ import { TypographyOverline } from "../Typography";
 
 interface TextFieldProps extends TextInputProps {
   label: string;
+  width?: string;
 }
 
 export function TextField({
   label,
   onFocus,
   onBlur,
+  width,
   ...props
 }: TextFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
@@ -28,7 +30,7 @@ export function TextField({
   };
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, width && { width }]}>
       <TypographyOverline style={styles.label}>{label}</TypographyOverline>
       <TextInput
         style={[

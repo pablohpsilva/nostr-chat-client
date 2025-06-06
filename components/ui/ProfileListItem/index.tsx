@@ -1,10 +1,11 @@
-import { fillRoute, ROUTES } from "@/constants/routes";
-import { formatPublicKey } from "@/lib/utils";
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { Colors } from "@/constants/Colors";
-import { Link } from "expo-router";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { fillRoute, ROUTES } from "@/constants/routes";
+import { formatPublicKey } from "@/lib/utils";
+import Tag from "../Tag";
 import { TypographyBodyL, TypographyCaptionXS } from "../Typography";
 
 interface ProfileListItemProps {
@@ -39,23 +40,12 @@ export default function ProfileListItem({
               </TypographyBodyL>
 
               <View style={styles.nipContainer}>
-                <Text
-                  style={[
-                    styles.nipTag,
-                    {
-                      borderColor:
-                        tag === "NIP17"
-                          ? Colors.dark.primary
-                          : Colors.dark.danger,
-                      backgroundColor:
-                        tag === "NIP17"
-                          ? Colors.dark.primary
-                          : Colors.dark.danger,
-                    },
-                  ]}
-                >
-                  {tag}
-                </Text>
+                <Tag
+                  tag={tag}
+                  color={
+                    tag === "NIP17" ? Colors.dark.primary : Colors.dark.danger
+                  }
+                />
                 {tag && tag === "NIP04" && (
                   <TypographyCaptionXS>Not safe</TypographyCaptionXS>
                 )}
