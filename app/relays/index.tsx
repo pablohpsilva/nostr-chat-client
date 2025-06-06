@@ -23,12 +23,12 @@ import {
   TypographyTitle,
 } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
+import { ROUTES } from "@/constants/routes";
 import { useRelayStore } from "@/store/relay";
 
 export default function RelayManagementScreen() {
   const router = useRouter();
   const [newRelayUrl, setNewRelayUrl] = useState("");
-
   const {
     isLoading,
     isSaving,
@@ -42,6 +42,9 @@ export default function RelayManagementScreen() {
     getActiveRelayCount,
     getTotalRelayCount,
   } = useRelayStore();
+  const relayEntries = getSortedRelays();
+  const activeRelayCount = getActiveRelayCount();
+  const totalRelayCount = getTotalRelayCount();
 
   // Handle adding new relay with validation and alerts
   const handleAddRelay = useCallback(async () => {
@@ -55,7 +58,10 @@ export default function RelayManagementScreen() {
 
     if (success) {
       setNewRelayUrl("");
-    } else if (error) {
+      return;
+    }
+
+    if (error) {
       Alert.alert("Error", error);
     }
   }, [newRelayUrl, addRelay, error, clearError]);
@@ -71,16 +77,17 @@ export default function RelayManagementScreen() {
         if (window.confirm("Are you sure you want to remove this relay?")) {
           confirmAction();
         }
-      } else {
-        Alert.alert(
-          "Remove Relay",
-          "Are you sure you want to remove this relay?",
-          [
-            { text: "Cancel", style: "cancel" },
-            { text: "Remove", style: "destructive", onPress: confirmAction },
-          ]
-        );
+        return;
       }
+
+      Alert.alert(
+        "Remove Relay",
+        "Are you sure you want to remove this relay?",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Remove", style: "destructive", onPress: confirmAction },
+        ]
+      );
     },
     [removeRelay]
   );
@@ -111,9 +118,14 @@ export default function RelayManagementScreen() {
     }
   }, [resetToDefaults]);
 
-  const relayEntries = getSortedRelays();
-  const activeRelayCount = getActiveRelayCount();
-  const totalRelayCount = getTotalRelayCount();
+  const handleBackButton = () => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(ROUTES.CHAT);
+  };
 
   useEffect(() => {
     loadRelays();
@@ -125,10 +137,7 @@ export default function RelayManagementScreen() {
       <StatusBar style="light" />
 
       <SafeAreaView edges={["top"]} style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={handleBackButton}>
           <Ionicons name="arrow-back" size={24} color={Colors.dark.white} />
         </TouchableOpacity>
         <H4>Relays</H4>
