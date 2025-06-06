@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
+  Alert,
   Modal,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -29,18 +31,37 @@ export default function SettingsModal({
   const logout = useNDKSessionLogout();
   const router = useRouter();
 
+  const handleLogout = () => {
+    handleCloseOverlay();
+    logout();
+    wipeCleanMessages();
+    wipeCleanChatRooms();
+    router.replace(ROUTES.LOGIN);
+  };
+
   const handleOnClickLogout = () => {
-    if (
-      window.confirm(
-        "Logging out will wipe clean your device's data. Are you sure you want to continue?"
-      )
-    ) {
-      handleCloseOverlay();
-      logout();
-      wipeCleanMessages();
-      wipeCleanChatRooms();
-      router.replace(ROUTES.LOGIN);
+    if (Platform.OS === "web") {
+      if (
+        window.confirm(
+          "Logging out will wipe clean your device's data. Are you sure you want to continue?"
+        )
+      ) {
+        handleLogout();
+      }
+      return;
     }
+    return Alert.alert(
+      "Log out?",
+      "Logging out will wipe clean your device's data. Are you sure you want to continue?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Yes",
+          style: "destructive",
+          onPress: handleLogout,
+        },
+      ]
+    );
   };
 
   const handleScroll = (event: any) => {
@@ -91,7 +112,11 @@ export default function SettingsModal({
             >
               <TypographyBodyL>💬 FAQ and Features</TypographyBodyL>
             </Link>
-            <Link href="#" onPress={toBeImplemented} style={styles.menuItem}>
+            <Link
+              href={ROUTES.RELAYS}
+              onPress={handleCloseOverlay}
+              style={styles.menuItem}
+            >
               <TypographyBodyL>🔗 Relays</TypographyBodyL>
             </Link>
             <Link href="#" onPress={toBeImplemented} style={styles.menuItem}>
