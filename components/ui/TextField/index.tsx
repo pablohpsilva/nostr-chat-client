@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { StyleSheet, TextInput, TextInputProps } from "react-native";
+import {
+  DimensionValue,
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+} from "react-native";
 
 import { Colors } from "@/constants/Colors";
 import { View } from "react-native";
@@ -7,14 +12,14 @@ import { TypographyOverline } from "../Typography";
 
 interface TextFieldProps extends TextInputProps {
   label: string;
-  width?: string;
+  width?: DimensionValue;
 }
 
 export function TextField({
   label,
   onFocus,
   onBlur,
-  width,
+  width = "auto",
   ...props
 }: TextFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
@@ -30,14 +35,14 @@ export function TextField({
   };
 
   return (
-    <View style={[styles.wrapper, width && { width }]}>
+    <View style={[styles.wrapper, width !== "auto" && { width }]}>
       <TypographyOverline style={styles.label}>{label}</TypographyOverline>
       <TextInput
         style={[
           styles.input,
           { borderColor: isFocused ? Colors.dark.lime : Colors.dark.purple },
         ]}
-        placeholderTextColor={Colors.dark.white}
+        placeholderTextColor={Colors.dark.deactive}
         onFocus={handleFocus}
         onBlur={handleBlur}
         {...props}
@@ -52,6 +57,8 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     gap: 8,
+    overflow: "hidden",
+    outlineColor: "transparent",
   },
   label: {
     textTransform: "uppercase",
@@ -59,6 +66,7 @@ const styles = StyleSheet.create({
   },
   input: {
     paddingVertical: 8,
+    borderTopWidth: 0,
     borderBottomWidth: 2,
     borderStyle: "solid",
     backgroundColor: "transparent",
