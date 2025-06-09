@@ -1,9 +1,19 @@
 import { NDKKind } from "@nostr-dev-kit/ndk";
 import { Fragment, useEffect } from "react";
-import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
 import ProfileListItem from "@/components/ui/ProfileListItem";
-import { TypographyBodyS } from "@/components/ui/Typography";
+import {
+  TypographyBodyS,
+  TypographyOverline,
+} from "@/components/ui/Typography";
+import { Colors } from "@/constants/Colors";
 import useNip04Profiles from "@/hooks/useNip04Profiles";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
 import { useProfileStore } from "@/store/profiles";
@@ -50,61 +60,79 @@ export default function List(props: ListProps) {
         />
       }
     >
-      {!hasConversations && (
+      {/* {!hasConversations && (
         <View style={styles.centerContainer}>
           <TypographyBodyS style={styles.emptyText}>
             No conversations yet
           </TypographyBodyS>
         </View>
-      )}
+      )} */}
 
       <View>
+        <View style={styles.chatHeader}>
+          <TypographyOverline
+            lightColor={Colors.dark.deactive}
+            darkColor={Colors.dark.deactive}
+          >
+            NIP17 - Private Messages
+          </TypographyOverline>
+
+          {isLoadingNip17UserProfiles && <ActivityIndicator size="small" />}
+        </View>
         <Fragment>
-          {hasPrivateChats &&
-            Object.values(nip17UserProfiles).map(
-              ({ npub, pubkey, displayName, picture, created_at }, index) => (
-                <ProfileListItem
-                  key={`${pubkey}-${npub}-${index}-${created_at}`}
-                  {...{
-                    npub,
-                    displayName,
-                    picture,
-                    tag: "NIP17",
-                  }}
-                />
-              )
-            )}
-
-          {isLoadingNip17UserProfiles && (
-            <View style={styles.centerContainer}>
-              <TypographyBodyS style={styles.emptyText}>
-                Loading NIP17 messages
-              </TypographyBodyS>
-            </View>
+          {Object.values(nip17UserProfiles).map(
+            ({ npub, pubkey, displayName, picture, created_at }, index) => (
+              <ProfileListItem
+                key={`${pubkey}-${npub}-${index}-${created_at}`}
+                {...{
+                  npub,
+                  displayName,
+                  picture,
+                  tag: "NIP17",
+                }}
+              />
+            )
           )}
-
-          {hasPublicChats &&
-            Object.values(nip04UserProfiles).map(
-              ({ npub, displayName, picture, created_at }, index) => (
-                <ProfileListItem
-                  key={`${npub}-${npub}-${index}-${created_at}`}
-                  {...{
-                    npub,
-                    displayName,
-                    picture,
-                    tag: "NIP04",
-                  }}
-                />
-              )
-            )}
-          {isLoadingNip04UserProfiles && (
-            <View style={styles.centerContainer}>
+          {!hasPrivateChats && !isLoadingNip17UserProfiles && (
+            <View style={styles.chatHeader}>
               <TypographyBodyS style={styles.emptyText}>
-                Loading NIP04 messages
+                No conversations yet
               </TypographyBodyS>
             </View>
           )}
         </Fragment>
+
+        <View style={styles.chatHeader}>
+          <TypographyOverline
+            lightColor={Colors.dark.deactive}
+            darkColor={Colors.dark.deactive}
+          >
+            NIP04 - Unsafe Chats
+          </TypographyOverline>
+
+          {isLoadingNip04UserProfiles && <ActivityIndicator size="small" />}
+        </View>
+        {Object.values(nip04UserProfiles).map(
+          ({ npub, displayName, picture, created_at }, index) => (
+            <ProfileListItem
+              key={`${npub}-${npub}-${index}-${created_at}`}
+              {...{
+                npub,
+                displayName,
+                picture,
+                tag: "NIP04",
+              }}
+            />
+          )
+        )}
+
+        {!hasPublicChats && !isLoadingNip04UserProfiles && (
+          <View style={styles.chatHeader}>
+            <TypographyBodyS style={styles.emptyText}>
+              No conversations yet
+            </TypographyBodyS>
+          </View>
+        )}
       </View>
 
       {/* {isLoading ? (
@@ -146,5 +174,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: "#666",
+  },
+  chatHeader: {
+    padding: 8,
+    marginTop: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });
