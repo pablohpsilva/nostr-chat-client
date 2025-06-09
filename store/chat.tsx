@@ -2,6 +2,11 @@ import { nip17 } from "nostr-tools";
 import { create } from "zustand";
 
 import { removeDuplicateEventsViaId } from "@/hooks/useTag";
+import {
+  getStoredData,
+  removeStoredData,
+  setStoredData,
+} from "@/utils/storage";
 
 /**
  * Chat Store with automatic 10-day message loading
@@ -47,6 +52,21 @@ interface ChatData {
   lastFetched?: number; // When we last fetched messages
 }
 
+const CHAT_STORAGE_KEY = "nostream-chat-data";
+
+// Helper function to convert Map to object for storage
+const mapToObject = (map: Map<string, ChatData>): Record<string, ChatData> => {
+  return Object.fromEntries(map);
+};
+
+// Helper function to convert object back to Map
+const objectToMap = (
+  obj: Record<string, ChatData> | null
+): Map<string, ChatData> => {
+  if (!obj) return new Map();
+  return new Map(Object.entries(obj));
+};
+
 interface ChatStore {
   // Storage for multiple chats: chatKey -> chat data
   chats: Map<string, ChatData>;
@@ -54,7 +74,14 @@ interface ChatStore {
   // Current active chat
   currentChatKey: string;
 
+  // Loading states
+  isLoading: boolean;
+  isSaving: boolean;
+  error: string | null;
+
   // Actions
+  loadChats: () => Promise<void>;
+  saveChats: () => Promise<void>;
   setMessages: (chatKey: string, messages: ChatMessages) => void;
   addMessage: (
     chatKey: string,
@@ -66,7 +93,8 @@ interface ChatStore {
   clearMessages: (chatKey: string) => void;
   setCurrentChat: (chatKey: string) => void;
   getCurrentMessages: () => ChatMessages;
-  wipeCleanMessages: () => void;
+  wipeCleanMessages: () => Promise<void>;
+  clearError: () => void;
 
   // Time range management
   getTimeRange: (chatKey: string) => {
@@ -91,6 +119,46 @@ interface ChatStore {
 export const useChatStore = create<ChatStore>((set, get) => ({
   chats: new Map(),
   currentChatKey: "",
+  isLoading: false,
+  isSaving: false,
+  error: null,
+
+  // Storage actions
+  loadChats: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const storedChats = await getStoredData<Record<string, ChatData> | null>(
+        CHAT_STORAGE_KEY,
+        null
+      );
+      const chatsMap = objectToMap(storedChats);
+      set({ chats: chatsMap });
+    } catch (error) {
+      console.error("Error loading chats:", error);
+      set({ error: "Failed to load chat data" });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  saveChats: async () => {
+    set({ isSaving: true, error: null });
+    try {
+      const { chats } = get();
+      const chatsObject = mapToObject(chats);
+      await setStoredData(CHAT_STORAGE_KEY, chatsObject);
+    } catch (error) {
+      console.error("Error saving chats:", error);
+      set({ error: "Failed to save chat data" });
+      throw error;
+    } finally {
+      set({ isSaving: false });
+    }
+  },
+
+  clearError: () => {
+    set({ error: null });
+  },
 
   setMessages: (chatKey: string, messages: ChatMessages) =>
     set((state) => {
@@ -113,6 +181,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         until,
         lastFetched: Math.floor(Date.now() / 1000),
       });
+
+      // Auto-save after updating
+      setTimeout(() => get().saveChats(), 0);
+
       return { ...state, chats: newChats };
     }),
 
@@ -147,6 +219,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         since: newSince,
         until: newUntil,
       });
+
+      // Auto-save after updating
+      setTimeout(() => get().saveChats(), 0);
+
       return { ...state, chats: newChats };
     }),
 
@@ -182,6 +258,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         since: newSince,
         until: newUntil,
       });
+
+      // Auto-save after updating
+      setTimeout(() => get().saveChats(), 0);
+
       return { ...state, chats: newChats };
     }),
 
@@ -198,15 +278,25 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     set((state) => {
       const newChats = new Map(state.chats);
       newChats.set(chatKey, { messages: [] });
+
+      // Auto-save after updating
+      setTimeout(() => get().saveChats(), 0);
+
       return { chats: newChats };
     }),
 
-  wipeCleanMessages: () =>
-    set((state) => {
-      const newChats = new Map(state.chats);
-      newChats.clear();
-      return { chats: newChats };
-    }),
+  wipeCleanMessages: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      await removeStoredData(CHAT_STORAGE_KEY);
+      set({ chats: new Map(), currentChatKey: "" });
+    } catch (error) {
+      console.error("Error wiping chat data:", error);
+      set({ error: "Failed to clear chat data" });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
   setCurrentChat: (chatKey: string) => set({ currentChatKey: chatKey }),
 

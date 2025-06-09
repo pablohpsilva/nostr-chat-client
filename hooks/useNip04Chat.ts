@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getNDK } from "@/components/NDKHeadless";
 import { useChatStore } from "@/store/chat";
-import useTag from "./useTag";
+import { createMessageTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
 let incomingSub: NDKSubscription;
@@ -19,7 +19,6 @@ let incomingSub: NDKSubscription;
 export default function useNip04Chat(_recipients: string | string[]) {
   const currentUser = useNDKCurrentUser();
   const [isLoading, setLoading] = useState(false);
-  const { createMessageTag } = useTag();
   const debouncedMessageCache = useRef<any[]>([]);
   const debounceTimer = useRef<number>(0);
   const { recipients, chatKey, pubKeys } = useMemo(() => {

@@ -13,7 +13,7 @@ import { getNDK } from "@/components/NDKHeadless";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/lib/nip17";
 import { useChatStore } from "@/store/chat";
-import useTag from "./useTag";
+import { createMessageTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
 
@@ -21,7 +21,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
   const currentUser = useNDKCurrentUser();
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [isLoading, setLoading] = useState(false);
-  const { createMessageTag } = useTag();
   const debouncedMessageCache = useRef<any[]>([]);
   const debounceTimer = useRef<number>(0);
   const { dTag, recipients } = useMemo(() => {

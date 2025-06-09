@@ -14,20 +14,31 @@ import { ChatRoom, Recipient } from "@/constants/types";
 import { wrapEvent } from "@/lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
 import useNip17Profiles from "./useNip17Profiles";
-import useTag from "./useTag";
+import {
+  createChatTag,
+  normalizeRecipients,
+  normalizeRecipientsNPub,
+} from "./useTag";
 
 let sub: NDKSubscription | null = null;
 
 export default function useNip04ChatRooms(recipientPrivateKey?: Uint8Array) {
-  const { createChatTag, normalizeRecipients, normalizeRecipientsNPub } =
-    useTag();
-  const {
-    loadAndUpdateProfiles,
-    profiles,
-    isLoading: isLoadingProfiles,
-  } = useNip17Profiles();
+  const { loadAndUpdateProfiles, isLoading: isLoadingProfiles } =
+    useNip17Profiles();
   const [isLoading, setLoading] = useState(false);
-  const { chatRooms: chatRoomMap, setChatRooms } = useChatListStore();
+  const {
+    chatRooms: chatRoomMap,
+    setChatRooms,
+    isLoading: isChatListLoading,
+    isSaving: isChatListSaving,
+    error: chatListError,
+    loadChatRooms: loadStoredChatRooms,
+    saveChatRooms: saveStoredChatRooms,
+    removeChatRoom,
+    clearChatRoom,
+    wipeCleanChatRooms,
+    clearError: clearChatListError,
+  } = useChatListStore();
   const chatRooms = useMemo(
     () => Array.from(chatRoomMap.values()),
     [chatRoomMap.values()]
@@ -247,9 +258,18 @@ export default function useNip04ChatRooms(recipientPrivateKey?: Uint8Array) {
     isLoading,
     isLoadingProfiles,
     chatRooms,
-    profiles,
     loadChatRooms,
     asyncLoadChatRooms,
     storeChatRoom,
+    // Chatlist store functionality
+    isChatListLoading,
+    isChatListSaving,
+    chatListError,
+    loadStoredChatRooms,
+    saveStoredChatRooms,
+    removeChatRoom,
+    clearChatRoom,
+    wipeCleanChatRooms,
+    clearChatListError,
   };
 }
