@@ -23,8 +23,11 @@ import {
 let sub: NDKSubscription | null = null;
 
 export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
-  const { loadAndUpdateProfiles, isLoading: isLoadingProfiles } =
-    useNip17Profiles();
+  const {
+    loadAndUpdateProfiles,
+    isLoading: isLoadingProfiles,
+    getChatRoomList,
+  } = useNip17Profiles();
   const [isLoading, setLoading] = useState(false);
   const {
     chatRooms: chatRoomMap,
@@ -55,6 +58,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
       | Recipient[],
     _currentUserPublicKey?: string
   ) => {
+    debugger;
     const ndk = getNDK().getInstance();
 
     // @ts-expect-error
@@ -73,6 +77,14 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
     }
 
     const _recipients = normalizeRecipients(possibleRecipients);
+
+    debugger;
+
+    if (_recipients.length === 0) {
+      console.log(new Error("No recipients found"));
+      return [];
+    }
+
     const recipients = _recipients.map((r) => r.publicKey);
     const recipientsNPubkeys = normalizeRecipientsNPub(possibleRecipients);
     const chatRoomMapKey = recipients.join(",");
@@ -255,6 +267,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
   }, []);
 
   return {
+    profiles: getChatRoomList().nip17,
     isLoading,
     isLoadingProfiles,
     chatRooms,

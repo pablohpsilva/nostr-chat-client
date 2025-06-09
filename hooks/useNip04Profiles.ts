@@ -10,7 +10,7 @@ import { removeDuplicatesByKey } from "./useTag";
 export default function useNip14Profiles() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setProfilesFromArray } = useProfileStore();
+  const { setProfilesFromArray, getChatRoomList } = useProfileStore();
 
   const getUserProfilesFromChats = async (): Promise<AppUserProfile[]> => {
     try {
@@ -91,6 +91,7 @@ export default function useNip14Profiles() {
   };
 
   return {
+    profiles: getChatRoomList().nip04,
     getUserProfilesFromChats,
     isLoading,
     error,

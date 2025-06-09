@@ -1,4 +1,3 @@
-import { NDKKind } from "@nostr-dev-kit/ndk";
 import { Fragment, useEffect } from "react";
 import {
   ActivityIndicator,
@@ -16,25 +15,19 @@ import {
 import { Colors } from "@/constants/Colors";
 import useNip04Profiles from "@/hooks/useNip04Profiles";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
-import { useProfileStore } from "@/store/profiles";
-
-interface ListProps {
-  onChatClick?: (kind: `NIP${NDKKind}`, pubkey: string) => void;
-}
 
 export default function List() {
   const {
     getUserProfilesFromChats: getNip04UserProfilesFromChats,
     isLoading: isLoadingNip04UserProfiles,
+    profiles: nip04UserProfiles,
   } = useNip04Profiles();
   const {
     loadChatRooms: getNip17UserProfilesFromChats,
     isLoading: isLoadingNip17UserProfiles,
     isLoadingProfiles,
+    profiles: nip17UserProfiles,
   } = useNip17StoreProfile();
-  const { getChatRoomList } = useProfileStore();
-  const { nip04: nip04UserProfiles, nip17: nip17UserProfiles } =
-    getChatRoomList();
   const isLoading =
     isLoadingNip17UserProfiles ||
     isLoadingNip04UserProfiles ||

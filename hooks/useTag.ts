@@ -1,11 +1,7 @@
 import { nip19 } from "nostr-tools";
 
 import { getNDK } from "@/components/NDKHeadless";
-import {
-  NIP17PossiblePublicKey,
-  NIP17PossiblePublicKeys,
-  Recipient,
-} from "@/constants/types";
+import { NIP17PossiblePublicKeys, Recipient } from "@/constants/types";
 import { generateUniqueDTag } from "@/lib/generateUniqueDTag";
 
 /**
@@ -86,16 +82,15 @@ export function normalizeRecipients(
       }
 
       return r;
-    })
+    }),
+    "publicKey"
   );
 
   if (!ignoreCurrentUser) {
-    return (
-      removeDuplicatesByKey(
-        result.concat({
-          publicKey: getNDK().getInstance().activeUser?.pubkey!,
-        })
-      ),
+    return removeDuplicatesByKey(
+      result.concat({
+        publicKey: getNDK().getInstance().activeUser?.pubkey!,
+      }),
       "publicKey"
     );
   }

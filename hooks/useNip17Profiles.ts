@@ -9,7 +9,11 @@ import { removeDuplicatesByKey } from "./useTag";
 
 export default function useNip17Profiles() {
   const [isLoading, setLoading] = useState(false);
-  const { profiles: profilesMap, setProfilesFromArray } = useProfileStore();
+  const {
+    profiles: profilesMap,
+    setProfilesFromArray,
+    getChatRoomList,
+  } = useProfileStore();
 
   const loadProfile = async (pubkeys: string[] | nip19.NPub[]) => {
     const ndk = getNDK().getInstance();
@@ -70,6 +74,7 @@ export default function useNip17Profiles() {
     loadProfile,
     handleUpdateProfiles,
     loadAndUpdateProfiles,
+    getChatRoomList,
     isLoading,
   };
 }
