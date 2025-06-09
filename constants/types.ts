@@ -1,5 +1,6 @@
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
+// import { RESULTS } from "react-native-permissions";
 
 export type Platform = "web" | "ios" | "android";
 
@@ -145,3 +146,14 @@ export type NIP17PossiblePublicKeys =
   | Recipient[];
 
 export type NIP17PossiblePublicKey = string | nip19.NPub | Recipient;
+
+export type TUsePermissionsReturnType = {
+  isError?: boolean;
+  type: (typeof RESULTS)[keyof typeof RESULTS];
+  errorMessage?: string;
+};
+
+export interface ICameraScannerProps {
+  setIsCameraShown: (value: boolean) => void;
+  onReadCode: (value: string) => void;
+}

@@ -160,7 +160,11 @@ export const buttonTextStyles = (variant: string, size: string) => {
   return { ...baseTextStyle, color: "#ffffff" };
 };
 
-export const buttonStyles = (variant: string, size: string) => {
+export const buttonStyles = (
+  variant: string,
+  size: string,
+  hasIcon: boolean
+) => {
   const sizeStyle =
     elementStyleSheet[`size-${size}` as keyof typeof elementStyleSheet];
 
@@ -185,6 +189,7 @@ export const buttonStyles = (variant: string, size: string) => {
       ...viewStyle,
       ...sizeStyle,
       ...shadowStyle,
+      ...(hasIcon && { gap: 8, flexDirection: "row", alignItems: "center" }),
     };
   }
 
@@ -193,5 +198,6 @@ export const buttonStyles = (variant: string, size: string) => {
   return {
     ...roundedViewStyle,
     ...sizeStyle,
+    ...(hasIcon && { gap: 8, flexDirection: "row", alignItems: "center" }),
   };
 };

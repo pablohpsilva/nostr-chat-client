@@ -1,3 +1,9 @@
+import Ionicons from "@expo/vector-icons/build/Ionicons";
+import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { Link } from "expo-router";
+import { Fragment, useEffect, useState } from "react";
+import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
+
 import { getNDK } from "@/components/NDKHeadless";
 import {
   TypographyBodyS,
@@ -6,11 +12,6 @@ import {
 } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
-import Ionicons from "@expo/vector-icons/build/Ionicons";
-import { NDKUserProfile } from "@nostr-dev-kit/ndk";
-import { Link } from "expo-router";
-import { Fragment, useEffect, useState } from "react";
-import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 
 const formatPubkey = (pubkey: string) => {
   return `${pubkey.substring(0, 8)}...${pubkey.substring(pubkey.length - 8)}`;

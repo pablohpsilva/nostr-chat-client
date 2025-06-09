@@ -128,7 +128,11 @@ export default function SettingsModal({
             <Link href="#" onPress={toBeImplemented} style={styles.menuItem}>
               <TypographyBodyL>🔒 Privacy</TypographyBodyL>
             </Link>
-            <Link href="#" onPress={toBeImplemented} style={styles.menuItem}>
+            <Link
+              href={ROUTES.KEYS}
+              onPress={handleCloseOverlay}
+              style={styles.menuItem}
+            >
               <TypographyBodyL>🔑 Keys</TypographyBodyL>
             </Link>
           </View>

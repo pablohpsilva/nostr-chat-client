@@ -6,6 +6,8 @@ import { buttonStyles, buttonTextStyles } from "./styles";
 
 export type ButtonProps = TouchableOpacityProps & {
   children: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  leftIcon?: React.ReactNode;
   variant?:
     | "rounded"
     | "text-primary"
@@ -24,9 +26,14 @@ export function Button({
   children,
   variant = "rounded",
   size = "medium",
+  leftIcon,
+  rightIcon,
   ...props
 }: ButtonProps) {
-  const style = useMemo(() => buttonStyles(variant, size), [variant, size]);
+  const style = useMemo(
+    () => buttonStyles(variant, size, Boolean(leftIcon || rightIcon)),
+    [variant, size]
+  );
 
   const textStyle = useMemo(() => {
     return buttonTextStyles(variant, size);
@@ -34,6 +41,7 @@ export function Button({
 
   return (
     <TouchableOpacity style={style} {...props}>
+      {leftIcon}
       {typeof children === "string" ? (
         <TypographyButtonS style={textStyle} selectable={false}>
           {children}
@@ -41,6 +49,7 @@ export function Button({
       ) : (
         children
       )}
+      {rightIcon}
     </TouchableOpacity>
   );
 }
