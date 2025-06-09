@@ -68,6 +68,7 @@ export default function RootLayout() {
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="chatlist" options={{ headerShown: false }} />
         <Stack.Screen name="relays" options={{ headerShown: false }} />
+        <Stack.Screen name="keys" options={{ headerShown: false }} />
         <Stack.Screen
           name="chat/NIP17/[npub]"
           options={{ headerShown: false }}

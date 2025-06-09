@@ -6,12 +6,13 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/Colors";
+import AddUserModal from "./components/AddUserModal";
 import List from "./components/List";
-import Search from "./components/Search";
 import SettingsModal from "./components/SettingsModal";
 
 export default function ChatListPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
 
   return (
     <Fragment>
@@ -32,11 +33,11 @@ export default function ChatListPage() {
               />
             </TouchableOpacity>
 
-            <Search />
+            {/* <Search /> */}
 
             <TouchableOpacity
               style={styles.menuButton}
-              onPress={() => alert("Soon... :)")}
+              onPress={() => setIsAddUserModalOpen(true)}
             >
               <Ionicons
                 name="add-outline"
@@ -52,6 +53,11 @@ export default function ChatListPage() {
         <SettingsModal
           isOverlayOpen={isSettingsModalOpen}
           handleCloseOverlay={() => setIsSettingsModalOpen(false)}
+        />
+
+        <AddUserModal
+          isOverlayOpen={isAddUserModalOpen}
+          handleCloseOverlay={() => setIsAddUserModalOpen(false)}
         />
       </View>
     </Fragment>

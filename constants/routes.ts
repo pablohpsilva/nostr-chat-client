@@ -5,6 +5,7 @@ export const ROUTES = {
   LOGIN: "/login",
   FEATURES: "/features",
   RELAYS: "/relays",
+  KEYS: "/keys",
 };
 
 export const fillRoute = (
