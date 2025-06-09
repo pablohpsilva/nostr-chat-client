@@ -22,7 +22,7 @@ interface ListProps {
   onChatClick?: (kind: `NIP${NDKKind}`, pubkey: string) => void;
 }
 
-export default function List(props: ListProps) {
+export default function List() {
   const {
     getUserProfilesFromChats: getNip04UserProfilesFromChats,
     isLoading: isLoadingNip04UserProfiles,
@@ -41,33 +41,23 @@ export default function List(props: ListProps) {
     isLoadingProfiles;
   const hasPrivateChats = Object.keys(nip17UserProfiles).length > 0;
   const hasPublicChats = Object.keys(nip04UserProfiles).length > 0;
-  const hasConversations = hasPrivateChats || hasPublicChats;
 
-  useEffect(() => {
+  const onRefresh = () => {
     getNip17UserProfilesFromChats();
     getNip04UserProfilesFromChats();
+  };
+
+  useEffect(() => {
+    onRefresh();
   }, []);
 
   return (
     <ScrollView
       contentContainerStyle={styles.scrollContent}
       refreshControl={
-        <RefreshControl
-          refreshing={isLoading}
-          onRefresh={() => {
-            getNip17UserProfilesFromChats();
-          }}
-        />
+        <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
       }
     >
-      {/* {!hasConversations && (
-        <View style={styles.centerContainer}>
-          <TypographyBodyS style={styles.emptyText}>
-            No conversations yet
-          </TypographyBodyS>
-        </View>
-      )} */}
-
       <View>
         <View style={styles.chatHeader}>
           <TypographyOverline
@@ -94,9 +84,9 @@ export default function List(props: ListProps) {
             )
           )}
           {!hasPrivateChats && !isLoadingNip17UserProfiles && (
-            <View style={styles.chatHeader}>
+            <View style={styles.chatHeaderPlaceholder}>
               <TypographyBodyS style={styles.emptyText}>
-                No conversations yet
+                No NIP17 conversations yet or not found
               </TypographyBodyS>
             </View>
           )}
@@ -127,9 +117,9 @@ export default function List(props: ListProps) {
         )}
 
         {!hasPublicChats && !isLoadingNip04UserProfiles && (
-          <View style={styles.chatHeader}>
+          <View style={styles.chatHeaderPlaceholder}>
             <TypographyBodyS style={styles.emptyText}>
-              No conversations yet
+              No NIP04 conversations yet or not found
             </TypographyBodyS>
           </View>
         )}
@@ -178,6 +168,13 @@ const styles = StyleSheet.create({
   chatHeader: {
     padding: 8,
     marginTop: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  chatHeaderPlaceholder: {
+    padding: 8,
+    marginTop: 8,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
