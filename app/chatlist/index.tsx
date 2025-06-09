@@ -6,13 +6,13 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Colors } from "@/constants/Colors";
-import AddUserModal from "./components/AddUserModal";
+import AddContactModal from "./components/AddContactModal";
 import List from "./components/List";
 import SettingsModal from "./components/SettingsModal";
 
 export default function ChatListPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [isAddContactModalOpen, setIsAddContactModalOpen] = useState(false);
 
   return (
     <Fragment>
@@ -37,7 +37,7 @@ export default function ChatListPage() {
 
             <TouchableOpacity
               style={styles.menuButton}
-              onPress={() => setIsAddUserModalOpen(true)}
+              onPress={() => setIsAddContactModalOpen(true)}
             >
               <Ionicons
                 name="add-outline"
@@ -55,9 +55,9 @@ export default function ChatListPage() {
           handleCloseOverlay={() => setIsSettingsModalOpen(false)}
         />
 
-        <AddUserModal
-          isOverlayOpen={isAddUserModalOpen}
-          handleCloseOverlay={() => setIsAddUserModalOpen(false)}
+        <AddContactModal
+          isOverlayOpen={isAddContactModalOpen}
+          handleCloseOverlay={() => setIsAddContactModalOpen(false)}
         />
       </View>
     </Fragment>

@@ -4,16 +4,16 @@ import { Alert, Modal, StyleSheet, TouchableOpacity, View } from "react-native";
 import { RESULTS } from "react-native-permissions";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { CameraScanner } from "@/components/CameraScanner";
-import { goToSettings } from "@/components/CameraScanner/helpers";
 import { Button } from "@/components/ui/Button";
+import { CameraScanner } from "@/components/ui/CameraScanner";
+import { goToSettings } from "@/components/ui/CameraScanner/helpers";
 import { TextField } from "@/components/ui/TextField";
 import { H4, TypographyBodyL } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
 import SearchStartChat from "./SearchStartChat";
 
-export default function AddUserModal({
+export default function AddContactModal({
   isOverlayOpen,
   handleCloseOverlay,
 }: {
