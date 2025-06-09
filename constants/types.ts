@@ -1,6 +1,6 @@
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
-// import { RESULTS } from "react-native-permissions";
+import { RESULTS } from "react-native-permissions";
 
 export type Platform = "web" | "ios" | "android";
 
