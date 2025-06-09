@@ -149,6 +149,9 @@ importers:
       react-native-get-random-values:
         specifier: 1.9.0
         version: 1.9.0(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))
+      react-native-hole-view:
+        specifier: ^3.0.1
+        version: 3.0.1(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0)
       react-native-markdown-display:
         specifier: ^7.0.2
         version: 7.0.2(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0)
@@ -170,6 +173,9 @@ importers:
       react-native-svg:
         specifier: ^15.12.0
         version: 15.12.0(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0)
+      react-native-vision-camera:
+        specifier: ^4.6.4
+        version: 4.6.4(react-native-reanimated@3.17.5(@babel/core@7.27.4)(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0)
       react-native-web:
         specifier: ~0.20.0
         version: 0.20.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -3830,6 +3836,12 @@ packages:
     peerDependencies:
       react-native: '>=0.56'
 
+  react-native-hole-view@3.0.1:
+    resolution: {integrity: sha512-EU5wAikG8ixRxH9YewwO3XM3vEBjVoz0cfeeYG2WxSZXEt2qVj2pVm+Shr3pOBWjTSflIlaAyYoS1ybTGCNX7Q==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+
   react-native-is-edge-to-edge@1.1.7:
     resolution: {integrity: sha512-EH6i7E8epJGIcu7KpfXYXiV2JFIYITtq+rVS8uEb+92naMRBdxhTuS8Wn2Q7j9sqyO0B+Xbaaf9VdipIAmGW4w==}
     peerDependencies:
@@ -3879,6 +3891,22 @@ packages:
     peerDependencies:
       react: '*'
       react-native: '*'
+
+  react-native-vision-camera@4.6.4:
+    resolution: {integrity: sha512-d998uTHsGJ9bTlsClgT37RK1sK7ZQekv5y6ylynds3vmdK6YbFQJUoi2cvMrFN4dp9qvSlCjEfwekjMIz3guQA==}
+    peerDependencies:
+      '@shopify/react-native-skia': '*'
+      react: '*'
+      react-native: '*'
+      react-native-reanimated: '*'
+      react-native-worklets-core: '*'
+    peerDependenciesMeta:
+      '@shopify/react-native-skia':
+        optional: true
+      react-native-reanimated:
+        optional: true
+      react-native-worklets-core:
+        optional: true
 
   react-native-web@0.20.0:
     resolution: {integrity: sha512-OOSgrw+aON6R3hRosCau/xVxdLzbjEcsLysYedka0ZON4ZZe6n9xgeN9ZkoejhARM36oTlUgHIQqxGutEJ9Wxg==}
@@ -9306,6 +9334,11 @@ snapshots:
       fast-base64-decode: 1.0.0
       react-native: 0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0)
 
+  react-native-hole-view@3.0.1(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+      react-native: 0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0)
+
   react-native-is-edge-to-edge@1.1.7(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
@@ -9366,6 +9399,13 @@ snapshots:
       react: 19.0.0
       react-native: 0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0)
       warn-once: 0.1.1
+
+  react-native-vision-camera@4.6.4(react-native-reanimated@3.17.5(@babel/core@7.27.4)(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+      react-native: 0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0)
+    optionalDependencies:
+      react-native-reanimated: 3.17.5(@babel/core@7.27.4)(react-native@0.79.2(@babel/core@7.27.4)(@types/react@19.1.6)(react@19.0.0))(react@19.0.0)
 
   react-native-web@0.20.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:

@@ -1,24 +1,67 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Modal, SafeAreaView, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  Modal,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from "react-native";
 
+import { Colors } from "@/constants/Colors";
 import { ICameraScannerProps } from "@/constants/types";
 import { useAppStateListener } from "@/hooks/useAppStateListener";
 import { useIsFocused } from "@react-navigation/native";
-import { RNHoleView } from "react-native-hole-view";
-import {
-  Camera,
-  CameraRuntimeError,
-  useCameraDevice,
-  useCodeScanner,
-} from "react-native-vision-camera";
+// import { RNHoleView } from "react-native-hole-view";
+import { TypographyBodyL } from "../Typography";
+
+// Conditionally import VisionCamera only on native platforms
+let Camera: any = null;
+let useCameraDevice: any = () => null;
+let useCodeScanner: any = () => ({});
+let RNHoleView: any = null;
+
+if (Platform.OS !== "web") {
+  const VisionCamera = require("react-native-vision-camera");
+  Camera = VisionCamera.Camera;
+  useCameraDevice = VisionCamera.useCameraDevice;
+  useCodeScanner = VisionCamera.useCodeScanner;
+  const { RNHoleView: _RNHoleView } = require("react-native-vision-camera");
+  RNHoleView = _RNHoleView;
+}
+
 import { getWindowHeight, getWindowWidth, isIos } from "./helpers";
 
 export const CameraScanner = ({
   setIsCameraShown,
   onReadCode,
 }: ICameraScannerProps) => {
+  // If on web, show a message and return early
+  if (Platform.OS === "web") {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <Modal presentationStyle="fullScreen" animationType="slide">
+          <View style={styles.webFallback}>
+            <TypographyBodyL style={styles.webFallbackText}>
+              Camera scanning is not available on web.
+            </TypographyBodyL>
+            <TypographyBodyL
+              style={[
+                styles.webFallbackText,
+                { marginTop: 20, textDecorationLine: "underline" },
+              ]}
+              onPress={() => setIsCameraShown(false)}
+            >
+              Go Back
+            </TypographyBodyL>
+          </View>
+        </Modal>
+      </SafeAreaView>
+    );
+  }
+
   const device = useCameraDevice("back");
-  const camera = useRef<Camera>(null);
+  const camera = useRef<any>(null);
   const isFocused = useIsFocused();
   const [isCameraInitialized, setIsCameraInitialized] = useState(isIos);
   const [isActive, setIsActive] = useState(isIos);
@@ -53,7 +96,7 @@ export const CameraScanner = ({
 
   const codeScanner = useCodeScanner({
     codeTypes: ["qr"],
-    onCodeScanned: (codes) => {
+    onCodeScanned: (codes: any) => {
       if (codes.length > 0) {
         if (codes[0].value) {
           setIsActive(false);
@@ -68,7 +111,7 @@ export const CameraScanner = ({
     setIsCameraShown(false);
   };
 
-  const onError = (error: CameraRuntimeError) => {
+  const onError = (error: any) => {
     Alert.alert("Error!", error.message);
   };
 
@@ -76,7 +119,7 @@ export const CameraScanner = ({
     Alert.alert("Error!", "Camera could not be started");
   }
 
-  if (isFocused && device) {
+  if (isFocused && device && Camera) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <Modal presentationStyle="fullScreen" animationType="slide">
@@ -115,6 +158,8 @@ export const CameraScanner = ({
       </SafeAreaView>
     );
   }
+
+  return null;
 };
 
 const styles = StyleSheet.create({
@@ -157,5 +202,16 @@ const styles = StyleSheet.create({
     borderRadius: 45,
     alignItems: "center",
     justifyContent: "center",
+  },
+  webFallback: {
+    flex: 1,
+    backgroundColor: Colors.dark.backgroundPrimary,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  webFallbackText: {
+    color: Colors.dark.white,
+    textAlign: "center",
   },
 });
