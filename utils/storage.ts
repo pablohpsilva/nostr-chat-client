@@ -137,7 +137,18 @@ export async function getStoredData<T>(
 
 export async function setStoredData<T>(key: string, data: T): Promise<void> {
   try {
-    await storage.setItem(key, JSON.stringify(data));
+    // Handle circular references by using a replacer function
+    const seen = new WeakSet();
+    const json = JSON.stringify(data, (key, value) => {
+      if (typeof value === "object" && value !== null) {
+        if (seen.has(value)) {
+          return "[Circular Reference]";
+        }
+        seen.add(value);
+      }
+      return value;
+    });
+    await storage.setItem(key, json);
   } catch (error) {
     console.warn(`Failed to store data for key ${key}:`, error);
     throw error;
