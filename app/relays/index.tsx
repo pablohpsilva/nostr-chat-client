@@ -119,11 +119,6 @@ export default function RelayManagementScreen() {
   }, [resetToDefaults]);
 
   const handleBackButton = () => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-
     router.replace(ROUTES.CHAT);
   };
 

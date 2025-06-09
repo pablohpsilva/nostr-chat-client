@@ -1,7 +1,6 @@
 import { Link, Stack, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Fragment } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/ui/Button";
@@ -23,7 +22,7 @@ export default function HomeScreen() {
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar style="light" />
+      <StatusBar barStyle="light-content" />
 
       <View style={styles.container}>
         <View style={{ minHeight: 100 }} />

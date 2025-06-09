@@ -23,6 +23,7 @@ import {
   TypographyBodyS,
 } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
+import { ROUTES } from "@/constants/routes";
 import {
   NDKPrivateKeySigner,
   useNDKCurrentUser,
@@ -100,11 +101,6 @@ export default function KeysScreen() {
   };
 
   const handleBackButton = () => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-
     router.replace(ROUTES.CHAT);
   };
 

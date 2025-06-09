@@ -1,16 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Fragment, useState } from "react";
-import { Alert, Modal, StyleSheet, TouchableOpacity, View } from "react-native";
-import { RESULTS } from "react-native-permissions";
+import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
+// import { RESULTS } from "react-native-permissions";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button } from "@/components/ui/Button";
-import { CameraScanner } from "@/components/ui/CameraScanner";
-import { goToSettings } from "@/components/ui/CameraScanner/helpers";
+// import { goToSettings } from "@/components/ui/CameraScanner/helpers";
 import { TextField } from "@/components/ui/TextField";
 import { H4, TypographyBodyL } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
-import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
+// import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
 import SearchStartChat from "./SearchStartChat";
 
 export default function AddContactModal({
@@ -20,51 +18,51 @@ export default function AddContactModal({
   isOverlayOpen: boolean;
   handleCloseOverlay: () => void;
 }) {
-  const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
+  // const { askPermissions } = usePermissions(EPermissionTypes.CAMERA);
   const [cameraShown, setCameraShown] = useState(false);
   const [qrText, setQrText] = useState("");
 
-  const takePermissions = async () => {
-    askPermissions()
-      .then((response) => {
-        //permission given for camera
-        if (
-          response.type === RESULTS.LIMITED ||
-          response.type === RESULTS.GRANTED
-        ) {
-          setCameraShown(true);
-        }
-      })
-      .catch((error) => {
-        if ("isError" in error && error.isError) {
-          Alert.alert(
-            error.errorMessage ||
-              "Something went wrong while taking camera permission"
-          );
-        }
-        if ("type" in error) {
-          if (error.type === RESULTS.UNAVAILABLE) {
-            Alert.alert("This feature is not supported on this device");
-          } else if (
-            error.type === RESULTS.BLOCKED ||
-            error.type === RESULTS.DENIED
-          ) {
-            Alert.alert(
-              "Permission Denied",
-              "Please give permission from settings to continue using camera.",
-              [
-                {
-                  text: "Cancel",
-                  onPress: () => console.log("Cancel Pressed"),
-                  style: "cancel",
-                },
-                { text: "Go To Settings", onPress: () => goToSettings() },
-              ]
-            );
-          }
-        }
-      });
-  };
+  // const takePermissions = async () => {
+  //   askPermissions()
+  //     .then((response) => {
+  //       //permission given for camera
+  //       if (
+  //         response.type === RESULTS.LIMITED ||
+  //         response.type === RESULTS.GRANTED
+  //       ) {
+  //         setCameraShown(true);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       if ("isError" in error && error.isError) {
+  //         Alert.alert(
+  //           error.errorMessage ||
+  //             "Something went wrong while taking camera permission"
+  //         );
+  //       }
+  //       if ("type" in error) {
+  //         if (error.type === RESULTS.UNAVAILABLE) {
+  //           Alert.alert("This feature is not supported on this device");
+  //         } else if (
+  //           error.type === RESULTS.BLOCKED ||
+  //           error.type === RESULTS.DENIED
+  //         ) {
+  //           Alert.alert(
+  //             "Permission Denied",
+  //             "Please give permission from settings to continue using camera.",
+  //             [
+  //               {
+  //                 text: "Cancel",
+  //                 onPress: () => console.log("Cancel Pressed"),
+  //                 style: "cancel",
+  //               },
+  //               { text: "Go To Settings", onPress: () => goToSettings() },
+  //             ]
+  //           );
+  //         }
+  //       }
+  //     });
+  // };
 
   const handleReadCode = (value: string) => {
     console.log(value);
@@ -72,14 +70,18 @@ export default function AddContactModal({
     setCameraShown(false);
   };
 
-  if (cameraShown) {
-    return (
-      <CameraScanner
-        setIsCameraShown={setCameraShown}
-        onReadCode={handleReadCode}
-      />
-    );
-  }
+  // if (cameraShown) {
+  //   return (
+  //     <CameraScanner
+  //       setIsCameraShown={setCameraShown}
+  //       onReadCode={handleReadCode}
+  //     />
+  //   );
+  // }
+
+  // useEffect(() => {
+  //   takePermissions();
+  // }, []);
 
   return (
     <Modal
@@ -110,7 +112,7 @@ export default function AddContactModal({
           />
         </View>
 
-        <View style={styles.searchResults}>
+        {/* <View style={styles.searchResults}>
           <Button
             variant="ghost-white"
             onPress={() => setCameraShown(true)}
@@ -124,7 +126,7 @@ export default function AddContactModal({
           >
             Scan QR Code
           </Button>
-        </View>
+        </View> */}
         {qrText && qrText.length > 60 && (
           <Fragment>
             <View>
