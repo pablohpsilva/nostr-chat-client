@@ -3,6 +3,11 @@ import { create } from "zustand";
 import { getNDK } from "@/components/NDKHeadless";
 import { DEFAULT_RELAYS } from "@/constants";
 import { RelayConfig, RelayDict } from "@/constants/types";
+import {
+  getStoredData,
+  removeStoredData,
+  setStoredData,
+} from "@/utils/storage";
 
 interface RelayStore {
   // State
@@ -20,7 +25,7 @@ interface RelayStore {
   resetToDefaults: () => Promise<void>;
   updateNDK: () => void;
   clearError: () => void;
-  wipeClean: () => void;
+  wipeClean: () => Promise<void>;
 
   // Computed
   getActiveRelays: () => RelayDict;
@@ -28,6 +33,8 @@ interface RelayStore {
   getTotalRelayCount: () => number;
   getSortedRelays: () => [string, RelayConfig][];
 }
+
+const STORAGE_KEY = "nostream-relay-config";
 
 const useRelayStore = create<RelayStore>()((set, get) => ({
   // Initial state
@@ -38,13 +45,28 @@ const useRelayStore = create<RelayStore>()((set, get) => ({
 
   // Actions
   loadRelays: async () => {
-    // No-op since we're not persisting data
-    set({ isLoading: false, error: null });
+    set({ isLoading: true, error: null });
+    try {
+      const storedRelays = await getStoredData<RelayDict>(
+        STORAGE_KEY,
+        DEFAULT_RELAYS
+      );
+      set({ relays: storedRelays });
+      get().updateNDK();
+    } catch (error) {
+      console.error("Error loading relays:", error);
+      set({ error: "Failed to load relays" });
+      // Fallback to defaults if loading fails
+      set({ relays: DEFAULT_RELAYS });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   saveRelays: async (relays: RelayDict) => {
     set({ isSaving: true, error: null });
     try {
+      await setStoredData(STORAGE_KEY, relays);
       set({ relays });
       get().updateNDK();
     } catch (error) {
@@ -151,8 +173,18 @@ const useRelayStore = create<RelayStore>()((set, get) => ({
     return Object.keys(get().relays).length;
   },
 
-  wipeClean: () => {
-    // No-op since we're not persisting data
+  wipeClean: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      await removeStoredData(STORAGE_KEY);
+      set({ relays: DEFAULT_RELAYS });
+      get().updateNDK();
+    } catch (error) {
+      console.error("Error wiping relay data:", error);
+      set({ error: "Failed to clear relay data" });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 }));
 
