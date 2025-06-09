@@ -1,5 +1,5 @@
 import { NDKKind } from "@nostr-dev-kit/ndk";
-import { Fragment, useEffect, useMemo } from "react";
+import { Fragment, useEffect } from "react";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -10,7 +10,7 @@ import {
 
 import ProfileListItem from "@/components/ui/ProfileListItem";
 import { TypographyBodyS } from "@/components/ui/Typography";
-import useNip14Profiles from "@/hooks/useNip04Profiles";
+import useNip04Profiles from "@/hooks/useNip04Profiles";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
 import { useProfileStore } from "@/store/profiles";
 
@@ -22,16 +22,15 @@ export default function List(props: ListProps) {
   const {
     getUserProfilesFromChats: getNip04UserProfilesFromChats,
     isLoading: isLoadingNip04UserProfiles,
-  } = useNip14Profiles();
+  } = useNip04Profiles();
   const {
     loadChatRooms: getNip17UserProfilesFromChats,
     isLoading: isLoadingNip17UserProfiles,
     isLoadingProfiles,
   } = useNip17StoreProfile();
   const { profiles: userProfiles, getChatRoomList } = useProfileStore();
-  const { nip04: nip04UserProfiles, nip17: nip17UserProfiles } = useMemo(() => {
-    return getChatRoomList();
-  }, [userProfiles]);
+  const { nip04: nip04UserProfiles, nip17: nip17UserProfiles } =
+    getChatRoomList();
   const isLoading =
     isLoadingNip17UserProfiles ||
     isLoadingNip04UserProfiles ||

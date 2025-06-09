@@ -1,6 +1,55 @@
 import { create } from "zustand";
 
 import { AppUserProfile } from "@/constants/types";
+import { getStoredData, setStoredData } from "@/utils/storage";
+
+const PROFILES_STORAGE_KEY = "nostream-profiles-data";
+
+// Helper functions for converting between Map and Array for storage
+const mapToArray = (map: Map<string, AppUserProfile>): AppUserProfile[] => {
+  return Array.from(map.values());
+};
+
+const arrayToMap = (array: AppUserProfile[]): Map<string, AppUserProfile> => {
+  const map = new Map<string, AppUserProfile>();
+  array.forEach((profile) => {
+    map.set(profile.pubkey, profile);
+  });
+  return map;
+};
+
+// Load profiles from storage
+const loadProfiles = async (): Promise<Map<string, AppUserProfile>> => {
+  try {
+    const storedProfiles = await getStoredData<AppUserProfile[]>(
+      PROFILES_STORAGE_KEY,
+      []
+    );
+    return arrayToMap(storedProfiles);
+  } catch (error) {
+    console.warn("Failed to load profiles from storage:", error);
+    return new Map();
+  }
+};
+
+const mapToObject = (
+  map: Map<string, AppUserProfile>
+): Record<string, AppUserProfile> => {
+  return Object.fromEntries(map);
+};
+
+// Save profiles to storage
+const saveProfiles = async (
+  profiles: Map<string, AppUserProfile>
+): Promise<void> => {
+  try {
+    // const profilesArray = mapToArray(profiles);
+    const profilesObject = mapToObject(profiles);
+    await setStoredData(PROFILES_STORAGE_KEY, profilesObject);
+  } catch (error) {
+    console.warn("Failed to save profiles to storage:", error);
+  }
+};
 
 export const useProfileStore = create<{
   profiles: Map<string, AppUserProfile>;
@@ -13,6 +62,7 @@ export const useProfileStore = create<{
     nip04: AppUserProfile[];
     nip17: AppUserProfile[];
   };
+  loadProfilesFromStorage: () => Promise<void>;
 }>((set, get) => ({
   profiles: new Map(),
   getChatRoomList: () => {
@@ -29,12 +79,17 @@ export const useProfileStore = create<{
       { nip04: [] as AppUserProfile[], nip17: [] as AppUserProfile[] }
     );
   },
+  loadProfilesFromStorage: async () => {
+    const profiles = await loadProfiles();
+    set((state) => ({ ...state, profiles }));
+  },
   setProfiles: (profiles: Map<string, AppUserProfile>) =>
     set((state) => {
       const newProfiles = new Map(state.profiles);
       profiles.forEach((profile, pubkey) => {
         newProfiles.set(pubkey, profile);
       });
+      saveProfiles(newProfiles); // Persist to storage
       return { ...state, profiles: newProfiles };
     }),
   setProfilesFromArray: (profiles: AppUserProfile[]) =>
@@ -45,23 +100,30 @@ export const useProfileStore = create<{
         _profiles.set(profile.pubkey, profile);
       });
 
+      saveProfiles(_profiles); // Persist to storage
       return { ...state, profiles: _profiles };
     }),
   addProfile: (profile: AppUserProfile) =>
     set((state) => {
       const newProfiles = new Map(state.profiles);
       newProfiles.set(profile.pubkey, profile);
+      saveProfiles(newProfiles); // Persist to storage
       return { ...state, profiles: newProfiles };
     }),
   removeProfile: (pubkey: string) =>
     set((state) => {
       const newProfiles = new Map(state.profiles);
       newProfiles.delete(pubkey);
+      saveProfiles(newProfiles); // Persist to storage
       return { ...state, profiles: newProfiles };
     }),
   clearProfiles: () =>
-    set((state) => ({
-      ...state,
-      profiles: new Map(),
-    })),
+    set((state) => {
+      const newProfiles = new Map();
+      saveProfiles(newProfiles); // Persist to storage
+      return { ...state, profiles: newProfiles };
+    }),
 }));
+
+// Initialize profiles from storage when the store is created
+useProfileStore.getState().loadProfilesFromStorage();

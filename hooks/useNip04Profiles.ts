@@ -5,6 +5,7 @@ import { useState } from "react";
 import { getNDK } from "@/components/NDKHeadless";
 import { AppUserProfile } from "@/constants/types";
 import { useProfileStore } from "@/store/profiles";
+import { removeDuplicatesByKey } from "./useTag";
 
 export default function useNip14Profiles() {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,10 +31,13 @@ export default function useNip14Profiles() {
       let filter: NDKFilter = {
         kinds: [NDKKind.EncryptedDirectMessage],
         "#p": [user.pubkey],
-        limit: 10,
       };
 
-      const events = Array.from(await ndk.fetchEvents(filter)) as Event[];
+      const _events = Array.from(await ndk.fetchEvents(filter)) as Event[];
+      const events = removeDuplicatesByKey(
+        _events.filter((event) => event.pubkey !== currentUserPublicKey),
+        "pubkey"
+      );
 
       const profilePromises = events.map(async (rumor) => {
         const npub = nip19.npubEncode(rumor.pubkey);
@@ -55,11 +59,8 @@ export default function useNip14Profiles() {
       //   const _profiles: NIP04UserProfile[] = profileResults
       const profiles: AppUserProfile[] = Array.from(
         profileResults
-          .filter(
-            (result): result is PromiseFulfilledResult<AppUserProfile> =>
-              result.status === "fulfilled"
-          )
-          .map((result) => result.value)
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value as AppUserProfile)
           // Remove duplicates by creating a Map keyed by npub
           .reduce((unique, profile) => {
             if (
@@ -74,6 +75,8 @@ export default function useNip14Profiles() {
           // Convert Map back to array
           .values()
       );
+
+      console.log("profiles", profiles);
 
       setProfilesFromArray(profiles);
 

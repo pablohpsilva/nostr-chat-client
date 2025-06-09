@@ -9,22 +9,28 @@ import {
 import { generateUniqueDTag } from "@/lib/generateUniqueDTag";
 
 /**
- * This function will remove duplicates from an array.
- * It will also normalize the recipients.
+ * Generic function to remove duplicates from an array based on a key.
+ * It handles both primitive values and objects with specified key properties.
  *
- * @param value - The array to remove duplicates from.
- * @returns The array with duplicates removed.
+ * @param array - The array to remove duplicates from
+ * @param keyProp - The property name to use as unique key (e.g. 'publicKey', 'pubkey', 'id')
+ * @returns Array with duplicates removed
  */
-export function removeDuplicates<T extends NIP17PossiblePublicKey>(
-  value: T[]
-): T[] {
+export function removeDuplicatesByKey<T>(array: T[], keyProp?: string): T[] {
   const seen = new Set<string>();
-  return value.filter((item) => {
+
+  return array.filter((item) => {
     let key: string;
     if (typeof item === "string") {
       key = item;
-    } else if (typeof item === "object" && "publicKey" in item) {
-      key = item.publicKey;
+    } else if (
+      typeof item === "object" &&
+      item !== null &&
+      keyProp &&
+      keyProp in item
+    ) {
+      // @ts-expect-error - We know the key exists due to the check above
+      key = String(item[keyProp]);
     } else {
       key = String(item);
     }
@@ -37,28 +43,11 @@ export function removeDuplicates<T extends NIP17PossiblePublicKey>(
   });
 }
 
-export function removeDuplicateEventsViaId<T extends { id: string | number }>(
-  value: T[]
-): T[] {
-  const seen = new Set<string>();
-  return value.filter((item) => {
-    let key: string;
-    if (typeof item === "string") {
-      key = item;
-    } else if (typeof item === "object" && "id" in item) {
-      // @ts-expect-error
-      key = item.id;
-    } else {
-      key = String(item);
-    }
-
-    if (seen.has(key)) {
-      return false;
-    }
-    seen.add(key);
-    return true;
-  });
-}
+// Example usage:
+// removeDuplicatesByKey(items) // For primitive arrays
+// removeDuplicatesByKey(items, 'publicKey') // For objects with publicKey
+// removeDuplicatesByKey(items, 'pubkey') // For objects with pubkey
+// removeDuplicatesByKey(items, 'id') // For objects with id
 
 /**
  * This function will normalize the recipients.
@@ -80,7 +69,7 @@ export function normalizeRecipients(
     ? possiblePublicKeys
     : [possiblePublicKeys];
 
-  const result = removeDuplicates(
+  const result = removeDuplicatesByKey(
     recipients.map((r) => {
       if (typeof r === "string") {
         if (r.startsWith("npub")) {
@@ -101,10 +90,13 @@ export function normalizeRecipients(
   );
 
   if (!ignoreCurrentUser) {
-    return removeDuplicates(
-      result.concat({
-        publicKey: getNDK().getInstance().activeUser?.pubkey!,
-      })
+    return (
+      removeDuplicatesByKey(
+        result.concat({
+          publicKey: getNDK().getInstance().activeUser?.pubkey!,
+        })
+      ),
+      "publicKey"
     );
   }
 
@@ -123,7 +115,7 @@ export function normalizeRecipientsNPub(
     ? possiblePublicKeys
     : [possiblePublicKeys];
 
-  const result = removeDuplicates(
+  const result = removeDuplicatesByKey(
     recipients.map((r) => {
       if (typeof r === "string") {
         if (r.startsWith("npub")) {
@@ -133,14 +125,16 @@ export function normalizeRecipientsNPub(
         return nip19.npubEncode(r);
       }
       return nip19.npubEncode(r.publicKey) as nip19.NPub;
-    })
+    }),
+    "publicKey"
   );
 
   if (!ignoreCurrentUser) {
-    return removeDuplicates(
+    return removeDuplicatesByKey(
       result.concat(
         nip19.npubEncode(getNDK().getInstance().activeUser?.pubkey!)
-      )
+      ),
+      "publicKey"
     );
   }
 

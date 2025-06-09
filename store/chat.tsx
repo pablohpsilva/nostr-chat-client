@@ -1,7 +1,7 @@
 import { nip17 } from "nostr-tools";
 import { create } from "zustand";
 
-import { removeDuplicateEventsViaId } from "@/hooks/useTag";
+import { removeDuplicatesByKey } from "@/hooks/useTag";
 import {
   getStoredData,
   removeStoredData,
@@ -195,10 +195,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     set((state) => {
       const newChats = new Map(state.chats);
       const existingChatData = newChats.get(chatKey) || { messages: [] };
-      const updatedMessages = removeDuplicateEventsViaId([
-        ...existingChatData.messages,
-        message,
-      ]);
+      const updatedMessages = removeDuplicatesByKey(
+        [...existingChatData.messages, message],
+        "id"
+      );
       const sortedMessages = updatedMessages.sort(
         (a, b) => a.created_at - b.created_at
       );
@@ -231,7 +231,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       const newChats = new Map(state.chats);
       const existingChatData = newChats.get(chatKey) || { messages: [] };
       const allMessages = [...existingChatData.messages, ...messages];
-      const deduplicatedMessages = removeDuplicateEventsViaId(allMessages);
+      const deduplicatedMessages = removeDuplicatesByKey(allMessages, "id");
       const sortedMessages = deduplicatedMessages.sort(
         (a, b) => a.created_at - b.created_at
       );
