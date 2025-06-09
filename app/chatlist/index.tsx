@@ -47,7 +47,7 @@ export default function ChatListPage() {
           </View>
         </SafeAreaView>
 
-        <List onChatClick={() => {}} />
+        <List />
 
         <SettingsModal
           isOverlayOpen={isSettingsModalOpen}
