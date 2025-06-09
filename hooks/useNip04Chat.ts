@@ -293,11 +293,12 @@ export default function useNip04Chat(_recipients: string | string[]) {
   }, []);
 
   return {
+    chat: null,
+    getConversationMessagesWebhook,
+    getHistoricalMessages,
     isLoading,
     messages: getMessages(chatKey),
     sendMessage,
-    getConversationMessagesWebhook,
-    getHistoricalMessages,
-    chat: null,
+    timeRange: getTimeRange(chatKey),
   };
 }

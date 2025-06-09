@@ -283,13 +283,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
   }, []);
 
   return {
+    chat: null,
+    getConversationMessages,
+    getConversationMessagesWebhook,
+    getHistoricalMessages,
     isLoading,
     isSendingMessage,
     messages: getMessages(dTag),
     sendMessage,
-    getHistoricalMessages,
-    getConversationMessages,
-    getConversationMessagesWebhook,
-    chat: null,
+    timeRange: getTimeRange(dTag),
   };
 }

@@ -1,25 +1,40 @@
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { useNDKCurrentUser } from "@nostr-dev-kit/ndk-hooks";
-import { useEffect, useRef } from "react";
+import dayjs from "dayjs";
+import { useEffect, useMemo, useRef } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import ChatMessage from "@/components/Chat/ChatMessage";
 import { Button } from "@/components/ui/Button";
+import { TimeRange } from "@/store/chat";
 
 interface MessageListProps {
   messages: NDKEvent[];
   isLoading?: boolean;
   loadPreviousMessages: () => void;
+  timeRange: TimeRange;
 }
 
 const MessageList = ({
   messages,
   isLoading = false,
   loadPreviousMessages,
+  timeRange,
 }: MessageListProps) => {
   const currentUser = useNDKCurrentUser();
   const scrollViewRef = useRef<ScrollView>(null);
   const lastMessageTimestampRef = useRef<number>(0);
+  const loadMoreText = useMemo(
+    () =>
+      isLoading
+        ? "Fetching and decrypting messages..."
+        : timeRange?.since
+        ? `Loaded since ${dayjs(timeRange.since * 1000).format(
+            "YYYY-MM-DD"
+          )}. Tap to load more.`
+        : "Tap to load messages",
+    [isLoading, timeRange?.since]
+  );
 
   const scrollToBottom = () => {
     scrollViewRef.current?.scrollToEnd({ animated: false });
@@ -55,9 +70,7 @@ const MessageList = ({
           variant="text-primary"
           onPress={loadPreviousMessages}
         >
-          {isLoading
-            ? "Fetching and decrypting messages..."
-            : "Load 10 days of messages"}
+          {loadMoreText}
         </Button>
       </View>
 

@@ -20,7 +20,7 @@ const EmptyChat = ({ isLoading, loadPreviousMessages }: EmptyChatProps) => {
         >
           {isLoading
             ? "Fetching and decrypting messages..."
-            : "Load 10 days of messages"}
+            : "Load 10 previous days of messages"}
         </Button>
       </View>
 

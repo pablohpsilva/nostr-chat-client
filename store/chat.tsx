@@ -67,6 +67,12 @@ const objectToMap = (
   return new Map(Object.entries(obj));
 };
 
+export type TimeRange = {
+  since?: number;
+  until?: number;
+  lastFetched: number;
+};
+
 interface ChatStore {
   // Storage for multiple chats: chatKey -> chat data
   chats: Map<string, ChatData>;
@@ -97,11 +103,7 @@ interface ChatStore {
   clearError: () => void;
 
   // Time range management
-  getTimeRange: (chatKey: string) => {
-    since?: number;
-    until?: number;
-    lastFetched: number;
-  };
+  getTimeRange: (chatKey: string) => TimeRange;
   getDefaultRange: () => { since: number; until: number };
   updateTimeRange: (chatKey: string, since?: number, until?: number) => void;
   shouldFetchRange: (

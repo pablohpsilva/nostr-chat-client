@@ -58,7 +58,6 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
       | Recipient[],
     _currentUserPublicKey?: string
   ) => {
-    debugger;
     const ndk = getNDK().getInstance();
 
     // @ts-expect-error
@@ -77,8 +76,6 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
     }
 
     const _recipients = normalizeRecipients(possibleRecipients);
-
-    debugger;
 
     if (_recipients.length === 0) {
       console.log(new Error("No recipients found"));

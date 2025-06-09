@@ -24,6 +24,7 @@ export default function NIP17ChatPage() {
     sendMessage,
     isLoading,
     isSendingMessage,
+    timeRange,
     getHistoricalMessages,
   } = useNip17Chat([npub as string]);
   const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
@@ -92,6 +93,7 @@ export default function NIP17ChatPage() {
               messages={messages as NDKEvent[]}
               isLoading={isLoading}
               loadPreviousMessages={getHistoricalMessages}
+              timeRange={timeRange}
             />
           )}
 

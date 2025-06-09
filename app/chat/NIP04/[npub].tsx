@@ -23,6 +23,7 @@ export default function NIP17ChatPage() {
     sendMessage,
     getHistoricalMessages,
     isLoading,
+    timeRange,
   } = useNip04Chat([npub as string]);
 
   const handleSendMessage = async (newMessage: string) => {
@@ -73,6 +74,7 @@ export default function NIP17ChatPage() {
               messages={messages as NDKEvent[]}
               isLoading={isLoading}
               loadPreviousMessages={getHistoricalMessages}
+              timeRange={timeRange}
             />
           )}
 
