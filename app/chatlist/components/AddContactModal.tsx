@@ -90,29 +90,30 @@ export default function AddContactModal({
       visible={isOverlayOpen}
       onRequestClose={handleCloseOverlay}
     >
-      <View style={styles.container}>
-        <SafeAreaView edges={["top"]} style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleCloseOverlay}
-          >
-            <Ionicons name="arrow-back" size={24} color={Colors.dark.white} />
-          </TouchableOpacity>
-          <H4>Add user</H4>
-        </SafeAreaView>
+      <SafeAreaView edges={["top"]} style={styles.modalSafeArea}>
+        <View style={styles.container}>
+          <View style={styles.searchHeader}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={handleCloseOverlay}
+            >
+              <Ionicons name="arrow-back" size={24} color={Colors.dark.white} />
+            </TouchableOpacity>
+            <H4>Add user</H4>
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TypographyBodyL>Enter pubkey or npub</TypographyBodyL>
-          <TextField
-            label="Enter pubkey or npub"
-            value={qrText}
-            onChangeText={setQrText}
-            placeholder="npub1..."
-            placeholderTextColor={Colors.dark.deactive}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TypographyBodyL>Enter pubkey or npub</TypographyBodyL>
+            <TextField
+              label="Enter pubkey or npub"
+              value={qrText}
+              onChangeText={setQrText}
+              placeholder="npub1..."
+              placeholderTextColor={Colors.dark.deactive}
+            />
+          </View>
 
-        {/* <View style={styles.searchResults}>
+          {/* <View style={styles.searchResults}>
           <Button
             variant="ghost-white"
             onPress={() => setCameraShown(true)}
@@ -127,15 +128,16 @@ export default function AddContactModal({
             Scan QR Code
           </Button>
         </View> */}
-        {qrText && qrText.length > 60 && (
-          <Fragment>
-            <View>
-              <TypographyBodyL>Results:</TypographyBodyL>
-            </View>
-            <SearchStartChat npub={qrText} onClose={handleCloseOverlay} />
-          </Fragment>
-        )}
-      </View>
+          {qrText && qrText.length > 60 && (
+            <Fragment>
+              <View>
+                <TypographyBodyL>Results:</TypographyBodyL>
+              </View>
+              <SearchStartChat npub={qrText} onClose={handleCloseOverlay} />
+            </Fragment>
+          )}
+        </View>
+      </SafeAreaView>
     </Modal>
   );
 }
@@ -145,13 +147,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.dark.backgroundPrimary,
   },
-  header: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    paddingBottom: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.light.backgroundPrimary,
+  modalSafeArea: {
+    flex: 1,
+    backgroundColor: Colors.dark.backgroundPrimary,
   },
   inputContainer: {
     padding: 16,
@@ -169,9 +167,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.dark.deactive,
-    backgroundColor: Colors.dark.backgroundSecondary,
+    marginTop: 16,
   },
   backButton: {
     marginRight: 16,
