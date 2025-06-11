@@ -5,6 +5,7 @@ import {
   Platform,
   SafeAreaView,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -12,7 +13,6 @@ import { Colors } from "@/constants/Colors";
 import { ICameraScannerProps } from "@/constants/types";
 import { useAppStateListener } from "@/hooks/useAppStateListener";
 import { useIsFocused } from "@react-navigation/native";
-// import { RNHoleView } from "react-native-hole-view";
 import { TypographyBodyL } from "../Typography";
 
 // Conditionally import VisionCamera only on native platforms
@@ -23,13 +23,14 @@ let RNHoleView: any = null;
 
 if (Platform.OS !== "web") {
   const VisionCamera = require("react-native-vision-camera");
+  const { RNHoleView: _RNHoleView } = require("react-native-hole-view");
   Camera = VisionCamera.Camera;
   useCameraDevice = VisionCamera.useCameraDevice;
   useCodeScanner = VisionCamera.useCodeScanner;
-  const { RNHoleView: _RNHoleView } = require("react-native-vision-camera");
   RNHoleView = _RNHoleView;
 }
 
+import { Ionicons } from "@expo/vector-icons";
 import { getWindowHeight, getWindowWidth, isIos } from "./helpers";
 
 export const CameraScanner = ({
@@ -69,6 +70,31 @@ export const CameraScanner = ({
   const { appState } = useAppStateListener();
   const [codeScanned, setCodeScanned] = useState("");
 
+  const onInitialized = () => {
+    setIsCameraInitialized(true);
+  };
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ["qr"],
+    onCodeScanned: (codes: any) => {
+      if (codes.length > 0) {
+        if (codes[0].value) {
+          setIsActive(false);
+          setTimeout(() => setCodeScanned(codes?.[0]?.value), 500);
+        }
+      }
+      return;
+    },
+  });
+
+  const onCrossClick = () => {
+    setIsCameraShown(false);
+  };
+
+  const onError = (error: any) => {
+    Alert.alert("Error!", error.message);
+  };
+
   useEffect(() => {
     if (codeScanned) {
       onReadCode(codeScanned);
@@ -90,31 +116,6 @@ export const CameraScanner = ({
     };
   }, [isCameraInitialized]);
 
-  const onInitialized = () => {
-    setIsCameraInitialized(true);
-  };
-
-  const codeScanner = useCodeScanner({
-    codeTypes: ["qr"],
-    onCodeScanned: (codes: any) => {
-      if (codes.length > 0) {
-        if (codes[0].value) {
-          setIsActive(false);
-          setTimeout(() => setCodeScanned(codes[0]?.value), 500);
-        }
-      }
-      return;
-    },
-  });
-
-  const onCrossClick = () => {
-    setIsCameraShown(false);
-  };
-
-  const onError = (error: any) => {
-    Alert.alert("Error!", error.message);
-  };
-
   if (device == null) {
     Alert.alert("Error!", "Camera could not be started");
   }
@@ -123,9 +124,11 @@ export const CameraScanner = ({
     return (
       <SafeAreaView style={styles.safeArea}>
         <Modal presentationStyle="fullScreen" animationType="slide">
-          <View
-            style={[styles.cameraControls, { backgroundColor: undefined }]}
-          />
+          <View style={[styles.cameraControls, { backgroundColor: undefined }]}>
+            <TouchableOpacity onPress={onCrossClick}>
+              <Ionicons name="close" size={24} color={Colors.dark.white} />
+            </TouchableOpacity>
+          </View>
           <Camera
             torch={flash}
             onInitialized={onInitialized}

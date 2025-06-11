@@ -1,6 +1,5 @@
 import { create } from "zustand";
 
-import { getNDK } from "@/components/NDKHeadless";
 import { DEFAULT_RELAYS } from "@/constants";
 import { RelayConfig, RelayDict } from "@/constants/types";
 import {
@@ -23,7 +22,7 @@ interface RelayStore {
   removeRelay: (url: string) => Promise<void>;
   toggleRelay: (url: string, type: "read" | "write") => Promise<void>;
   resetToDefaults: () => Promise<void>;
-  updateNDK: () => void;
+  // updateNDK: () => void;
   clearError: () => void;
   wipeClean: () => Promise<void>;
 
@@ -52,7 +51,7 @@ const useRelayStore = create<RelayStore>()((set, get) => ({
         DEFAULT_RELAYS
       );
       set({ relays: storedRelays });
-      get().updateNDK();
+      // get().updateNDK();
     } catch (error) {
       console.error("Error loading relays:", error);
       set({ error: "Failed to load relays" });
@@ -68,7 +67,7 @@ const useRelayStore = create<RelayStore>()((set, get) => ({
     try {
       await setStoredData(STORAGE_KEY, relays);
       set({ relays });
-      get().updateNDK();
+      // get().updateNDK();
     } catch (error) {
       console.error("Error saving relays:", error);
       set({ error: "Failed to save relays" });
@@ -140,10 +139,12 @@ const useRelayStore = create<RelayStore>()((set, get) => ({
     await get().saveRelays(DEFAULT_RELAYS);
   },
 
-  updateNDK: () => {
-    const activeRelays = get().getActiveRelays();
-    getNDK().setRelays(activeRelays);
-  },
+  // updateNDK: () => {
+  //   const activeRelays = get().getActiveRelays();
+  //   debugger;
+  //   getNDK().setRelays(activeRelays);
+  //   getNDK().getInstance().connect();
+  // },
 
   clearError: () => {
     set({ error: null });
@@ -178,7 +179,7 @@ const useRelayStore = create<RelayStore>()((set, get) => ({
     try {
       await removeStoredData(STORAGE_KEY);
       set({ relays: DEFAULT_RELAYS });
-      get().updateNDK();
+      // get().updateNDK();
     } catch (error) {
       console.error("Error wiping relay data:", error);
       set({ error: "Failed to clear relay data" });
