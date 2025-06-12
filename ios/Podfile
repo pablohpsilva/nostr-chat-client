@@ -10,7 +10,7 @@ ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWO
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
   :deterministic_uuids => false
-  
+
 prepare_react_native_project!
 
 target 'nostreamchatclient' do
@@ -61,44 +61,4 @@ target 'nostreamchatclient' do
       end
     end
   end
-
-  def node_require(script)
-    # Resolve script with node to allow for hoisting
-    require Pod::Executable.execute_command('node', ['-p',
-      "require.resolve(
-        '#{script}',
-        {paths: [process.argv[1]]},
-      )", __dir__]).strip
-  end
-
-  # Use it to require both react-native's and this package's scripts:
-  node_require('react-native/scripts/react_native_pods.rb')
-  node_require('react-native-permissions/scripts/setup.rb')
-
-  # ⬇️ uncomment the permissions you need
-  setup_permissions([
-    # 'AppTrackingTransparency',
-    # 'Bluetooth',
-    # 'Calendars',
-    # 'CalendarsWriteOnly',
-    'Camera',
-    # 'Contacts',
-    # 'FaceID',
-    # 'LocationAccuracy',
-    # 'LocationAlways',
-    # 'LocationWhenInUse',
-    # 'MediaLibrary',
-    'Microphone',
-    # 'Motion',
-    # 'Notifications',
-    'PhotoLibrary',
-    'PhotoLibraryAddOnly',
-    # 'Reminders',
-    # 'Siri',
-    # 'SpeechRecognition',
-    # 'StoreKit',
-  ])
-
-  # permissions_path = '../node_modules/react-native-permissions/ios'
-  # pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
 end

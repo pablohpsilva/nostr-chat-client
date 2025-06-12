@@ -2,11 +2,27 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "image": "latest",
+        "node": "20.12.2"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "image": "latest",
+        "node": "20.12.2"
+      }
     },
-    "production": {}
+    "production": {
+      "ios": {
+        "image": "latest",
+        "node": "20.12.2"
+      }
+    }
+  },
+  "cli": {
+    "version": ">= 12.0.0"
   }
 }
