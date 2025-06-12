@@ -16,15 +16,14 @@ export const ImportKeyForm: React.FC<ImportKeyFormProps> = ({
   handleLogin,
   onClickBack,
 }) => {
-  const [nsec, setNsec] = useState(
-    // User 1
-    // "60569c58045299f924661381db8c71eb19d5f8de52b99e102a066e0dd9e170d9"
-    // User 2
-    "97b05a0e944a3cddc6b9f89482e2638f32810cbeabd1235ec2c53dc3c676f8f0"
-    // "nsec1dwwauw7mvj8klywn5wcsep7hm29tyvfmmp3e55qanzr3s6g5y3hstpmts4"
-    // User 3
-    // "nsec1dwwauw7mvj8klywn5wcsep7hm29tyvfmmp3e55qanzr3s6g5y3hstpmts4"
-  );
+  const [nsec, setNsec] = useState<string>();
+  // User 1
+  // "60569c58045299f924661381db8c71eb19d5f8de52b99e102a066e0dd9e170d9"
+  // User 2
+  // "97b05a0e944a3cddc6b9f89482e2638f32810cbeabd1235ec2c53dc3c676f8f0"
+  // "nsec1dwwauw7mvj8klywn5wcsep7hm29tyvfmmp3e55qanzr3s6g5y3hstpmts4"
+  // User 3
+  // "nsec1dwwauw7mvj8klywn5wcsep7hm29tyvfmmp3e55qanzr3s6g5y3hstpmts4"
 
   const handleOnChangeNsec = (value: string) => {
     setNsec(value);
