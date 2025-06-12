@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Modal,
@@ -12,26 +14,23 @@ import {
 import { Colors } from "@/constants/Colors";
 import { ICameraScannerProps } from "@/constants/types";
 import { useAppStateListener } from "@/hooks/useAppStateListener";
-import { useIsFocused } from "@react-navigation/native";
 import { TypographyBodyL } from "../Typography";
+import { isIos } from "./helpers";
 
 // Conditionally import VisionCamera only on native platforms
 let Camera: any = null;
 let useCameraDevice: any = () => null;
 let useCodeScanner: any = () => ({});
-let RNHoleView: any = null;
+// let RNHoleView: any = null;
 
 if (Platform.OS !== "web") {
   const VisionCamera = require("react-native-vision-camera");
-  const { RNHoleView: _RNHoleView } = require("react-native-hole-view");
+  // const { RNHoleView: _RNHoleView } = require("react-native-hole-view");
   Camera = VisionCamera.Camera;
   useCameraDevice = VisionCamera.useCameraDevice;
   useCodeScanner = VisionCamera.useCodeScanner;
-  RNHoleView = _RNHoleView;
+  // RNHoleView = _RNHoleView;
 }
-
-import { Ionicons } from "@expo/vector-icons";
-import { getWindowHeight, getWindowWidth, isIos } from "./helpers";
 
 export const CameraScanner = ({
   setIsCameraShown,
@@ -145,7 +144,7 @@ export const CameraScanner = ({
               isCameraInitialized
             }
           />
-          <RNHoleView
+          {/* <RNHoleView
             holes={[
               {
                 x: getWindowWidth() * 0.1,
@@ -156,7 +155,7 @@ export const CameraScanner = ({
               },
             ]}
             style={[styles.rnholeView, styles.fullScreenCamera]}
-          />
+          /> */}
         </Modal>
       </SafeAreaView>
     );
