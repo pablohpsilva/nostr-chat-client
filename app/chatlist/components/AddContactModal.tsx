@@ -21,24 +21,24 @@ import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
 import { isValidNpubOrPublicKey } from "@/lib/utils";
 import SearchStartChat from "./SearchStartChat";
 
-// let CameraScanner: any = null;
-// if (Platform.OS !== "web" && process.env.NODE_ENV === "production") {
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   console.log("Platform.OS ", Platform.OS);
-//   const {
-//     CameraScanner: _CameraScanner,
-//   } = require("@/components/ui/CameraScanner");
-//   CameraScanner = _CameraScanner;
-// }
+let CameraScanner: any = null;
+if (Platform.OS !== "web" && process.env.NODE_ENV === "production") {
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  console.log("Platform.OS ", Platform.OS);
+  const {
+    CameraScanner: _CameraScanner,
+  } = require("@/components/ui/CameraScanner");
+  CameraScanner = _CameraScanner;
+}
 
 export default function AddContactModal({
   isOverlayOpen,
@@ -115,12 +115,12 @@ export default function AddContactModal({
     >
       <SafeAreaView edges={["top"]} style={styles.modalSafeArea}>
         {cameraShown ? (
-          // <CameraScanner
-          //   setIsCameraShown={setCameraShown}
-          //   onReadCode={handleReadCode}
-          // />
-          <View />
+          <CameraScanner
+            setIsCameraShown={setCameraShown}
+            onReadCode={handleReadCode}
+          />
         ) : (
+          // <View />
           <View style={styles.container}>
             <View style={styles.searchHeader}>
               <TouchableOpacity
