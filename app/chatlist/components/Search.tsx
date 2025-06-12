@@ -16,7 +16,7 @@ import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 
 import { TypographyBodyL } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
-import { isValidNpub } from "@/lib/utils";
+import { isValidNpub } from "@/interal-lib/utils";
 import SearchStartChat from "./SearchStartChat";
 
 // const formatPubkey = (pubkey: string) => {

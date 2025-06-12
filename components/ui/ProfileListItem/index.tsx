@@ -4,7 +4,7 @@ import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
-import { formatPublicKey } from "@/lib/utils";
+import { formatPublicKey } from "@/interal-lib/utils";
 import Tag from "../Tag";
 import { TypographyBodyL, TypographyCaptionXS } from "../Typography";
 

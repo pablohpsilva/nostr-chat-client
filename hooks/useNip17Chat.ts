@@ -9,10 +9,10 @@ import {
 import { Event, nip17 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { useChatStore } from "@/app-store/chat";
 import { getNDK } from "@/components/NDKHeadless";
 import { ReplyTo } from "@/constants/types";
-import { wrapManyEvents } from "@/lib/nip17";
-import { useChatStore } from "@/store/chat";
+import { wrapManyEvents } from "@/interal-lib/nip17";
 import { createMessageTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
-import { formatPubkey, isValidNpubOrPublicKey } from "@/lib/utils";
+import { formatPubkey, isValidNpubOrPublicKey } from "@/interal-lib/utils";
 
 export default function SearchStartChat({
   npub: _npub,

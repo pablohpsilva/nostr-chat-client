@@ -10,12 +10,12 @@ import {
   View,
 } from "react-native";
 
+import { useChatStore } from "@/app-store/chat";
+import { useChatListStore } from "@/app-store/chatlist";
 import { Button } from "@/components/ui/Button";
 import { TypographyBodyL, TypographyTitle } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
-import { useChatStore } from "@/store/chat";
-import { useChatListStore } from "@/store/chatlist";
 import { useNDKSessionLogout } from "@nostr-dev-kit/ndk-hooks";
 import { Link, useRouter } from "expo-router";
 

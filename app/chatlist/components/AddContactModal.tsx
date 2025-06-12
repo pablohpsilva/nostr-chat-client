@@ -18,7 +18,7 @@ import { Colors } from "@/constants/Colors";
 // import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
 import { Button } from "@/components/ui/Button";
 import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
-import { isValidNpubOrPublicKey } from "@/lib/utils";
+import { isValidNpubOrPublicKey } from "@/interal-lib/utils";
 import SearchStartChat from "./SearchStartChat";
 
 let CameraScanner: any = null;

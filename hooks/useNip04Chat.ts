@@ -9,8 +9,8 @@ import {
 import { nip04 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { useChatStore } from "@/app-store/chat";
 import { getNDK } from "@/components/NDKHeadless";
-import { useChatStore } from "@/store/chat";
 import { createMessageTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;

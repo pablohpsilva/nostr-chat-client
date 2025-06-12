@@ -4,9 +4,9 @@ import dayjs from "dayjs";
 import { useEffect, useMemo, useRef } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { TimeRange } from "@/app-store/chat";
 import ChatMessage from "@/components/Chat/ChatMessage";
 import { Button } from "@/components/ui/Button";
-import { TimeRange } from "@/store/chat";
 
 interface MessageListProps {
   messages: NDKEvent[];

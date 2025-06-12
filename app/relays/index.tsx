@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useRelayStore } from "@/app-store/relay";
 import { Button } from "@/components/ui/Button";
 import Tag from "@/components/ui/Tag";
 import { TextField } from "@/components/ui/TextField";
@@ -24,7 +25,6 @@ import {
 } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/routes";
-import { useRelayStore } from "@/store/relay";
 
 export default function RelayManagementScreen() {
   const router = useRouter();

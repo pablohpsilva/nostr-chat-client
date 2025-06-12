@@ -2,9 +2,9 @@ import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
 import { Event, nip19 } from "nostr-tools";
 import { useState } from "react";
 
+import { useProfileStore } from "@/app-store/profiles";
 import { getNDK } from "@/components/NDKHeadless";
 import { AppUserProfile } from "@/constants/types";
-import { useProfileStore } from "@/store/profiles";
 import { removeDuplicatesByKey } from "./useTag";
 
 export default function useNip14Profiles() {

@@ -9,10 +9,10 @@ import cloneDeep from "lodash.clonedeep";
 import { Event, nip17, nip19 } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 
+import { useChatListStore } from "@/app-store/chatlist";
 import { getNDK } from "@/components/NDKHeadless";
 import { ChatRoom, Recipient } from "@/constants/types";
-import { wrapEvent } from "@/lib/nip17";
-import { useChatListStore } from "@/store/chatlist";
+import { wrapEvent } from "@/interal-lib/nip17";
 import useNip17Profiles from "./useNip17Profiles";
 import {
   createChatTag,
