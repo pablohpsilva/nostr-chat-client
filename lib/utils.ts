@@ -139,3 +139,34 @@ export class Queue<V> {
 export const formatPublicKey = (value: string) => {
   return `${value.substring(0, 6)}...${value.substring(value.length - 4)}`;
 };
+
+export function isValidNpub(npub?: string) {
+  return npub && npub?.length >= 63 && npub?.startsWith?.("npub");
+}
+
+export function isValidPublicKey(pubkey?: string) {
+  if (!pubkey) return false;
+
+  // Check if it's a hex public key (64 chars)
+  if (pubkey.length === 64 && /^[0-9a-f]{64}$/i.test(pubkey)) {
+    return true;
+  }
+
+  // Check if it's a bech32 npub (starts with npub1 and is ~63 chars)
+  if (pubkey.length >= 60 && pubkey.length <= 65) {
+    return true;
+  }
+
+  return false;
+}
+
+export function isValidNpubOrPublicKey(npubOrPublicKey?: string) {
+  return isValidNpub(npubOrPublicKey) || isValidPublicKey(npubOrPublicKey);
+}
+
+export const formatPubkey = (pubkey: string) => {
+  if (pubkey.length < 16) {
+    return pubkey;
+  }
+  return `${pubkey.substring(0, 8)}...${pubkey.substring(pubkey.length - 8)}`;
+};

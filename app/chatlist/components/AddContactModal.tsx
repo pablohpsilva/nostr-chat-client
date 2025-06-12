@@ -17,9 +17,28 @@ import { H4, TypographyBodyL } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 // import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
 import { Button } from "@/components/ui/Button";
-import { CameraScanner } from "@/components/ui/CameraScanner";
 import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
+import { isValidNpubOrPublicKey } from "@/lib/utils";
 import SearchStartChat from "./SearchStartChat";
+
+// let CameraScanner: any = null;
+// if (Platform.OS !== "web" && process.env.NODE_ENV === "production") {
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   const {
+//     CameraScanner: _CameraScanner,
+//   } = require("@/components/ui/CameraScanner");
+//   CameraScanner = _CameraScanner;
+// }
 
 export default function AddContactModal({
   isOverlayOpen,
@@ -75,7 +94,7 @@ export default function AddContactModal({
   };
 
   const handleUseCamera = () => {
-    // setCameraShown(true);
+    setCameraShown(true);
     takePermissions().then(() => {
       setCameraShown(true);
     });
@@ -96,10 +115,11 @@ export default function AddContactModal({
     >
       <SafeAreaView edges={["top"]} style={styles.modalSafeArea}>
         {cameraShown ? (
-          <CameraScanner
-            setIsCameraShown={setCameraShown}
-            onReadCode={handleReadCode}
-          />
+          // <CameraScanner
+          //   setIsCameraShown={setCameraShown}
+          //   onReadCode={handleReadCode}
+          // />
+          <View />
         ) : (
           <View style={styles.container}>
             <View style={styles.searchHeader}>
@@ -146,7 +166,7 @@ export default function AddContactModal({
               </View>
             )}
 
-            {qrText && qrText.length >= 60 && (
+            {qrText && isValidNpubOrPublicKey(qrText) && (
               <Fragment>
                 <View style={styles.searchResultsTitle}>
                   <TypographyBodyL>Results:</TypographyBodyL>

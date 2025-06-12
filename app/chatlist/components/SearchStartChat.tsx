@@ -1,7 +1,8 @@
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { Link } from "expo-router";
-import { Fragment, useEffect, useState } from "react";
+import { nip19 } from "nostr-tools";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 
 import { getNDK } from "@/components/NDKHeadless";
@@ -12,13 +13,10 @@ import {
 } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
-
-const formatPubkey = (pubkey: string) => {
-  return `${pubkey.substring(0, 8)}...${pubkey.substring(pubkey.length - 8)}`;
-};
+import { formatPubkey, isValidNpubOrPublicKey } from "@/lib/utils";
 
 export default function SearchStartChat({
-  npub,
+  npub: _npub,
   onClose,
 }: {
   npub: string;
@@ -27,15 +25,21 @@ export default function SearchStartChat({
   const [userProfiles, setUserProfiles] = useState<NDKUserProfile>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const npub = useMemo(() => {
+    return !_npub.startsWith("npub") ? nip19.npubEncode(_npub) : _npub;
+  }, [_npub]);
+  const npubToUse = isValidNpubOrPublicKey(npub) ? npub : "";
 
   const fetchUserProfile = async () => {
     try {
-      setIsLoading(true);
-      const user = getNDK().getInstance().getUser({ npub });
-      const userProfile = await user.fetchProfile();
+      if (isValidNpubOrPublicKey(npub)) {
+        setIsLoading(true);
+        const user = getNDK().getInstance().getUser({ npub });
+        const userProfile = await user.fetchProfile();
 
-      if (userProfile) {
-        setUserProfiles(userProfile);
+        if (userProfile) {
+          setUserProfiles(userProfile);
+        }
       }
     } catch (error) {
       setError(error as string);
@@ -58,7 +62,7 @@ export default function SearchStartChat({
         style={styles.container}
         href={fillRoute(ROUTES.CHAT_ID, {
           nip: "NIP17",
-          npub,
+          npub: npubToUse,
         })}
         onPress={handleOnClose}
       >
@@ -81,10 +85,10 @@ export default function SearchStartChat({
                 <TypographyBodySBold>
                   {userProfiles?.displayName ||
                     userProfiles?.name ||
-                    `Anonymous user: ${formatPubkey(npub)}`}
+                    `Anonymous user: ${formatPubkey(npubToUse)}`}
                 </TypographyBodySBold>
                 <TypographyBodyS style={styles.pubkey}>
-                  {formatPubkey(npub)}
+                  Match for: {formatPubkey(_npub)}
                 </TypographyBodyS>
               </View>
             </View>

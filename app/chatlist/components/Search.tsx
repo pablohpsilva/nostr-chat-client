@@ -16,6 +16,7 @@ import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 
 import { TypographyBodyL } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
+import { isValidNpub } from "@/lib/utils";
 import SearchStartChat from "./SearchStartChat";
 
 // const formatPubkey = (pubkey: string) => {
@@ -150,14 +151,12 @@ export default function Search() {
             style={styles.searchResults}
             contentContainerStyle={styles.searchResultsContent}
           >
-            {searchQuery &&
-              searchQuery.startsWith("npub") &&
-              searchQuery.length === 63 && (
-                <SearchStartChat
-                  npub={searchQuery}
-                  onClose={handleCloseOverlay}
-                />
-              )}
+            {searchQuery && isValidNpub(searchQuery) && (
+              <SearchStartChat
+                npub={searchQuery}
+                onClose={handleCloseOverlay}
+              />
+            )}
 
             {searchQuery ? (
               <TypographyBodyL style={styles.noResultsText}>
