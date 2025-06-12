@@ -13,10 +13,10 @@ import { decrypt, encrypt, getConversationKey } from "./nip44";
 
 type Rumor = UnsignedEvent & { id: string };
 
-const TWO_DAYS = 2 * 24 * 60 * 60;
+export const TWO_DAYS = 2 * 24 * 60 * 60;
 
-const now = () => Math.round(Date.now() / 1000);
-const randomNow = () => Math.round(now() - Math.random() * TWO_DAYS);
+export const now = () => Math.round(Date.now() / 1000);
+export const randomNow = () => Math.round(now() - Math.random() * TWO_DAYS);
 
 const nip44ConversationKey = (privateKey: Uint8Array, publicKey: string) => {
   return getConversationKey(privateKey, publicKey);
@@ -105,7 +105,6 @@ export function wrapEvent(
   const seal = createSeal(rumor, senderPrivateKey, recipientPublicKey);
 
   const wrap = createWrap(seal, recipientPublicKey, tags);
-  console.log(`wrap: ${wrap}`);
 
   return wrap;
 }

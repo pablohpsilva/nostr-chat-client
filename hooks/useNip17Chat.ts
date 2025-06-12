@@ -9,10 +9,10 @@ import {
 import { Event, nip17 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useChatStore } from "@/app-store/chat";
 import { getNDK } from "@/components/NDKHeadless";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
+import { useChatStore } from "@/store/chat";
 import { createMessageTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
@@ -141,8 +141,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.GiftWrap],
         "#d": [dTag],
-        // We only want to fetch messages that are newer than the last fetched message
-        since: getTimeRange(dTag).until,
+        since: Math.floor(Date.now() / 1000) - 3 * 24 * 60 * 60,
       };
 
       const options: NDKSubscriptionOptions = {

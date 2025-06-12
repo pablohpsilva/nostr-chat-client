@@ -59,10 +59,19 @@ export function wrapEvent(
 ): NostrEvent {
   const event = createEvent(recipient, message, conversationTitle, replyTo);
 
-  const wrap = {
-    ...nip59.wrapEvent(event, senderPrivateKey, recipient.publicKey, tags),
-    created_at: Math.ceil(Date.now() / 1000),
-  } as NostrEvent;
+  // const wrap = {
+  //   ...nip59.wrapEvent(event, senderPrivateKey, recipient.publicKey, tags),
+  //   created_at: now(),
+  // } as NostrEvent;
+
+  // console.log("wrap", wrap);
+
+  const wrap = nip59.wrapEvent(
+    event,
+    senderPrivateKey,
+    recipient.publicKey,
+    tags
+  ) as NostrEvent;
 
   return wrap;
 }

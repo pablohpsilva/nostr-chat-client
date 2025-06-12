@@ -1,13 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Fragment, useState } from "react";
-import {
-  Alert,
-  Modal,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, Modal, StyleSheet, TouchableOpacity, View } from "react-native";
 import { RESULTS } from "react-native-permissions";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,29 +9,28 @@ import { TextField } from "@/components/ui/TextField";
 import { H4, TypographyBodyL } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 // import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
-import { Button } from "@/components/ui/Button";
 import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
 import { isValidNpubOrPublicKey } from "@/interal-lib/utils";
 import SearchStartChat from "./SearchStartChat";
 
-let CameraScanner: any = null;
-if (Platform.OS !== "web" && process.env.NODE_ENV === "production") {
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  console.log("Platform.OS ", Platform.OS);
-  const {
-    CameraScanner: _CameraScanner,
-  } = require("@/components/ui/CameraScanner");
-  CameraScanner = _CameraScanner;
-}
+// let CameraScanner: any = null;
+// if (Platform.OS !== "web" && process.env.NODE_ENV === "production") {
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   console.log("Platform.OS ", Platform.OS);
+//   const {
+//     CameraScanner: _CameraScanner,
+//   } = require("@/components/ui/CameraScanner");
+//   CameraScanner = _CameraScanner;
+// }
 
 export default function AddContactModal({
   isOverlayOpen,
@@ -115,10 +107,11 @@ export default function AddContactModal({
     >
       <SafeAreaView edges={["top"]} style={styles.modalSafeArea}>
         {cameraShown ? (
-          <CameraScanner
-            setIsCameraShown={setCameraShown}
-            onReadCode={handleReadCode}
-          />
+          // <CameraScanner
+          //   setIsCameraShown={setCameraShown}
+          //   onReadCode={handleReadCode}
+          // />
+          <View />
         ) : (
           // <View />
           <View style={styles.container}>
@@ -148,7 +141,7 @@ export default function AddContactModal({
               />
             </View>
 
-            {Platform.OS !== "web" && (
+            {/* {Platform.OS !== "web" && (
               <View style={styles.searchResults}>
                 <Button
                   variant="ghost-white"
@@ -164,7 +157,7 @@ export default function AddContactModal({
                   Scan QR Code
                 </Button>
               </View>
-            )}
+            )} */}
 
             {qrText && isValidNpubOrPublicKey(qrText) && (
               <Fragment>

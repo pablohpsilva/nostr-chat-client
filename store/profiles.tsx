@@ -57,7 +57,7 @@ export const useProfileStore = create<{
   setProfilesFromArray: (profiles: AppUserProfile[]) => void;
   addProfile: (profile: AppUserProfile) => void;
   removeProfile: (pubkey: string) => void;
-  clearProfiles: () => void;
+  wipeCleanProfiles: () => void;
   getChatRoomList: () => {
     nip04: AppUserProfile[];
     nip17: AppUserProfile[];
@@ -117,7 +117,7 @@ export const useProfileStore = create<{
       saveProfiles(newProfiles); // Persist to storage
       return { ...state, profiles: newProfiles };
     }),
-  clearProfiles: () =>
+  wipeCleanProfiles: () =>
     set((state) => {
       const newProfiles = new Map();
       saveProfiles(newProfiles); // Persist to storage

@@ -9,8 +9,8 @@ import {
 import { nip04 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useChatStore } from "@/app-store/chat";
 import { getNDK } from "@/components/NDKHeadless";
+import { useChatStore } from "@/store/chat";
 import { createMessageTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
@@ -180,14 +180,14 @@ export default function useNip04Chat(_recipients: string | string[]) {
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.EncryptedDirectMessage],
         "#p": pubKeys,
-        since: getTimeRange(chatKey).until,
+        since: Math.floor(Date.now() / 1000) - 3 * 24 * 60 * 60,
       };
 
       // 2. Messages sent FROM recipients TO current user
       const incomingFilter: NDKFilter = {
         kinds: [NDKKind.EncryptedDirectMessage],
         "#p": [currentUser.pubkey],
-        since: getTimeRange(chatKey).until,
+        since: Math.floor(Date.now() / 1000) - 3 * 24 * 60 * 60,
       };
 
       const options: NDKSubscriptionOptions = {

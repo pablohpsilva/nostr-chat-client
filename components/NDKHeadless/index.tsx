@@ -27,11 +27,14 @@ export const getNDK = (() => {
   // This closure ensures we only have one reference to the NDK instance
   // Create the singleton NDK instance
   // const ndk = new NDK({ explicitRelayUrls: relayUrls, cacheAdapter });
-  const ndk = new NDK({ explicitRelayUrls: relayUrls });
+  const ndk = new NDK({
+    explicitRelayUrls: relayUrls,
+  });
   let instance = ndk;
 
   // Connect to relays on initialization (client-side)
-  if (typeof window !== "undefined") ndk.connect();
+  // if (typeof window !== "undefined") ndk.connect();
+  ndk.connect();
 
   // Return a function that always provides the same instance
   return () => {
