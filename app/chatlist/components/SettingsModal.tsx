@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 
+import { useNDK } from "@/components/Context";
 import { Button } from "@/components/ui/Button";
 import { TypographyBodyL, TypographyTitle } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
@@ -17,7 +18,6 @@ import { fillRoute, ROUTES } from "@/constants/routes";
 import { useChatStore } from "@/store/chat";
 import { useChatListStore } from "@/store/chatlist";
 import { useProfileStore } from "@/store/profiles";
-import { useNDKSessionLogout } from "@nostr-dev-kit/ndk-hooks";
 import { Link, useRouter } from "expo-router";
 
 export default function SettingsModal({
@@ -31,8 +31,8 @@ export default function SettingsModal({
   const { wipeCleanChatRooms } = useChatListStore();
   const { wipeCleanProfiles } = useProfileStore();
   // const { wipeClean: wipeCleanRelays } = useRelayStore();
-  const logout = useNDKSessionLogout();
   const router = useRouter();
+  const { logout } = useNDK();
 
   const handleLogout = () => {
     handleCloseOverlay();

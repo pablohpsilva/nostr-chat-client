@@ -2,13 +2,14 @@ import cloneDeep from "lodash.clonedeep";
 import { nip19 } from "nostr-tools";
 import { useState } from "react";
 
-import { getNDK } from "@/components/NDKHeadless";
+import { useNDK } from "@/components/Context";
 import { AppUserProfile } from "@/constants/types";
 import { useProfileStore } from "@/store/profiles";
 import { removeDuplicatesByKey } from "./useTag";
 
 export default function useNip17Profiles() {
   const [isLoading, setLoading] = useState(false);
+  const { ndk, getProfile } = useNDK();
   const {
     profiles: profilesMap,
     setProfilesFromArray,
@@ -16,15 +17,13 @@ export default function useNip17Profiles() {
   } = useProfileStore();
 
   const loadProfile = async (pubkeys: string[] | nip19.NPub[]) => {
-    const ndk = getNDK().getInstance();
     const profiles = (
       await Promise.all(
         removeDuplicatesByKey(pubkeys, "publicKey")
           .filter((pubkey) => !profilesMap.has(pubkey))
-          .filter((pubkey) => pubkey !== ndk.activeUser?.pubkey)
+          .filter((pubkey) => pubkey !== ndk?.activeUser?.pubkey)
           .map(async (pubkey) => {
-            const user = ndk.getUser({ pubkey });
-            const profile = await user.fetchProfile();
+            const profile = await getProfile(pubkey);
             const defaultProfileValues = {
               pubkey,
               npub: nip19.npubEncode(pubkey),

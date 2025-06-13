@@ -9,16 +9,12 @@ import cloneDeep from "lodash.clonedeep";
 import { Event, nip17, nip19 } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 
-import { getNDK } from "@/components/NDKHeadless";
+import { useNDK } from "@/components/Context";
 import { ChatRoom, Recipient } from "@/constants/types";
 import { wrapEvent } from "@/interal-lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
 import useNip17Profiles from "./useNip17Profiles";
-import {
-  createChatTag,
-  normalizeRecipients,
-  normalizeRecipientsNPub,
-} from "./useTag";
+import { useTag } from "./useTag";
 
 let sub: NDKSubscription | null = null;
 
@@ -42,6 +38,9 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
     wipeCleanChatRooms,
     clearError: clearChatListError,
   } = useChatListStore();
+  const { createChatTag, normalizeRecipients, normalizeRecipientsNPub } =
+    useTag();
+  const { ndk, fetchEvents, signPublishEvent } = useNDK();
   const chatRooms = useMemo(
     () => Array.from(chatRoomMap.values()),
     [chatRoomMap.values()]
@@ -58,12 +57,10 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
       | Recipient[],
     _currentUserPublicKey?: string
   ) => {
-    const ndk = getNDK().getInstance();
-
     // @ts-expect-error
-    const privateKey = getNDK().getInstance().signer?._privateKey;
+    const privateKey = ndk?.signer?._privateKey;
     const currentUserPublicKey =
-      ndk.activeUser?.pubkey ?? _currentUserPublicKey;
+      ndk?.activeUser?.pubkey ?? _currentUserPublicKey;
 
     if (!privateKey) {
       console.log(new Error("No private key found"));
@@ -97,18 +94,26 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
     };
     const message = JSON.stringify(chatRoom);
 
-    const events = await Promise.all(
-      _recipients.map(async (r) => {
+    const events = _recipients
+      .map((r) => {
         const { tag: dTag } = createChatTag(r.publicKey);
         const event = wrapEvent(privateKey, r, message, [["d", dTag]]);
-        return Object.assign(new NDKEvent(getNDK().getInstance()), event);
+        return event;
       })
-    );
+      .map((event) => {
+        const _event = new NDKEvent(ndk, event);
+        return _event;
+      })
+      .filter((event) => event.validate());
 
     await Promise.all(
       events.map(async (event, index) => {
         console.log(`storing chat room ${index + 1} of ${events.length}...`);
-        await event.publish();
+        await signPublishEvent(event as NDKEvent, {
+          sign: false,
+          repost: false,
+          publish: true,
+        });
         console.log(`chat room ${index + 1} of ${events.length} stored!`);
       })
     );
@@ -140,17 +145,15 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
 
   const loadChatRooms = async (_options: NDKSubscriptionOptions = {}) => {
     try {
-      const ndk = getNDK().getInstance();
-
       // @ts-expect-error
-      const privateKey = ndk.signer?._privateKey ?? recipientPrivateKey;
+      const privateKey = ndk?.signer?._privateKey ?? recipientPrivateKey;
       if (!privateKey) {
         throw new Error("No private key found");
       }
 
       setLoading(true);
 
-      const currentUserPublicKey = ndk.activeUser?.pubkey;
+      const currentUserPublicKey = ndk?.activeUser?.pubkey;
       if (!currentUserPublicKey) {
         throw new Error("No current user public key found");
       }
@@ -161,7 +164,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
         "#d": [dTag],
       };
 
-      const events = await ndk.fetchEvents(filter);
+      const events = await fetchEvents(filter);
 
       const chatRoomPromise = (
         await Promise.all(
@@ -203,15 +206,14 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
         
         
         ---`);
-      const ndk = getNDK().getInstance();
       // @ts-expect-error
-      const privateKey = ndk.signer?._privateKey ?? recipientPrivateKey;
+      const privateKey = ndk?.signer?._privateKey ?? recipientPrivateKey;
 
       if (!privateKey) {
         throw new Error("No private key found");
       }
 
-      const currentUserPublicKey = ndk.activeUser?.pubkey;
+      const currentUserPublicKey = ndk?.activeUser?.pubkey;
 
       if (!currentUserPublicKey) {
         throw new Error("No current user public key found");
@@ -228,7 +230,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
         ..._options,
       };
 
-      sub = getNDK().getInstance().subscribe(filter, options);
+      sub = ndk?.subscribe(filter, options)!;
 
       sub.on("event", async (event: NDKEvent) => {
         try {

@@ -5,9 +5,9 @@ export const DEFAULT_RELAYS: RelayDict = {
   // "wss://relay1.nostrchat.io": { read: true, write: true },
   // "wss://relay2.nostrchat.io": { read: true, write: true },
   // "ws://localhost:8008": { read: true, write: true },
-  // "wss://relay.damus.io": { read: true, write: true },
-  // "wss://relay.snort.social": { read: true, write: true },
-  // "wss://nos.lol": { read: true, write: true },
+  "wss://relay.damus.io": { read: true, write: true },
+  "wss://relay.snort.social": { read: true, write: true },
+  "wss://nos.lol": { read: true, write: true },
   "wss://nostream-production-0ee9.up.railway.app": { read: true, write: true },
 };
 
