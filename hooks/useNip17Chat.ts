@@ -144,8 +144,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
       const privateKey = getNDK().getInstance().signer?._privateKey;
       const since = Math.floor(Date.now() / 1000) - 3 * 24 * 60 * 60;
 
-      alertUser(`since: ${new Date(since * 1000).toISOString()}`);
-
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.GiftWrap],
         "#d": [dTag],
@@ -190,10 +188,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
 
       // Get missing time ranges we need to fetch
       const missingRanges = getMissingRanges(dTag);
-      console.log(
-        "missingRanges",
-        missingRanges.map((r) => new Date(r.since * 1000))
-      );
 
       for (const { since, until } of missingRanges) {
         const filter: NDKFilter = {
@@ -251,26 +245,34 @@ export default function useNip17Chat(_recipients: string | string[]) {
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
 
-      const events = wrapManyEvents(
+      const _events = wrapManyEvents(
         privateKey,
         recipients,
         message,
         [["d", dTag]],
         conversationTitle,
         replyTo
-      ).map((event) => new NDKEvent(getNDK().getInstance(), event));
-
-      console.log(
-        "events",
-        events?.map((e) => e.created_at)
       );
+
+      await getNDK().getInstance().connect();
+      const ndk = getNDK().getInstance();
+
+      // Nao faz sentido, o ndk ja assina os eventos
+      // const events = await Promise.all(
+      //   _events.map(async (event) => {
+      //     const ndkEvent = new NDKEvent(ndk, event);
+      //     await ndkEvent.sign();
+      //     return ndkEvent;
+      //   })
+      // );
+      const events = _events.map((event) => new NDKEvent(ndk, event));
 
       await Promise.allSettled(
         events.map(async (event, index) => {
           try {
             console.log(`Publishing event ${index + 1} of ${events.length}`);
+            alertUser(`Has publish method? ${!!event?.publish}`);
             alertUser(`Publishing event ${index + 1} of ${events.length}`);
-            alertUser(Object.keys(event).join(", "));
             await event.publish();
             alertUser(`Published event ${index + 1} of ${events.length}`);
             console.log(`Published event ${index + 1} of ${events.length}`);
