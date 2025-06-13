@@ -13,9 +13,14 @@ import { getNDK } from "@/components/NDKHeadless";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
 import { useChatStore } from "@/store/chat";
+import { Alert, Platform } from "react-native";
 import { createMessageTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
+
+const alertUser = (message: string) => {
+  Platform.OS === "web" ? alert(message) : Alert.alert(message);
+};
 
 export default function useNip17Chat(_recipients: string | string[]) {
   const currentUser = useNDKCurrentUser();
@@ -137,11 +142,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
 
       // @ts-expect-error
       const privateKey = getNDK().getInstance().signer?._privateKey;
+      const since = Math.floor(Date.now() / 1000) - 3 * 24 * 60 * 60;
+
+      alertUser(`since: ${new Date(since * 1000).toISOString()}`);
 
       const outgoingFilter: NDKFilter = {
         kinds: [NDKKind.GiftWrap],
         "#d": [dTag],
-        since: Math.floor(Date.now() / 1000) - 3 * 24 * 60 * 60,
+        since,
       };
 
       const options: NDKSubscriptionOptions = {
@@ -262,7 +270,9 @@ export default function useNip17Chat(_recipients: string | string[]) {
       await Promise.allSettled(
         events.map(async (event, index) => {
           console.log(`Publishing event ${index + 1} of ${events.length}`);
+          alertUser(`Publishing event ${index + 1} of ${events.length}`);
           await event.publish();
+          alertUser(`Published event ${index + 1} of ${events.length}`);
           console.log(`Published event ${index + 1} of ${events.length}`);
         })
       );
