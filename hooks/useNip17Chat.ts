@@ -269,11 +269,19 @@ export default function useNip17Chat(_recipients: string | string[]) {
 
       await Promise.allSettled(
         events.map(async (event, index) => {
-          console.log(`Publishing event ${index + 1} of ${events.length}`);
-          alertUser(`Publishing event ${index + 1} of ${events.length}`);
-          await event.publish();
-          alertUser(`Published event ${index + 1} of ${events.length}`);
-          console.log(`Published event ${index + 1} of ${events.length}`);
+          try {
+            console.log(`Publishing event ${index + 1} of ${events.length}`);
+            alertUser(`Publishing event ${index + 1} of ${events.length}`);
+            await event.publish();
+            alertUser(`Published event ${index + 1} of ${events.length}`);
+            console.log(`Published event ${index + 1} of ${events.length}`);
+          } catch (error) {
+            console.error("Error publishing event:", error);
+            alertUser(
+              `Error publishing event ${index + 1} of ${events.length}`
+            );
+            alertUser(`${error}`);
+          }
         })
       );
     } catch (error) {
