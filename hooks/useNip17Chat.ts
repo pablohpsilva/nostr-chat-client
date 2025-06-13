@@ -15,6 +15,7 @@ import { wrapManyEvents } from "@/interal-lib/nip17";
 import { useChatStore } from "@/store/chat";
 import { Alert, Platform } from "react-native";
 import { createMessageTag } from "./useTag";
+import cloneDeep = require("lodash.clonedeep");
 
 let outgoingSub: NDKSubscription;
 
@@ -257,24 +258,24 @@ export default function useNip17Chat(_recipients: string | string[]) {
       await getNDK().getInstance().connect();
       const ndk = getNDK().getInstance();
 
-      // Nao faz sentido, o ndk ja assina os eventos
-      // const events = await Promise.all(
-      //   _events.map(async (event) => {
-      //     const ndkEvent = new NDKEvent(ndk, event);
-      //     await ndkEvent.sign();
-      //     return ndkEvent;
-      //   })
-      // );
-      const events = _events.map((event) => new NDKEvent(ndk, event));
+      // Create events and ensure they're properly bound to the NDK instance
+      const events = await Promise.all(
+        _events.map(async (event) => {
+          const ndkEvent = new NDKEvent(ndk, event);
+          // Ensure the event is properly initialized with the NDK instance
+          await ndkEvent.sign();
+          return ndkEvent;
+        })
+      );
 
       await Promise.allSettled(
         events.map(async (event, index) => {
           try {
             console.log(`Publishing event ${index + 1} of ${events.length}`);
-            alertUser(`Has publish method? ${!!event?.publish}`);
-            alertUser(`Publishing event ${index + 1} of ${events.length}`);
+            if (!event?.publish) {
+              throw new Error("Publish method not available on event");
+            }
             await event.publish();
-            alertUser(`Published event ${index + 1} of ${events.length}`);
             console.log(`Published event ${index + 1} of ${events.length}`);
           } catch (error) {
             console.error("Error publishing event:", error);
