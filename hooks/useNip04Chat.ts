@@ -266,9 +266,7 @@ export default function useNip04Chat(_recipients: string | string[]) {
           };
           return event;
         })
-        .map((event) =>
-          Object.assign(new NDKEvent(getNDK().getInstance()), event)
-        );
+        .map((event) => new NDKEvent(getNDK().getInstance(), event));
 
       await Promise.allSettled(
         events.map(async (event, index) => {

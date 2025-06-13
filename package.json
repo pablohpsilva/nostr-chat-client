@@ -15,7 +15,10 @@
     "eas:login": "eas login",
     "eas:build:ios": "eas build --platform ios --profile production",
     "eas:submit:ios": "eas submit --platform ios",
-    "eas:release:ios": "pnpm eas:build:ios && pnpm eas:submit:ios"
+    "eas:release:ios": "pnpm eas:build:ios && pnpm eas:submit:ios",
+    "update:version": "node ./scripts/update-version.js",
+    "update:version:build": "node ./scripts/update-version.js",
+    "update:build": "node ./scripts/update-version.js --build"
   },
   "dependencies": {
     "@capacitor/core": "^7.2.0",

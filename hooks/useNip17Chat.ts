@@ -258,9 +258,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
         [["d", dTag]],
         conversationTitle,
         replyTo
-      ).map((event) =>
-        Object.assign(new NDKEvent(getNDK().getInstance()), event)
-      );
+      ).map((event) => new NDKEvent(getNDK().getInstance(), event));
 
       console.log(
         "events",
@@ -272,6 +270,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
           try {
             console.log(`Publishing event ${index + 1} of ${events.length}`);
             alertUser(`Publishing event ${index + 1} of ${events.length}`);
+            alertUser(Object.keys(event).join(", "));
             await event.publish();
             alertUser(`Published event ${index + 1} of ${events.length}`);
             console.log(`Published event ${index + 1} of ${events.length}`);
