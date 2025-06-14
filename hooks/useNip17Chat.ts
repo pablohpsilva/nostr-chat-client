@@ -12,6 +12,7 @@ import { useNDK } from "@/components/Context";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
 import { useChatStore } from "@/store/chat";
+import { captureException } from "@sentry/react-native";
 import { Alert, Platform } from "react-native";
 import { useTag } from "./useTag";
 
@@ -83,7 +84,8 @@ export default function useNip17Chat(_recipients: string | string[]) {
       const unwrappedEvent = unwrapMessages(events, privateKey);
       addMessages(dTag, unwrappedEvent);
     } catch (error) {
-      console.error(error);
+      captureException(error);
+      console.error("Error adding message to conversation:", error);
     }
   };
 
@@ -127,6 +129,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
 
       return events;
     } catch (error) {
+      captureException(error);
       console.error("Error fetching conversation messages:", error);
       return [];
     } finally {
@@ -224,6 +227,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
 
       return true;
     } catch (error) {
+      captureException(error);
       console.error("Error fetching historical messages:", error);
       return false;
     } finally {
@@ -281,17 +285,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
             });
             console.log(`Published event ${index + 1} of ${events.length}`);
           } catch (error) {
-            console.error("Error publishing event:", error);
-            alertUser(
-              `Error publishing event ${index + 1} of ${events.length}`
-            );
-            alertUser(`${error}`);
+            captureException(error);
+            console.error("Error sending direct message:", error);
           }
         })
       );
     } catch (error) {
+      captureException(error);
       console.error("Error sending direct message:", error);
-      throw error;
     } finally {
       setIsSendingMessage(false);
     }

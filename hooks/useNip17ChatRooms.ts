@@ -13,6 +13,7 @@ import { useNDK } from "@/components/Context";
 import { ChatRoom, Recipient } from "@/constants/types";
 import { wrapEvent } from "@/interal-lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
+import { captureException } from "@sentry/react-native";
 import useNip17Profiles from "./useNip17Profiles";
 import { useTag } from "./useTag";
 
@@ -181,8 +182,9 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
 
               return [chatRoomMapKey, chatRoom];
               // await loadProfile(chatRoom.recipients);
-            } catch (err) {
-              console.error("Error unwrapping gifts", err);
+            } catch (error) {
+              captureException(error);
+              console.error("Error unwrapping gifts", error);
               return null;
             }
           })
@@ -191,6 +193,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
 
       return handleChatRoomEventAndProfile(chatRoomPromise);
     } catch (error) {
+      captureException(error);
       console.error("Error loading chat rooms", error);
       return new Map();
     } finally {
@@ -240,13 +243,15 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
           const chatRoomMapKey = chatRoom.recipients.join(",");
 
           handleChatRoomEventAndProfile([[chatRoomMapKey, chatRoom]]);
-        } catch (err) {
-          console.error("Error unwrapping gifts", err);
+        } catch (error) {
+          captureException(error);
+          console.error("Error unwrapping gifts", error);
         } finally {
           setLoading(false);
         }
       });
     } catch (error) {
+      captureException(error);
       console.error("Error loading chat rooms", error);
     } finally {
     }
