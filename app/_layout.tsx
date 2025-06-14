@@ -15,7 +15,9 @@ import { LogBox } from "react-native";
 import "react-native-reanimated";
 // import PolyfillCrypto from "react-native-webview-crypto";
 
-import NDKHeadless from "@/components/NDKHeadless";
+// import NDKHeadless from "@/components/NDKHeadless";
+import { NDKProvider } from "@/components/Context";
+import { DEFAULT_RELAYS } from "@/constants";
 import { DarkTheme, DefaultTheme } from "@/constants/Theme";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -60,23 +62,25 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {/* <PolyfillCrypto /> */}
-      <NDKHeadless />
-      <Stack>
-        <Stack.Screen name="features" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="chatlist" options={{ headerShown: false }} />
-        <Stack.Screen name="relays" options={{ headerShown: false }} />
-        <Stack.Screen name="keys" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="chat/NIP17/[npub]"
-          options={{ headerShown: false }}
-        />
-        {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <NDKProvider relayUrls={Object.keys(DEFAULT_RELAYS)}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        {/* <PolyfillCrypto /> */}
+        {/* <NDKHeadless /> */}
+        <Stack>
+          <Stack.Screen name="features" options={{ headerShown: false }} />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          <Stack.Screen name="chatlist" options={{ headerShown: false }} />
+          <Stack.Screen name="relays" options={{ headerShown: false }} />
+          <Stack.Screen name="keys" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="chat/NIP17/[npub]"
+            options={{ headerShown: false }}
+          />
+          {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </NDKProvider>
   );
 }

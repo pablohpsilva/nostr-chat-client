@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.dark.deactive,
     backgroundColor: Colors.dark.backgroundSecondary,
     width: "100%",
+    alignItems: "center",
   },
   defaultShadow: {
     shadowColor: "#000",
@@ -73,6 +74,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginRight: 12,
+    padding: 8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

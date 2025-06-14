@@ -4,18 +4,16 @@ import {
   NDKKind,
   NDKSubscription,
   NDKSubscriptionOptions,
-  useNDKCurrentUser,
 } from "@nostr-dev-kit/ndk-hooks";
 import { Event, nip17 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { getNDK } from "@/components/NDKHeadless";
+import { useNDK } from "@/components/Context";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
 import { useChatStore } from "@/store/chat";
 import { Alert, Platform } from "react-native";
-import { createMessageTag } from "./useTag";
-import cloneDeep = require("lodash.clonedeep");
+import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
 
@@ -24,11 +22,21 @@ const alertUser = (message: string) => {
 };
 
 export default function useNip17Chat(_recipients: string | string[]) {
-  const currentUser = useNDKCurrentUser();
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const debouncedMessageCache = useRef<any[]>([]);
   const debounceTimer = useRef<number>(0);
+  const { createMessageTag } = useTag();
+  const {
+    getMessages,
+    addMessages,
+    getTimeRange,
+    getMissingRanges,
+    markFetched,
+    updateTimeRange,
+  } = useChatStore();
+  const { ndk, fetchEvents, signPublishEvent } = useNDK();
+  const currentUser = ndk?.activeUser;
   const { dTag, recipients } = useMemo(() => {
     const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
 
@@ -44,14 +52,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
       recipients: dRecipients,
     };
   }, [_recipients]);
-  const {
-    getMessages,
-    addMessages,
-    getTimeRange,
-    getMissingRanges,
-    markFetched,
-    updateTimeRange,
-  } = useChatStore();
 
   const unwrapMessages = (
     event: NDKEvent[],
@@ -113,7 +113,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
       }
 
       // @ts-expect-error
-      const privateKey = getNDK().getInstance().signer?._privateKey;
+      const privateKey = ndk?.signer?._privateKey;
 
       // Filter to get the conversation messages
       const filter: NDKFilter = {
@@ -121,7 +121,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
         "#d": [dTag],
       };
 
-      const events = await getNDK().getInstance().fetchEvents(filter);
+      const events = await fetchEvents(filter);
 
       addMessageToConversation(Array.from(events), privateKey!);
 
@@ -142,7 +142,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
       }
 
       // @ts-expect-error
-      const privateKey = getNDK().getInstance().signer?._privateKey;
+      const privateKey = ndk?.signer?._privateKey;
       const since = Math.floor(Date.now() / 1000) - 3 * 24 * 60 * 60;
 
       const outgoingFilter: NDKFilter = {
@@ -156,7 +156,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
         ..._options,
       };
 
-      outgoingSub = getNDK().getInstance().subscribe(outgoingFilter, options);
+      outgoingSub = ndk?.subscribe(outgoingFilter, options)!;
 
       outgoingSub.on("event", (event: NDKEvent) => {
         console.log("FOUND EVENT", event?.id);
@@ -185,7 +185,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
       }
 
       // @ts-expect-error
-      const privateKey = getNDK().getInstance().signer?._privateKey;
+      const privateKey = ndk?.signer?._privateKey;
 
       // Get missing time ranges we need to fetch
       const missingRanges = getMissingRanges(dTag);
@@ -198,9 +198,9 @@ export default function useNip17Chat(_recipients: string | string[]) {
           until,
         };
 
-        const events = await getNDK().getInstance().fetchEvents(filter);
+        const events = await fetchEvents(filter);
 
-        if (events.size > 0) {
+        if (events.length > 0) {
           addMessageToConversation(Array.from(events), privateKey!);
         }
       }
@@ -244,38 +244,41 @@ export default function useNip17Chat(_recipients: string | string[]) {
       setIsSendingMessage(true);
 
       // @ts-expect-error
-      const privateKey = getNDK().getInstance().signer?._privateKey;
+      const privateKey = ndk?.signer?._privateKey;
 
-      const _events = wrapManyEvents(
+      const events = wrapManyEvents(
         privateKey,
         recipients,
         message,
         [["d", dTag]],
         conversationTitle,
         replyTo
-      );
-
-      await getNDK().getInstance().connect();
-      const ndk = getNDK().getInstance();
+      )
+        .map((event) => {
+          const _event = new NDKEvent(ndk, event);
+          return _event;
+        })
+        .filter((event) => event.validate());
 
       // Create events and ensure they're properly bound to the NDK instance
-      const events = await Promise.all(
-        _events.map(async (event) => {
-          const ndkEvent = new NDKEvent(ndk, event);
-          // Ensure the event is properly initialized with the NDK instance
-          await ndkEvent.sign();
-          return ndkEvent;
-        })
-      );
+      // const events = await Promise.all(
+      //   _events.map(async (event) => {
+      //     const ndkEvent = new NDKEvent(ndk, event);
+      //     // Ensure the event is properly initialized with the NDK instance
+      //     await ndkEvent.sign();
+      //     return ndkEvent;
+      //   })
+      // );
 
       await Promise.allSettled(
         events.map(async (event, index) => {
           try {
             console.log(`Publishing event ${index + 1} of ${events.length}`);
-            if (!event?.publish) {
-              throw new Error("Publish method not available on event");
-            }
-            await event.publish();
+            await signPublishEvent(event as NDKEvent, {
+              sign: false,
+              repost: false,
+              publish: true,
+            });
             console.log(`Published event ${index + 1} of ${events.length}`);
           } catch (error) {
             console.error("Error publishing event:", error);

@@ -1,10 +1,9 @@
-import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
-import { useNDKSessionLogin } from "@nostr-dev-kit/ndk-hooks";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Fragment, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
+import { useNDK } from "@/components/Context";
 import { Button } from "@/components/ui/Button";
 import { H3, TypographyBodyL } from "@/components/ui/Typography";
 import { APP_NAME } from "@/constants";
@@ -21,26 +20,17 @@ import { KeysType, LoginMode } from "./types";
 export default function LoginScreen() {
   const router = useRouter();
   const [mode, setMode] = useState<LoginMode>(LoginMode.LOGIN);
-  const login = useNDKSessionLogin();
+  const { loginWithSecret } = useNDK();
 
   const handleLogin = async (keys: KeysType) => {
-    const signer = new NDKPrivateKeySigner(keys.nsec);
-
-    // await saveSigner(keys);
-
-    await login(signer);
-    // Redirect to the app after successful login
-    router.replace(ROUTES.CHAT);
+    const result = await loginWithSecret(keys.nsec);
+    if (result) {
+      router.replace(ROUTES.CHAT);
+    }
   };
 
   const handleCreateAccount = async (keys: KeysType) => {
-    // await saveSigner(keys);
-
-    const signer = new NDKPrivateKeySigner(keys.nsec);
-    await login(signer);
-
-    // Redirect to the app after successful login
-    router.replace(ROUTES.CHAT);
+    await handleLogin(keys);
   };
 
   const handleOnClickBack = () => {

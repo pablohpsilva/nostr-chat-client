@@ -139,12 +139,6 @@ const useRelayStore = create<RelayStore>()((set, get) => ({
     await get().saveRelays(DEFAULT_RELAYS);
   },
 
-  // updateNDK: () => {
-  //   const activeRelays = get().getActiveRelays();
-  //   getNDK().setRelays(activeRelays);
-  //   getNDK().getInstance().connect();
-  // },
-
   clearError: () => {
     set({ error: null });
   },

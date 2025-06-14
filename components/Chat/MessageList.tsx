@@ -1,5 +1,4 @@
 import { NDKEvent } from "@nostr-dev-kit/ndk";
-import { useNDKCurrentUser } from "@nostr-dev-kit/ndk-hooks";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useRef } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
@@ -7,6 +6,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import ChatMessage from "@/components/Chat/ChatMessage";
 import { Button } from "@/components/ui/Button";
 import { TimeRange } from "@/store/chat";
+import { useNDK } from "../Context";
 
 interface MessageListProps {
   messages: NDKEvent[];
@@ -21,7 +21,8 @@ const MessageList = ({
   loadPreviousMessages,
   timeRange,
 }: MessageListProps) => {
-  const currentUser = useNDKCurrentUser();
+  const { ndk } = useNDK();
+  const currentUser = ndk?.activeUser;
   const scrollViewRef = useRef<ScrollView>(null);
   const lastMessageTimestampRef = useRef<number>(0);
   const loadMoreText = useMemo(

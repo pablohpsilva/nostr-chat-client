@@ -4,22 +4,23 @@ import {
   NDKKind,
   NDKSubscription,
   NDKSubscriptionOptions,
-  useNDKCurrentUser,
 } from "@nostr-dev-kit/ndk-hooks";
 import { nip04 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { getNDK } from "@/components/NDKHeadless";
+import { useNDK } from "@/components/Context";
 import { useChatStore } from "@/store/chat";
-import { createMessageTag } from "./useTag";
+import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
 let incomingSub: NDKSubscription;
 
 export default function useNip04Chat(_recipients: string | string[]) {
-  const currentUser = useNDKCurrentUser();
   const [isLoading, setLoading] = useState(false);
   const debouncedMessageCache = useRef<any[]>([]);
+  const { createMessageTag } = useTag();
+  const { ndk, fetchEvents, signPublishEvent } = useNDK();
+  const currentUser = ndk?.activeUser;
   const debounceTimer = useRef<number>(0);
   const { recipients, chatKey, pubKeys } = useMemo(() => {
     const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
@@ -107,7 +108,7 @@ export default function useNip04Chat(_recipients: string | string[]) {
       }
 
       // @ts-expect-error
-      const privateKey = getNDK().getInstance().signer?._privateKey;
+      const privateKey = ndk?.signer?._privateKey;
 
       // Get missing time ranges we need to fetch
       const missingRanges = getMissingRanges(chatKey);
@@ -127,8 +128,8 @@ export default function useNip04Chat(_recipients: string | string[]) {
         };
 
         const [outgoingEvents, incomingEvents] = await Promise.all([
-          getNDK().getInstance().fetchEvents(outgoingFilter),
-          getNDK().getInstance().fetchEvents(incomingFilter),
+          fetchEvents(outgoingFilter),
+          fetchEvents(incomingFilter),
         ]);
 
         const events = new Set([...outgoingEvents, ...incomingEvents]);
@@ -173,7 +174,7 @@ export default function useNip04Chat(_recipients: string | string[]) {
       }
 
       // @ts-expect-error
-      const privateKey = getNDK().getInstance().signer?._privateKey;
+      const privateKey = ndk.signer?._privateKey;
 
       // We need two filters to get the complete conversation:
       // 1. Messages sent FROM current user TO recipients
@@ -200,8 +201,8 @@ export default function useNip04Chat(_recipients: string | string[]) {
         ..._options,
       };
 
-      outgoingSub = getNDK().getInstance().subscribe(outgoingFilter, options);
-      incomingSub = getNDK().getInstance().subscribe(incomingFilter, options);
+      outgoingSub = ndk?.subscribe(outgoingFilter, options)!;
+      incomingSub = ndk?.subscribe(incomingFilter, options)!;
 
       outgoingSub.on("event", (event: NDKEvent) => {
         // // For outgoing messages, the p tag contains the recipient
@@ -253,7 +254,7 @@ export default function useNip04Chat(_recipients: string | string[]) {
 
       setLoading(true);
       // @ts-expect-error
-      const privateKey = getNDK().getInstance().signer?._privateKey;
+      const privateKey = ndk?.signer?._privateKey;
 
       const events = recipients
         .map((recipient) => {
@@ -266,12 +267,20 @@ export default function useNip04Chat(_recipients: string | string[]) {
           };
           return event;
         })
-        .map((event) => new NDKEvent(getNDK().getInstance(), event));
+        .map((event) => {
+          const _event = new NDKEvent(ndk, event);
+          return _event;
+        })
+        .filter((event) => event.validate());
 
       await Promise.allSettled(
         events.map(async (event, index) => {
           console.log(`Publishing event ${index + 1} of ${events.length}`);
-          await event.publish();
+          await signPublishEvent(event as NDKEvent, {
+            sign: false,
+            repost: false,
+            publish: true,
+          });
           console.log(`Published event ${index + 1} of ${events.length}`);
         })
       );

@@ -1,8 +1,8 @@
 import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
-import { Event, nip19 } from "nostr-tools";
+import { nip19 } from "nostr-tools";
 import { useState } from "react";
 
-import { getNDK } from "@/components/NDKHeadless";
+import { useNDK } from "@/components/Context";
 import { AppUserProfile } from "@/constants/types";
 import { useProfileStore } from "@/store/profiles";
 import { removeDuplicatesByKey } from "./useTag";
@@ -11,14 +11,14 @@ export default function useNip14Profiles() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setProfilesFromArray, getChatRoomList } = useProfileStore();
+  const { ndk, fetchEvents, getProfile } = useNDK();
 
   const getUserProfilesFromChats = async (): Promise<AppUserProfile[]> => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const ndk = getNDK().getInstance();
-      const user = ndk.activeUser;
+      const user = ndk?.activeUser;
 
       if (!user) {
         throw new Error("No active user");
@@ -33,7 +33,7 @@ export default function useNip14Profiles() {
         "#p": [user.pubkey],
       };
 
-      const _events = Array.from(await ndk.fetchEvents(filter)) as Event[];
+      const _events = await fetchEvents(filter);
       const events = removeDuplicatesByKey(
         _events.filter((event) => event.pubkey !== currentUserPublicKey),
         "pubkey"
@@ -42,10 +42,9 @@ export default function useNip14Profiles() {
       const profilePromises = events.map(async (rumor) => {
         const npub = nip19.npubEncode(rumor.pubkey);
         const pubKeyObj = { pubkey: rumor.pubkey, npub };
-        const profileUser = ndk.getUser(pubKeyObj);
 
         try {
-          const _profile = await profileUser.fetchProfile();
+          const _profile = await getProfile(rumor.pubkey);
           const profile = _profile ? _profile : pubKeyObj;
           return { ...profile, npub, pubkey: rumor.pubkey, nip: "NIP04" };
         } catch (err) {

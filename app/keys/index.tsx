@@ -13,7 +13,7 @@ import {
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { getNDK } from "@/components/NDKHeadless";
+import { useNDK } from "@/components/Context";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import {
@@ -24,17 +24,14 @@ import {
 } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/routes";
-import {
-  NDKPrivateKeySigner,
-  useNDKCurrentUser,
-} from "@nostr-dev-kit/ndk-hooks";
+import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-hooks";
 
 export default function KeysScreen() {
   const router = useRouter();
-  const currentUser = useNDKCurrentUser();
+  const { ndk } = useNDK();
+  const currentUser = ndk?.activeUser;
   const [showPrivateKey, setShowPrivateKey] = useState(false);
   const [privateKeyConfirmed, setPrivateKeyConfirmed] = useState(false);
-  console.log("currentUser", currentUser);
   const [keys, setKeys] = useState({
     publicKey: currentUser?.pubkey,
     npub: currentUser?.npub,
@@ -55,7 +52,7 @@ export default function KeysScreen() {
     setShowPrivateKey(true);
     const currentUserPrivateKey =
       //   @ts-expect-error
-      getNDK().getInstance().signer?.privateKey;
+      ndk?.signer?.privateKey;
     const signer = new NDKPrivateKeySigner(
       currentUserPrivateKey as `nsec${string}`
     );
