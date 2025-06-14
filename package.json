@@ -84,6 +84,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@sentry/cli": "^2.46.0",
     "@types/lodash.clonedeep": "^4.5.9",
     "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^19.0.14",

@@ -2472,9 +2472,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - SDWebImage (5.21.0):
-    - SDWebImage/Core (= 5.21.0)
-  - SDWebImage/Core (5.21.0)
+  - SDWebImage (5.21.1):
+    - SDWebImage/Core (= 5.21.1)
+  - SDWebImage/Core (5.21.1)
   - SDWebImageAVIFCoder (0.11.0):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
@@ -2950,7 +2950,7 @@ SPEC CHECKSUMS:
   RNSentry: a668f2659e9ac463db403a1f081fd0ca5375d840
   RNSha256: 4d35f112e967f58273d625a19376f4eafc72bd5c
   RNSVG: 8a1054afe490b5d63b9792d7ae3c1fde8c05cdd0
-  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
+  SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
@@ -2959,6 +2959,6 @@ SPEC CHECKSUMS:
   VisionCamera: f56eaedde0d3fa095143b78374d29e89e71735f9
   Yoga: 29f74a5b77dca8c37669e1e1e867e5f4e12407df
 
-PODFILE CHECKSUM: 78b1c7450d5d9432df117cc337a1e1aa9aa63880
+PODFILE CHECKSUM: 232622ad02c1f5d5aa396e7b3d969f566ddca55e
 
 COCOAPODS: 1.16.2
