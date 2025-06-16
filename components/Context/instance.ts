@@ -113,6 +113,8 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
         // await event.publish();
         const relaySet = NDKRelaySet.fromRelayUrls(ndk.explicitRelayUrls!, ndk);
 
+        ndk.subManager.dispatchEvent(event.rawEvent(), undefined, true);
+
         await relaySet.publish(event, 10 * 1000, 1);
       }
 
