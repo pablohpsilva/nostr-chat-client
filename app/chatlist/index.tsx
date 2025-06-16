@@ -5,6 +5,7 @@ import { Fragment, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useNDK } from "@/components/Context";
 import { Colors } from "@/constants/Colors";
 import AddContactModal from "./components/AddContactModal";
 import List from "./components/List";
@@ -13,6 +14,10 @@ import SettingsModal from "./components/SettingsModal";
 export default function ChatListPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isAddContactModalOpen, setIsAddContactModalOpen] = useState(false);
+
+  const { ndk } = useNDK();
+
+  console.log("NDK", ndk);
 
   return (
     <Fragment>

@@ -4,6 +4,7 @@ import NDK, {
   NDKNip07Signer,
   NDKNip46Signer,
   NDKPrivateKeySigner,
+  NDKRelaySet,
 } from "@nostr-dev-kit/ndk";
 import { captureException } from "@sentry/react-native";
 import { useEffect, useRef, useState } from "react";
@@ -104,12 +105,15 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
         await event.repost();
       }
 
-      if (params.sign) {
+      if (params.sign || !event.sig) {
         await event.sign();
       }
 
       if (params.publish) {
-        await event.publish();
+        // await event.publish();
+        const relaySet = NDKRelaySet.fromRelayUrls(ndk.explicitRelayUrls!, ndk);
+
+        await relaySet.publish(event, 10 * 1000, 1);
       }
 
       return event;
