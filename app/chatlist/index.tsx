@@ -15,10 +15,6 @@ export default function ChatListPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isAddContactModalOpen, setIsAddContactModalOpen] = useState(false);
 
-  const { ndk } = useNDK();
-
-  console.log("NDK", ndk);
-
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />

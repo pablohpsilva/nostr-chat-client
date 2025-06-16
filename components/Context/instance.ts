@@ -106,12 +106,14 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
         await event.repost();
       }
 
-      if (params.sign || !event.sig) {
+      if (params.sign) {
         await event.sign();
       }
 
       if (params.publish) {
         const relaySet = NDKRelaySet.fromRelayUrls(ndk.explicitRelayUrls!, ndk);
+
+        captureException(relaySet);
         // If the published event is a delete event, notify the cache if there is one
         if (
           event.kind === NDKKind.EventDeletion &&
@@ -142,6 +144,7 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
         ndk.subManager.dispatchEvent(event.rawEvent(), undefined, true);
 
         const relays = await relaySet.publish(event, 10 * 1000, 1);
+        captureException(relays);
 
         relays.forEach((relay) => ndk?.subManager.seenEvent(event.id, relay));
       }
