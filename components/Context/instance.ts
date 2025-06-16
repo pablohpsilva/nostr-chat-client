@@ -5,6 +5,7 @@ import NDK, {
   NDKNip46Signer,
   NDKPrivateKeySigner,
 } from "@nostr-dev-kit/ndk";
+import { captureException } from "@sentry/react-native";
 import { useEffect, useRef, useState } from "react";
 
 export default function NDKInstance(explicitRelayUrls: string[]) {
@@ -92,18 +93,30 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
       publish: true,
     }
   ) {
-    if (ndk === undefined) return;
-    event.ndk = ndk;
-    if (params.repost) {
-      await event.repost();
+    try {
+      if (ndk === undefined) {
+        return;
+      }
+
+      event.ndk = ndk;
+
+      if (params.repost) {
+        await event.repost();
+      }
+
+      if (params.sign) {
+        await event.sign();
+      }
+
+      if (params.publish) {
+        await event.publish();
+      }
+
+      return event;
+    } catch (error) {
+      captureException(error);
+      throw error;
     }
-    if (params.sign) {
-      await event.sign();
-    }
-    if (params.publish) {
-      await event.publish();
-    }
-    return event;
   }
 
   return {
