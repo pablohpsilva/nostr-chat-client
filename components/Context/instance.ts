@@ -1,6 +1,7 @@
 import NDK, {
   NDKEvent,
   NDKFilter,
+  NDKKind,
   NDKNip07Signer,
   NDKNip46Signer,
   NDKPrivateKeySigner,
@@ -110,12 +111,39 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
       }
 
       if (params.publish) {
-        // await event.publish();
         const relaySet = NDKRelaySet.fromRelayUrls(ndk.explicitRelayUrls!, ndk);
+        // If the published event is a delete event, notify the cache if there is one
+        if (
+          event.kind === NDKKind.EventDeletion &&
+          ndk.cacheAdapter?.deleteEventIds
+        ) {
+          const eTags = event.getMatchingTags("e").map((tag) => tag[1]);
+          ndk.cacheAdapter.deleteEventIds(eTags);
+        }
+
+        if (ndk.cacheAdapter?.addUnpublishedEvent) {
+          try {
+            ndk.cacheAdapter?.addUnpublishedEvent?.(event, relaySet.relayUrls);
+          } catch (e) {
+            console.error("Error adding unpublished event to cache", e);
+          }
+        }
+
+        // if this is a delete event, send immediately to the cache
+        if (
+          event.kind === NDKKind.EventDeletion &&
+          ndk.cacheAdapter?.deleteEventIds
+        ) {
+          ndk.cacheAdapter?.deleteEventIds(
+            event.getMatchingTags("e").map((tag) => tag[1])
+          );
+        }
 
         ndk.subManager.dispatchEvent(event.rawEvent(), undefined, true);
 
-        await relaySet.publish(event, 10 * 1000, 1);
+        const relays = await relaySet.publish(event, 10 * 1000, 1);
+
+        relays.forEach((relay) => ndk?.subManager.seenEvent(event.id, relay));
       }
 
       return event;
