@@ -39,7 +39,7 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>17</string>
+    <string>18</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSMinimumSystemVersion</key>
@@ -63,6 +63,8 @@
     <string>This app uses the photo library to share photos in chats.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>This app uses the photo library to share photos in chats.</string>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>This app does not access your Apple Music library. This permission is required due to third-party libraries that may reference music-related APIs.</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
