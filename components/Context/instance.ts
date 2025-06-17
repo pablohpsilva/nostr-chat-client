@@ -8,6 +8,7 @@ import NDK, {
 import { useEffect, useRef, useState } from "react";
 
 import { alertUser } from "@/utils/alert";
+import { captureException } from "@sentry/react-native";
 
 export default function NDKInstance(explicitRelayUrls: string[]) {
   const loaded = useRef(false);
@@ -111,11 +112,14 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
       }
 
       if (params.publish) {
+        captureException("PUBLISHING EVENT");
         await event.publish();
+        captureException("PUBLISHED EVENT");
       }
 
       return event;
     } catch (error) {
+      captureException(error);
       alertUser(error as string);
       throw error;
     }

@@ -61,7 +61,7 @@ if (__DEV__) {
 //   'Setting a timer for a long period of time',
 // ]);
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     // Poppins fonts
@@ -103,4 +103,4 @@ export default function RootLayout() {
       </ThemeProvider>
     </NDKProvider>
   );
-}
+});
