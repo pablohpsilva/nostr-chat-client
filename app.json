@@ -23,10 +23,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.nostream.chatclient",
-      "permissions": [
-        "INTERNET",
-        "ACCESS_NETWORK_STATE"
-      ]
+      "permissions": ["INTERNET", "ACCESS_NETWORK_STATE"]
     },
     "web": {
       "bundler": "metro",
@@ -49,7 +46,8 @@
         {
           "url": "https://sentry.io/",
           "project": "react-native",
-          "organization": "nostr"
+          "organization": "nostr",
+          "note": "Use SENTRY_AUTH_TOKEN env to authenticate with Sentry."
         }
       ]
     ],

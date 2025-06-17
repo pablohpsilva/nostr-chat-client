@@ -20,23 +20,37 @@ import { NDKProvider } from "@/components/Context";
 import { DEFAULT_RELAYS } from "@/constants";
 import { DarkTheme, DefaultTheme } from "@/constants/Theme";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import * as Sentry from '@sentry/react-native';
+import * as Sentry from "@sentry/react-native";
 
-Sentry.init({
-  dsn: 'https://8e0f3df32b2ebb086ed1e34cee8f4d72@o4509492843577344.ingest.de.sentry.io/4509492844691536',
+// Initialize Sentry with error handling
+try {
+  Sentry.init({
+    dsn: "https://8e0f3df32b2ebb086ed1e34cee8f4d72@o4509492843577344.ingest.de.sentry.io/4509492844691536",
 
-  // Adds more context data to events (IP address, cookies, user, etc.)
-  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
-  sendDefaultPii: true,
+    // Adds more context data to events (IP address, cookies, user, etc.)
+    // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+    sendDefaultPii: true,
 
-  // Configure Session Replay
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+    // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+    // We recommend adjusting this value in production.
+    tracesSampleRate: 1.0,
 
-  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  // spotlight: __DEV__,
-});
+    // Configure Session Replay (only if available)
+    ...(Sentry.mobileReplayIntegration && {
+      replaysSessionSampleRate: 0.1,
+      replaysOnErrorSampleRate: 1,
+      integrations: [
+        Sentry.mobileReplayIntegration(),
+        ...(Sentry.feedbackIntegration ? [Sentry.feedbackIntegration()] : []),
+      ],
+    }),
+
+    // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+    // spotlight: __DEV__,
+  });
+} catch (error) {
+  console.log("Sentry initialization failed:", error);
+}
 
 // Disable all LogBox notifications
 if (__DEV__) {
