@@ -270,11 +270,13 @@ export default function useNip17Chat(_recipients: string | string[]) {
         events.map(async (event, index) => {
           try {
             console.log(`Publishing event ${index + 1} of ${events.length}`);
+            alertUser("BEFORE signPublishEvent");
             await signPublishEvent(event as NDKEvent, {
               sign: false,
               repost: false,
               publish: true,
             });
+            alertUser("AFTER signPublishEvent");
             console.log(`Published event ${index + 1} of ${events.length}`);
           } catch (error) {
             console.error("Error publishing event:", error);
