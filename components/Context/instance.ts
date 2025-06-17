@@ -103,15 +103,21 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
       event.ndk = ndk;
 
       if (params.repost) {
+        alertUser("BEFORE repost");
         await event.repost();
+        alertUser("AFTER repost");
       }
 
       if (params.sign) {
+        alertUser("BEFORE sign");
         await event.sign();
+        alertUser("AFTER sign");
       }
 
       if (params.publish) {
+        alertUser("BEFORE publish");
         await event.publish();
+        alertUser("AFTER publish");
       }
 
       return event;

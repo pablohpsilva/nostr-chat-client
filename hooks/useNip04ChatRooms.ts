@@ -13,6 +13,7 @@ import { useNDK } from "@/components/Context";
 import { ChatRoom, Recipient } from "@/constants/types";
 import { wrapEvent } from "@/interal-lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
+import { alertUser } from "@/utils/alert";
 import useNip17Profiles from "./useNip17Profiles";
 import { useTag } from "./useTag";
 
@@ -54,62 +55,67 @@ export default function useNip04ChatRooms(recipientPrivateKey?: Uint8Array) {
       | Recipient[],
     _currentUserPublicKey?: string
   ) => {
-    // @ts-expect-error
-    const privateKey = ndk?.signer?._privateKey;
-    const currentUserPublicKey =
-      ndk?.activeUser?.pubkey ?? getUser(_currentUserPublicKey!).pubkey;
+    try {
+      // @ts-expect-error
+      const privateKey = ndk?.signer?._privateKey;
+      const currentUserPublicKey =
+        ndk?.activeUser?.pubkey ?? getUser(_currentUserPublicKey!).pubkey;
 
-    if (!privateKey) {
-      console.log(new Error("No private key found"));
-      return [];
+      if (!privateKey) {
+        console.log(new Error("No private key found"));
+        return [];
+      }
+
+      if (!currentUserPublicKey) {
+        console.log(new Error("No current user public key found"));
+        return [];
+      }
+
+      const _recipients = normalizeRecipients(possibleRecipients);
+      const recipients = _recipients.map((r) => r.publicKey);
+      const recipientsNPubkeys = normalizeRecipientsNPub(possibleRecipients);
+      const chatRoomMapKey = recipients.join(",");
+
+      if (chatRoomMap.has(chatRoomMapKey) || _chatRoomMap.has(chatRoomMapKey)) {
+        console.log("chat room already exists: ", chatRoomMapKey);
+        return;
+      }
+
+      const chatRoom: ChatRoom = {
+        recipients,
+        recipientsNPubkeys,
+      };
+      const message = JSON.stringify(chatRoom);
+
+      const events = _recipients
+        .map((r) => {
+          const { tag: dTag } = createChatTag(r.publicKey);
+          const event = wrapEvent(privateKey, r, message, [["d", dTag]]);
+          return event;
+        })
+        .map((event) => {
+          const _event = new NDKEvent(ndk, event);
+          return _event;
+        })
+        .filter((event) => event.validate());
+
+      await Promise.all(
+        events.map(async (event, index) => {
+          console.log(`storing chat room ${index + 1} of ${events.length}...`);
+          await signPublishEvent(event as NDKEvent, {
+            sign: false,
+            repost: false,
+            publish: true,
+          });
+          console.log(`chat room ${index + 1} of ${events.length} stored!`);
+        })
+      );
+
+      setChatRooms(new Map([[chatRoomMapKey, chatRoom]]));
+    } catch (error) {
+      console.error("Error storing chat room:", error);
+      alertUser(error?.toString() || "Error storing chat room");
     }
-
-    if (!currentUserPublicKey) {
-      console.log(new Error("No current user public key found"));
-      return [];
-    }
-
-    const _recipients = normalizeRecipients(possibleRecipients);
-    const recipients = _recipients.map((r) => r.publicKey);
-    const recipientsNPubkeys = normalizeRecipientsNPub(possibleRecipients);
-    const chatRoomMapKey = recipients.join(",");
-
-    if (chatRoomMap.has(chatRoomMapKey) || _chatRoomMap.has(chatRoomMapKey)) {
-      console.log("chat room already exists: ", chatRoomMapKey);
-      return;
-    }
-
-    const chatRoom: ChatRoom = {
-      recipients,
-      recipientsNPubkeys,
-    };
-    const message = JSON.stringify(chatRoom);
-
-    const events = _recipients
-      .map((r) => {
-        const { tag: dTag } = createChatTag(r.publicKey);
-        const event = wrapEvent(privateKey, r, message, [["d", dTag]]);
-        return event;
-      })
-      .map((event) => {
-        const _event = new NDKEvent(ndk, event);
-        return _event;
-      })
-      .filter((event) => event.validate());
-
-    await Promise.all(
-      events.map(async (event, index) => {
-        console.log(`storing chat room ${index + 1} of ${events.length}...`);
-        await signPublishEvent(event as NDKEvent, {
-          sign: false,
-          repost: false,
-          publish: true,
-        });
-        console.log(`chat room ${index + 1} of ${events.length} stored!`);
-      })
-    );
-
-    setChatRooms(new Map([[chatRoomMapKey, chatRoom]]));
   };
 
   const handleChatRoomEventAndProfile = async (

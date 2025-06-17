@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useNDK } from "@/components/Context";
 import { useChatStore } from "@/store/chat";
+import { alertUser } from "@/utils/alert";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
@@ -286,7 +287,8 @@ export default function useNip04Chat(_recipients: string | string[]) {
       );
     } catch (error) {
       console.error("Error sending direct message:", error);
-      throw error;
+      // throw error;
+      alertUser(error?.toString() || "Error sending direct message");
     } finally {
       setLoading(false);
     }

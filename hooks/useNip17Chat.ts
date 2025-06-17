@@ -287,7 +287,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
       );
     } catch (error) {
       console.error("Error sending direct message:", error);
-      throw error;
+      alertUser(error?.toString() || "Error sending direct message");
     } finally {
       setIsSendingMessage(false);
     }
