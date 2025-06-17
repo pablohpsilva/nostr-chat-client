@@ -11,7 +11,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.nostream.chatclient",
-      "appleTeamId": "DGLKF29HPV"
+      "appleTeamId": "DGLKF29HPV",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
