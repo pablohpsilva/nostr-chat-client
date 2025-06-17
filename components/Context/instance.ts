@@ -39,7 +39,6 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
 
     try {
       await ndkInstance.connect();
-      alertUser("CONNECTED");
       _setNDK(ndkInstance);
     } catch (error) {
       console.error("ERROR loading NDK NDKInstance", error);
