@@ -13,6 +13,7 @@ import { useNDK } from "@/components/Context";
 import { ChatRoom, Recipient } from "@/constants/types";
 import { wrapEvent } from "@/interal-lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
+import { captureException } from "@sentry/react-native";
 import useNip17Profiles from "./useNip17Profiles";
 import { useTag } from "./useTag";
 
@@ -108,13 +109,18 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
 
     await Promise.all(
       events.map(async (event, index) => {
-        console.log(`storing chat room ${index + 1} of ${events.length}...`);
-        await signPublishEvent(event as NDKEvent, {
-          sign: false,
-          repost: false,
-          publish: true,
-        });
-        console.log(`chat room ${index + 1} of ${events.length} stored!`);
+        try {
+          console.log(`storing chat room ${index + 1} of ${events.length}...`);
+          await signPublishEvent(event as NDKEvent, {
+            sign: false,
+            repost: false,
+            publish: true,
+          });
+          console.log(`chat room ${index + 1} of ${events.length} stored!`);
+        } catch (error) {
+          captureException("NIP17: ERROR STORING CHAT ROOM");
+          captureException(error);
+        }
       })
     );
 

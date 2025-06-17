@@ -12,7 +12,7 @@ import { useNDK } from "@/components/Context";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
 import { useChatStore } from "@/store/chat";
-import { alertUser } from "@/utils/alert";
+import { captureException } from "@sentry/react-native";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
@@ -277,17 +277,21 @@ export default function useNip17Chat(_recipients: string | string[]) {
             });
             console.log(`Published event ${index + 1} of ${events.length}`);
           } catch (error) {
-            console.error("Error publishing event:", error);
-            alertUser(
-              `Error publishing event ${index + 1} of ${events.length}`
-            );
-            alertUser(`${error}`);
+            captureException("ERROR PUBLISHING EVENT");
+            captureException(error);
+            throw error;
+            // console.error("Error publishing event:", error);
+            // alertUser(
+            //   `Error publishing event ${index + 1} of ${events.length}`
+            // );
+            // alertUser(`${error}`);
           }
         })
       );
     } catch (error) {
-      console.error("Error sending direct message:", error);
-      throw error;
+      captureException(error);
+      // console.error("Error sending direct message:", error);
+      // throw error;
     } finally {
       setIsSendingMessage(false);
     }

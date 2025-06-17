@@ -98,16 +98,19 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
   ) {
     try {
       if (ndk === undefined) {
+        captureException("PUBLISHING EVENT: NDK UNDEFINED");
         return;
       }
 
       event.ndk = ndk;
 
       if (params.repost) {
+        captureException("PUBLISHING EVENT: REPOST");
         await event.repost();
       }
 
       if (params.sign) {
+        captureException("PUBLISHING EVENT: SIGN");
         await event.sign();
       }
 
@@ -117,6 +120,7 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
         captureException("PUBLISHED EVENT");
       }
 
+      captureException("PUBLISHING EVENT: DONE");
       return event;
     } catch (error) {
       captureException(error);

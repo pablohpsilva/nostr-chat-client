@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useNDK } from "@/components/Context";
 import { useChatStore } from "@/store/chat";
+import { captureException } from "@sentry/react-native";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
@@ -275,18 +276,23 @@ export default function useNip04Chat(_recipients: string | string[]) {
 
       await Promise.allSettled(
         events.map(async (event, index) => {
-          console.log(`Publishing event ${index + 1} of ${events.length}`);
-          await signPublishEvent(event as NDKEvent, {
-            sign: false,
-            repost: false,
-            publish: true,
-          });
-          console.log(`Published event ${index + 1} of ${events.length}`);
+          try {
+            console.log(`Publishing event ${index + 1} of ${events.length}`);
+            await signPublishEvent(event as NDKEvent, {
+              sign: false,
+              repost: false,
+              publish: true,
+            });
+            console.log(`Published event ${index + 1} of ${events.length}`);
+          } catch (error) {
+            captureException("NIP04: ERROR PUBLISHING EVENT");
+            captureException(error);
+            throw error;
+          }
         })
       );
     } catch (error) {
-      console.error("Error sending direct message:", error);
-      throw error;
+      captureException(error);
     } finally {
       setLoading(false);
     }
