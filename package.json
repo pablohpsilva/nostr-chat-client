@@ -13,6 +13,7 @@
     "lint": "expo lint",
     "doctor": "expo doctor",
     "update:packages": "ncu -u",
+    "mock:release": "npx expo run:ios --configuration Release",
     "eas:login": "eas login",
     "eas:build:ios": "eas build --platform ios --profile production",
     "eas:submit:ios": "eas submit --platform ios",

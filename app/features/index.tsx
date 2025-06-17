@@ -43,16 +43,16 @@ export default function FeaturesScreen() {
               style={styles.featureDescription}
               colorName="yellow"
             >
-              If you don't like or don't trust our relays, you can run your own
-              relay and use it in the application.
+              If you don&apos;t like or don&apos;t trust our relays, you can run
+              your own relay and use it in the application.
             </TypographyCaptionL>
             <TypographyCaptionL
               style={styles.featureDescription}
               colorName="lime"
             >
-              If you like our service, but you don't want to use our free relays
-              and want extra privacy without the headache of maintaining your
-              own relay, you can use our paid relays.
+              If you like our service, but you don&apos;t want to use our free
+              relays and want extra privacy without the headache of maintaining
+              your own relay, you can use our paid relays.
             </TypographyCaptionL>
             <View style={styles.featureDescription}>
               <Button
@@ -98,7 +98,7 @@ export default function FeaturesScreen() {
               style={styles.featureDescription}
               colorName="lime"
             >
-              All public keys are pseudonymous. As long as you don't share
+              All public keys are pseudonymous. As long as you don&apos;t share
               publicly your public key and/or do not create a Nostr Profile,
               nobody can link your public key to you.
             </TypographyCaptionL>
@@ -118,15 +118,17 @@ export default function FeaturesScreen() {
               sent.
             </TypographyBodyL>
             <TypographyBodyL style={styles.featureDescription}>
-              Your keys are stored on your device. We don't store them. As long
-              as you don't share them, nobody can decrypt your messages.
+              Your keys are stored on your device. We don&apos;t store them. As
+              long as you don&apos;t share them, nobody can decrypt your
+              messages.
             </TypographyBodyL>
             <TypographyCaptionL
               style={styles.featureDescription}
               colorName="yellow"
             >
-              This is REAL end-to-end encryption. Not WhatsApp "end-to-end"
-              encription where Meta has access to all your data.
+              This is REAL end-to-end encryption. Not WhatsApp
+              &quot;end-to-end&quot; encription where Meta has access to all
+              your data.
             </TypographyCaptionL>
             <TypographyCaptionL
               style={styles.featureDescription}
@@ -185,7 +187,7 @@ export default function FeaturesScreen() {
           <View style={styles.featureSection}>
             <H5>🚫 No tracking and no data collection</H5>
             <TypographyBodyL style={styles.featureDescription}>
-              We don't collect, store, or analyze your personal data. No
+              We don&apos;t collect, store, or analyze your personal data. No
               analytics, no tracking pixels, no behavioral profiling. Your
               privacy is respected from the ground up.
             </TypographyBodyL>

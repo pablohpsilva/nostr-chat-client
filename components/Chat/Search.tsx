@@ -166,7 +166,7 @@ export default function Search({
               </div>
             ) : searchQuery ? (
               <div className="text-gray-500 text-center mt-8">
-                No results found for "{searchQuery}"
+                No results found for &quot;{searchQuery}&quot;
               </div>
             ) : null}
           </div>

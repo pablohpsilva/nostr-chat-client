@@ -101,7 +101,7 @@ export function LoginForm() {
         </TouchableOpacity>
 
         <View style={styles.registerContainer}>
-          <ThemedText>Don't have an account? </ThemedText>
+          <ThemedText>Don&apos;t have an account? </ThemedText>
           <TouchableOpacity
             onPress={() => Alert.alert("Register", "Feature coming soon!")}
           >

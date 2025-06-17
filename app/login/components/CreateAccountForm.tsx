@@ -75,7 +75,9 @@ export const CreateAccountForm: React.FC<CreateAccountFormProps> = ({
 
   return (
     <Fragment>
-      <TypographyBodyL>We'll generate a new Nostr key for you.</TypographyBodyL>
+      <TypographyBodyL>
+        We&apos;ll generate a new Nostr key for you.
+      </TypographyBodyL>
       <TypographyBodyL>
         Be sure to save your private key securely!
       </TypographyBodyL>
