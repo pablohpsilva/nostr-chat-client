@@ -13,14 +13,9 @@ import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
 import { useChatStore } from "@/store/chat";
 import { captureException } from "@sentry/react-native";
-import { Alert, Platform } from "react-native";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
-
-const alertUser = (message: string) => {
-  Platform.OS === "web" ? alert(message) : Alert.alert(message);
-};
 
 export default function useNip17Chat(_recipients: string | string[]) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);

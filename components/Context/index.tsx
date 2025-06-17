@@ -83,7 +83,7 @@ const NDKProvider = ({
 }: PropsWithChildren<{
   relayUrls: string[];
 }>) => {
-  const { ndk, signer, setSigner, fetchEvents, signPublishEvent } =
+  const { ndk, signer, setSigner, fetchEvents, signPublishEvent, loadNdk } =
     NDKInstance(relayUrls);
   const { getUser, getProfile } = Users(ndk);
 
@@ -117,6 +117,18 @@ const NDKProvider = ({
   async function logout() {
     await setSigner(undefined);
   }
+
+  async function handleLoadNdk() {
+    try {
+      await loadNdk(relayUrls);
+    } catch (error) {
+      console.error("Error loading NDKs", error);
+    }
+  }
+
+  // useEffect(() => {
+  //   handleLoadNdk();
+  // }, [relayUrls]);
 
   return (
     <NDKContext.Provider
