@@ -41,6 +41,10 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
     try {
       await ndkInstance.connect();
       _setNDK(ndkInstance);
+
+      alertUser(
+        `NDK connected to ${ndkInstance.pool.connectedRelays().length} relays`
+      );
     } catch (error) {
       console.error("ERROR loading NDK NDKInstance", error);
     }
@@ -110,10 +114,7 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
     }
 
     if (params.publish) {
-      alertUser(`0. ndk: ${Boolean(ndk)}`);
-      alertUser(`1. ndk.explicitRelayUrls: ${ndk.explicitRelayUrls}`);
       const relaySet = NDKRelaySet.fromRelayUrls(ndk.explicitRelayUrls!, ndk);
-      alertUser(`2. relaySet: ${Boolean(relaySet)}`);
 
       // If the published event is a delete event, notify the cache if there is one
       if (
@@ -142,27 +143,11 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
         );
       }
 
-      alertUser(`3. ndk.subManager: ${Boolean(ndk.subManager)}`);
-      alertUser(
-        `4. ndk.subManager.dispatchEvent: ${Boolean(
-          ndk.subManager.dispatchEvent
-        )}`
-      );
-      alertUser(`5. event.rawEvent: ${Boolean(event.rawEvent)}`);
-      alertUser(`6. event.rawEvent: ${event.rawEvent()}`);
       ndk.subManager.dispatchEvent(event.rawEvent(), undefined, true);
-      alertUser("7. DISPATCHED");
 
-      alertUser(`8. relaySet.publish: ${relaySet.publish}`);
       const relays = await relaySet.publish(event, 10 * 1000, 1);
-      alertUser(`9. relays: ${relays}`);
-      alertUser("10. EVENT PUBLISHED");
 
-      alertUser(
-        `11. ndk.subManager.seenEvent: ${Boolean(ndk.subManager.seenEvent)}`
-      );
       relays.forEach((relay) => ndk?.subManager.seenEvent(event.id, relay));
-      alertUser("12. SEEN EVENT");
     }
 
     return event;
