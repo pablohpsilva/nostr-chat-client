@@ -61,12 +61,12 @@ export default function useNip04ChatRooms(recipientPrivateKey?: Uint8Array) {
       (await fetchProfile(_currentUserPublicKey!))?.pubkey;
 
     if (!privateKey) {
-      console.log(new Error("No private key found"));
+      // console.log(new Error("No private key found"));
       return [];
     }
 
     if (!currentUserPublicKey) {
-      console.log(new Error("No current user public key found"));
+      // console.log(new Error("No current user public key found"));
       return [];
     }
 
@@ -76,7 +76,7 @@ export default function useNip04ChatRooms(recipientPrivateKey?: Uint8Array) {
     const chatRoomMapKey = recipients.join(",");
 
     if (chatRoomMap.has(chatRoomMapKey) || _chatRoomMap.has(chatRoomMapKey)) {
-      console.log("chat room already exists: ", chatRoomMapKey);
+      // console.log("chat room already exists: ", chatRoomMapKey);
       return;
     }
 
@@ -100,13 +100,13 @@ export default function useNip04ChatRooms(recipientPrivateKey?: Uint8Array) {
 
     await Promise.all(
       events.map(async (event, index) => {
-        console.log(`storing chat room ${index + 1} of ${events.length}...`);
+        // console.log(`storing chat room ${index + 1} of ${events.length}...`);
         await signPublishEvent(event as NDKEvent, {
           sign: false,
           repost: false,
           publish: true,
         });
-        console.log(`chat room ${index + 1} of ${events.length} stored!`);
+        // console.log(`chat room ${index + 1} of ${events.length} stored!`);
       })
     );
 

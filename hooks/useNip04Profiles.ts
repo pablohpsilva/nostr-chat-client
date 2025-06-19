@@ -75,7 +75,7 @@ export default function useNip14Profiles() {
           .values()
       );
 
-      console.log("profiles", profiles);
+      // console.log("profiles", profiles);
 
       setProfilesFromArray(profiles);
 

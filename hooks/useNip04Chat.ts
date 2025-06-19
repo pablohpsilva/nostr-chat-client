@@ -230,12 +230,12 @@ export default function useNip04Chat(_recipients: string | string[]) {
 
       // Handle EOSE (End of Stored Events)
       outgoingSub.on("eose", (event: any) => {
-        console.log("Outgoing messages EOSE received", event);
+        // console.log("Outgoing messages EOSE received", event);
         setLoading(false);
       });
 
       incomingSub.on("eose", (event: any) => {
-        console.log("Incoming messages EOSE received", event);
+        // console.log("Incoming messages EOSE received", event);
         setLoading(false);
       });
     } catch (error) {
@@ -275,13 +275,13 @@ export default function useNip04Chat(_recipients: string | string[]) {
 
       await Promise.allSettled(
         events.map(async (event, index) => {
-          console.log(`Publishing event ${index + 1} of ${events.length}`);
+          // console.log(`Publishing event ${index + 1} of ${events.length}`);
           await signPublishEvent(event as NDKEvent, {
             sign: false,
             repost: false,
             publish: true,
           });
-          console.log(`Published event ${index + 1} of ${events.length}`);
+          // console.log(`Published event ${index + 1} of ${events.length}`);
         })
       );
     } catch (error) {

@@ -42,8 +42,6 @@ export const getNDK = (() => {
       getInstance: () => instance,
       getRelayUrls: () => instance.explicitRelayUrls,
       setRelays: (newRelays: RelayDict) => {
-        console.log("setRelays", newRelays);
-        console.log("instance", instance);
         const explicitRelayUrls = Object.keys(newRelays);
         // instance = new NDK({ explicitRelayUrls, cacheAdapter });
         instance = new NDK({ explicitRelayUrls });

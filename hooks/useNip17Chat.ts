@@ -155,14 +155,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
       outgoingSub = ndk?.subscribe(outgoingFilter, options)!;
 
       outgoingSub.on("event", (event: NDKEvent) => {
-        console.log("FOUND EVENT", event?.id);
+        // console.log("FOUND EVENT", event?.id);
         // addMessageToConversation(event, privateKey!);
         debouncedAddMessages(privateKey!)(event);
       });
 
       // Handle EOSE (End of Stored Events)
       outgoingSub.on("eose", (event: any) => {
-        console.log("Outgoing messages EOSE received", event);
+        // console.log("Outgoing messages EOSE received", event);
       });
     } catch (error) {
       console.error("Error fetching conversation messages:", error);

@@ -11,24 +11,23 @@ import MessageInput from "@/components/Chat/MessageInput";
 import MessageList from "@/components/Chat/MessageList";
 import { ROUTES } from "@/constants/routes";
 import { ChatRoom } from "@/constants/types";
+import useNDKWrapper from "@/hooks/useNDKWrapper";
 import useNip17Chat from "@/hooks/useNip17Chat";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
-import useNDKWrapper from "@/hooks/useNDKWrapper";
 
 export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();
   const router = useRouter();
   const {
-    // messages,
-    // getConversationMessagesWebhook,
+    messages,
+    getConversationMessagesWebhook,
     sendMessage,
     isLoading,
-    // isSendingMessage,
-    // timeRange,
+    isSendingMessage,
+    timeRange,
     getHistoricalMessages,
   } = useNip17Chat([npub as string]);
-  // const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
-  const { storeChatRoom } = useNip17StoreProfile();
+  const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
   const { ndk } = useNDKWrapper();
   const currentUser = ndk?.activeUser;
 
@@ -62,10 +61,10 @@ export default function NIP17ChatPage() {
   };
 
   useEffect(() => {
-    // loadChatRooms().then((chatRoomMap) => {
-    //   getConversationMessagesWebhook();
-    //   handleStoreChatRoom(chatRoomMap);
-    // });
+    loadChatRooms().then((chatRoomMap) => {
+      getConversationMessagesWebhook();
+      handleStoreChatRoom(chatRoomMap);
+    });
     // getHistoricalMessages();
   }, [npub]);
 
@@ -84,12 +83,12 @@ export default function NIP17ChatPage() {
             onBackClick={handleBackToList}
           />
 
-          {/* {messages.length === 0 && ( */}
-          <EmptyChat
-            isLoading={isLoading}
-            loadPreviousMessages={getHistoricalMessages}
-          />
-          {/* )}
+          {messages.length === 0 && (
+            <EmptyChat
+              isLoading={isLoading}
+              loadPreviousMessages={getHistoricalMessages}
+            />
+          )}
 
           {messages.length > 0 && (
             <MessageList
@@ -98,12 +97,11 @@ export default function NIP17ChatPage() {
               loadPreviousMessages={getHistoricalMessages}
               timeRange={timeRange}
             />
-          )} */}
+          )}
 
           <MessageInput
             onSendMessage={handleSendMessage}
-            // disable={isLoading || isSendingMessage}
-            disable={isLoading}
+            disable={isLoading || isSendingMessage}
           />
         </View>
       </KeyboardAvoidingView>
