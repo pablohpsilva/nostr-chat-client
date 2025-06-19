@@ -119,7 +119,8 @@
           "react-native-bouncy-checkbox",
           "react-native-sha256",
           "react-native-webview-crypto"
-        ]
+        ],
+        "listUnknownPackages": false
       }
     }
   }
