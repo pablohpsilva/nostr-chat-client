@@ -13,7 +13,6 @@ import {
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useNDK } from "@/components/Context";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import {
@@ -24,11 +23,12 @@ import {
 } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/routes";
-import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-hooks";
+import useNDKWrapper from "@/hooks/useNDKWrapper";
+import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
 
 export default function KeysScreen() {
   const router = useRouter();
-  const { ndk } = useNDK();
+  const { ndk } = useNDKWrapper();
   const currentUser = ndk?.activeUser;
   const [showPrivateKey, setShowPrivateKey] = useState(false);
   const [privateKeyConfirmed, setPrivateKeyConfirmed] = useState(false);

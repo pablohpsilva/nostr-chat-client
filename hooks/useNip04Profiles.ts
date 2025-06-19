@@ -2,16 +2,16 @@ import { NDKFilter, NDKKind } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
 import { useState } from "react";
 
-import { useNDK } from "@/components/Context";
 import { AppUserProfile } from "@/constants/types";
 import { useProfileStore } from "@/store/profiles";
+import useNDKWrapper from "./useNDKWrapper";
 import { removeDuplicatesByKey } from "./useTag";
 
 export default function useNip14Profiles() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setProfilesFromArray, getChatRoomList } = useProfileStore();
-  const { ndk, fetchEvents, getProfile } = useNDK();
+  const { ndk, fetchEvents, fetchProfile } = useNDKWrapper();
 
   const getUserProfilesFromChats = async (): Promise<AppUserProfile[]> => {
     try {
@@ -44,7 +44,7 @@ export default function useNip14Profiles() {
         const pubKeyObj = { pubkey: rumor.pubkey, npub };
 
         try {
-          const _profile = await getProfile(rumor.pubkey);
+          const _profile = await fetchProfile(rumor.pubkey);
           const profile = _profile ? _profile : pubKeyObj;
           return { ...profile, npub, pubkey: rumor.pubkey, nip: "NIP04" };
         } catch (err) {

@@ -4,12 +4,12 @@ import {
   NDKKind,
   NDKSubscription,
   NDKSubscriptionOptions,
-} from "@nostr-dev-kit/ndk-hooks";
+} from "@nostr-dev-kit/ndk-mobile";
 import { nip04 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useNDK } from "@/components/Context";
 import { useChatStore } from "@/store/chat";
+import useNDKWrapper from "./useNDKWrapper";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
@@ -19,7 +19,7 @@ export default function useNip04Chat(_recipients: string | string[]) {
   const [isLoading, setLoading] = useState(false);
   const debouncedMessageCache = useRef<any[]>([]);
   const { createMessageTag } = useTag();
-  const { ndk, fetchEvents, signPublishEvent } = useNDK();
+  const { ndk, fetchEvents, signPublishEvent } = useNDKWrapper();
   const currentUser = ndk?.activeUser;
   const debounceTimer = useRef<number>(0);
   const { recipients, chatKey, pubKeys } = useMemo(() => {

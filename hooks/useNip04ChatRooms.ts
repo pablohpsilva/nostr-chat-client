@@ -9,10 +9,10 @@ import cloneDeep from "lodash.clonedeep";
 import { Event, nip17, nip19 } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 
-import { useNDK } from "@/components/Context";
 import { ChatRoom, Recipient } from "@/constants/types";
 import { wrapEvent } from "@/interal-lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
+import useNDKWrapper from "./useNDKWrapper";
 import useNip17Profiles from "./useNip17Profiles";
 import { useTag } from "./useTag";
 
@@ -35,7 +35,7 @@ export default function useNip04ChatRooms(recipientPrivateKey?: Uint8Array) {
     wipeCleanChatRooms,
     clearError: clearChatListError,
   } = useChatListStore();
-  const { ndk, fetchEvents, signPublishEvent, getUser } = useNDK();
+  const { ndk, fetchEvents, signPublishEvent, fetchProfile } = useNDKWrapper();
   const { createChatTag, normalizeRecipients, normalizeRecipientsNPub } =
     useTag();
   const chatRooms = useMemo(
@@ -57,7 +57,8 @@ export default function useNip04ChatRooms(recipientPrivateKey?: Uint8Array) {
     // @ts-expect-error
     const privateKey = ndk?.signer?._privateKey;
     const currentUserPublicKey =
-      ndk?.activeUser?.pubkey ?? getUser(_currentUserPublicKey!).pubkey;
+      ndk?.activeUser?.pubkey ??
+      (await fetchProfile(_currentUserPublicKey!))?.pubkey;
 
     if (!privateKey) {
       console.log(new Error("No private key found"));

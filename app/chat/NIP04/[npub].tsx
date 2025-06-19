@@ -1,4 +1,4 @@
-import { NDKEvent } from "@nostr-dev-kit/ndk-hooks";
+import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Fragment, useEffect } from "react";
@@ -8,16 +8,16 @@ import ChatHeader from "@/components/Chat/ChatHeader";
 import EmptyChat from "@/components/Chat/EmptyChat";
 import MessageInput from "@/components/Chat/MessageInput";
 import MessageList from "@/components/Chat/MessageList";
-import { useNDK } from "@/components/Context";
 import { TypographyOverline } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/routes";
+import useNDKWrapper from "@/hooks/useNDKWrapper";
 import useNip04Chat from "@/hooks/useNip04Chat";
 
 export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();
   const router = useRouter();
-  const { ndk } = useNDK();
+  const { ndk } = useNDKWrapper();
   const currentUser = ndk?.activeUser;
   const {
     messages,

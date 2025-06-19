@@ -1,4 +1,4 @@
-import { NDKEvent } from "@nostr-dev-kit/ndk-hooks";
+import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { nip19 } from "nostr-tools";
@@ -9,11 +9,11 @@ import ChatHeader from "@/components/Chat/ChatHeader";
 import EmptyChat from "@/components/Chat/EmptyChat";
 import MessageInput from "@/components/Chat/MessageInput";
 import MessageList from "@/components/Chat/MessageList";
-import { useNDK } from "@/components/Context";
 import { ROUTES } from "@/constants/routes";
 import { ChatRoom } from "@/constants/types";
 import useNip17Chat from "@/hooks/useNip17Chat";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
+import useNDKWrapper from "@/hooks/useNDKWrapper";
 
 export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();
@@ -28,7 +28,7 @@ export default function NIP17ChatPage() {
     getHistoricalMessages,
   } = useNip17Chat([npub as string]);
   const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
-  const { ndk } = useNDK();
+  const { ndk } = useNDKWrapper();
   const currentUser = ndk?.activeUser;
 
   const handleSendMessage = async (newMessage: string) => {

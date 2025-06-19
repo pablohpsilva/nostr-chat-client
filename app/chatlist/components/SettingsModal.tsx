@@ -10,11 +10,11 @@ import {
   View,
 } from "react-native";
 
-import { useNDK } from "@/components/Context";
 import { Button } from "@/components/ui/Button";
 import { TypographyBodyL, TypographyTitle } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
+import useNDKWrapper from "@/hooks/useNDKWrapper";
 import { useChatStore } from "@/store/chat";
 import { useChatListStore } from "@/store/chatlist";
 import { useProfileStore } from "@/store/profiles";
@@ -32,7 +32,7 @@ export default function SettingsModal({
   const { wipeCleanProfiles } = useProfileStore();
   // const { wipeClean: wipeCleanRelays } = useRelayStore();
   const router = useRouter();
-  const { logout } = useNDK();
+  const { logout } = useNDKWrapper();
 
   const handleLogout = () => {
     handleCloseOverlay();

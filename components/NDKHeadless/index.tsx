@@ -5,7 +5,7 @@ import {
   NDKSessionLocalStorage,
   useNDKInit,
   useNDKSessionMonitor,
-} from "@nostr-dev-kit/ndk-hooks";
+} from "@nostr-dev-kit/ndk-mobile";
 import { useEffect } from "react";
 
 import { DEFAULT_RELAYS } from "@/constants";

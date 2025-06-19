@@ -1,13 +1,12 @@
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Fragment, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 
-import { useNDK } from "@/components/Context";
 import { Button } from "@/components/ui/Button";
 import { H3, TypographyBodyL } from "@/components/ui/Typography";
 import { APP_NAME } from "@/constants";
-import { ROUTES } from "@/constants/routes";
+import useNDKWrapper from "@/hooks/useNDKWrapper";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CreateAccountForm } from "./components/CreateAccountForm";
@@ -16,15 +15,21 @@ import { ImportKeyAdvancedForm } from "./components/ImportKeyAdvancedForm";
 import { ImportKeyForm } from "./components/ImportKeyForm";
 import { LoginForm } from "./components/LoginForm";
 import { KeysType, LoginMode } from "./types";
+import { ROUTES } from "@/constants/routes";
 
 export default function LoginScreen() {
   const router = useRouter();
   const [mode, setMode] = useState<LoginMode>(LoginMode.LOGIN);
-  const { loginWithSecret } = useNDK();
+  const { ndk, loginWithSecret: ndkLogin } = useNDKWrapper();
 
   const handleLogin = async (keys: KeysType) => {
-    const result = await loginWithSecret(keys.nsec);
-    if (result) {
+    if (!ndk) {
+      Alert.alert("Error", "NDK not initialized");
+      return;
+    }
+    const result = await ndkLogin(keys.nsec);
+
+    if (!!result) {
       router.replace(ROUTES.CHAT);
     }
   };

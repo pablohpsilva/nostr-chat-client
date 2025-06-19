@@ -16,10 +16,11 @@ import "react-native-reanimated";
 // import PolyfillCrypto from "react-native-webview-crypto";
 
 // import NDKHeadless from "@/components/NDKHeadless";
-import { NDKProvider } from "@/components/Context";
-import { DEFAULT_RELAYS } from "@/constants";
 import { DarkTheme, DefaultTheme } from "@/constants/Theme";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { initializeNDK } from "@/interal-lib/ndk";
+import { useNDKInit } from "@nostr-dev-kit/ndk-mobile";
+import { useEffect } from "react";
 
 // Disable all LogBox notifications
 if (__DEV__) {
@@ -30,6 +31,8 @@ if (__DEV__) {
   console.log("ignoreAllLogs");
   LogBox.ignoreAllLogs(true);
 }
+
+const ndk = initializeNDK();
 
 // Alternative: Ignore specific warnings only (uncomment and modify as needed)
 // LogBox.ignoreLogs([
@@ -42,6 +45,7 @@ if (__DEV__) {
 // ]);
 
 export default function RootLayout() {
+  const initializeNDK = useNDKInit();
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     // Poppins fonts
@@ -56,31 +60,33 @@ export default function RootLayout() {
     "Inter-Bold": require("../assets/fonts/Inter/static/Inter_18pt-Bold.ttf"),
   });
 
+  useEffect(() => {
+    initializeNDK(ndk);
+  }, []);
+
   if (!loaded) {
     // Async font loading only occurs in development.
     return null;
   }
 
   return (
-    <NDKProvider relayUrls={Object.keys(DEFAULT_RELAYS)}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        {/* <PolyfillCrypto /> */}
-        {/* <NDKHeadless /> */}
-        <Stack>
-          <Stack.Screen name="features" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="chatlist" options={{ headerShown: false }} />
-          <Stack.Screen name="relays" options={{ headerShown: false }} />
-          <Stack.Screen name="keys" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="chat/NIP17/[npub]"
-            options={{ headerShown: false }}
-          />
-          {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </NDKProvider>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      {/* <PolyfillCrypto /> */}
+      {/* <NDKHeadless /> */}
+      <StatusBar style="light" />
+      <Stack>
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="chatlist" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="features" options={{ headerShown: false }} />
+        <Stack.Screen name="relays" options={{ headerShown: false }} />
+        <Stack.Screen name="keys" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="chat/NIP17/[npub]"
+          options={{ headerShown: false }}
+        /> */}
+        {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
+        <Stack.Screen name="+not-found" />
+      </Stack>
+    </ThemeProvider>
   );
 }

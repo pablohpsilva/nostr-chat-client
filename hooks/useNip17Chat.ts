@@ -4,22 +4,18 @@ import {
   NDKKind,
   NDKSubscription,
   NDKSubscriptionOptions,
-} from "@nostr-dev-kit/ndk-hooks";
+} from "@nostr-dev-kit/ndk-mobile";
 import { Event, nip17 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useNDK } from "@/components/Context";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
 import { useChatStore } from "@/store/chat";
-import { Alert, Platform } from "react-native";
+import { alertUser } from "@/utils/alert";
+import useNDKWrapper from "./useNDKWrapper";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
-
-const alertUser = (message: string) => {
-  Platform.OS === "web" ? alert(message) : Alert.alert(message);
-};
 
 export default function useNip17Chat(_recipients: string | string[]) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
@@ -35,7 +31,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
     markFetched,
     updateTimeRange,
   } = useChatStore();
-  const { ndk, fetchEvents, signPublishEvent } = useNDK();
+  const { ndk, fetchEvents, signPublishEvent } = useNDKWrapper();
   const currentUser = ndk?.activeUser;
   const { dTag, recipients } = useMemo(() => {
     const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];

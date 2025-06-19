@@ -5,8 +5,8 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import ChatMessage from "@/components/Chat/ChatMessage";
 import { Button } from "@/components/ui/Button";
+import useNDKWrapper from "@/hooks/useNDKWrapper";
 import { TimeRange } from "@/store/chat";
-import { useNDK } from "../Context";
 
 interface MessageListProps {
   messages: NDKEvent[];
@@ -21,7 +21,7 @@ const MessageList = ({
   loadPreviousMessages,
   timeRange,
 }: MessageListProps) => {
-  const { ndk } = useNDK();
+  const { ndk } = useNDKWrapper();
   const currentUser = ndk?.activeUser;
   const scrollViewRef = useRef<ScrollView>(null);
   const lastMessageTimestampRef = useRef<number>(0);

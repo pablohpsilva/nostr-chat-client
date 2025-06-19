@@ -320,7 +320,11 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - ExpoSecureStore (14.2.3):
+    - ExpoModulesCore
   - ExpoSplashScreen (0.30.9):
+    - ExpoModulesCore
+  - ExpoSQLite (15.2.12):
     - ExpoModulesCore
   - ExpoSymbols (0.4.5):
     - ExpoModulesCore
@@ -2490,7 +2494,9 @@ DEPENDENCIES:
   - "ExpoKeepAwake (from `../node_modules/.pnpm/expo-keep-awake@14.1.4_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_react-_ff177fbd44ad8539e7e1593b4c33e160/node_modules/expo-keep-awake/ios`)"
   - "ExpoLinking (from `../node_modules/.pnpm/expo-linking@7.1.5_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_react-nati_4d3ca752dd8a42209fcbc54b83cd3a89/node_modules/expo-linking/ios`)"
   - "ExpoModulesCore (from `../node_modules/.pnpm/expo-modules-core@2.4.0/node_modules/expo-modules-core`)"
+  - "ExpoSecureStore (from `../node_modules/.pnpm/expo-secure-store@14.2.3_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_reac_027dd86dc69a95ec6c648bc202f1bf8a/node_modules/expo-secure-store/ios`)"
   - "ExpoSplashScreen (from `../node_modules/.pnpm/expo-splash-screen@0.30.9_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_rea_5c4749c7b0eef095aac9a303c8de8cdf/node_modules/expo-splash-screen/ios`)"
+  - "ExpoSQLite (from `../node_modules/.pnpm/expo-sqlite@15.2.12_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_react-nat_875c213bf70487130abf8389387a5ec1/node_modules/expo-sqlite/ios`)"
   - "ExpoSymbols (from `../node_modules/.pnpm/expo-symbols@0.4.5_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_react-nati_6a0f271f0519e6163d8770d829b8b71b/node_modules/expo-symbols/ios`)"
   - "ExpoSystemUI (from `../node_modules/.pnpm/expo-system-ui@5.0.8_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_react-na_e2cf0195601dacf7f988b823b3a88b61/node_modules/expo-system-ui/ios`)"
   - "ExpoWebBrowser (from `../node_modules/.pnpm/expo-web-browser@14.1.6_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_react_70592ee68e7ed63315bfab82953008b0/node_modules/expo-web-browser/ios`)"
@@ -2635,8 +2641,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/.pnpm/expo-linking@7.1.5_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_react-nati_4d3ca752dd8a42209fcbc54b83cd3a89/node_modules/expo-linking/ios"
   ExpoModulesCore:
     :path: "../node_modules/.pnpm/expo-modules-core@2.4.0/node_modules/expo-modules-core"
+  ExpoSecureStore:
+    :path: "../node_modules/.pnpm/expo-secure-store@14.2.3_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_reac_027dd86dc69a95ec6c648bc202f1bf8a/node_modules/expo-secure-store/ios"
   ExpoSplashScreen:
     :path: "../node_modules/.pnpm/expo-splash-screen@0.30.9_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_rea_5c4749c7b0eef095aac9a303c8de8cdf/node_modules/expo-splash-screen/ios"
+  ExpoSQLite:
+    :path: "../node_modules/.pnpm/expo-sqlite@15.2.12_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_react-nat_875c213bf70487130abf8389387a5ec1/node_modules/expo-sqlite/ios"
   ExpoSymbols:
     :path: "../node_modules/.pnpm/expo-symbols@0.4.5_expo@53.0.11_@babel+core@7.27.4_@expo+metro-runtime@5.0.4_react-nati_6a0f271f0519e6163d8770d829b8b71b/node_modules/expo-symbols/ios"
   ExpoSystemUI:
@@ -2832,7 +2842,9 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: bf0811570c8da182bfb879169437d4de298376e7
   ExpoLinking: b85ff4eafeae6fc638c6cace60007ae521af0ef4
   ExpoModulesCore: d431ffe83c8673d02cb38425594a5f5480fd3061
+  ExpoSecureStore: b367d9f62c9102d808afbeb1561636d4276e439d
   ExpoSplashScreen: 03ef991c0f9575a10269e08083cb4bd10e0989bc
+  ExpoSQLite: 9b4feb8264559916a9bc37d157fc2e076b00afbe
   ExpoSymbols: c5612a90fb9179cdaebcd19bea9d8c69e5d3b859
   ExpoSystemUI: 29fb31c0e06eea3f5d88299d5c290101fc69f61f
   ExpoWebBrowser: 06fb5f767f53ad53944b068cdd207984cb998712

@@ -5,7 +5,6 @@ import { nip19 } from "nostr-tools";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 
-import { useNDK } from "@/components/Context";
 import {
   TypographyBodyS,
   TypographyBodySBold,
@@ -14,6 +13,7 @@ import {
 import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
 import { formatPubkey, isValidNpubOrPublicKey } from "@/interal-lib/utils";
+import useNDKWrapper from "@/hooks/useNDKWrapper";
 
 export default function SearchStartChat({
   npub: _npub,
@@ -29,7 +29,7 @@ export default function SearchStartChat({
     return !_npub.startsWith("npub") ? nip19.npubEncode(_npub) : _npub;
   }, [_npub]);
   const npubToUse = isValidNpubOrPublicKey(npub) ? npub : "";
-  const { getProfile } = useNDK();
+  const { fetchProfile } = useNDKWrapper();
 
   const fetchUserProfile = async () => {
     try {

@@ -9,22 +9,22 @@ import cloneDeep from "lodash.clonedeep";
 import { Event, nip17, nip19 } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 
-import { useNDK } from "@/components/Context";
 import { ChatRoom, Recipient } from "@/constants/types";
 import { wrapEvent } from "@/interal-lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
+import useNDKWrapper from "./useNDKWrapper";
 import useNip17Profiles from "./useNip17Profiles";
 import { useTag } from "./useTag";
 
 let sub: NDKSubscription | null = null;
 
 export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
+  const [isLoading, setLoading] = useState(false);
   const {
     loadAndUpdateProfiles,
     isLoading: isLoadingProfiles,
     getChatRoomList,
   } = useNip17Profiles();
-  const [isLoading, setLoading] = useState(false);
   const {
     chatRooms: chatRoomMap,
     setChatRooms,
@@ -40,7 +40,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
   } = useChatListStore();
   const { createChatTag, normalizeRecipients, normalizeRecipientsNPub } =
     useTag();
-  const { ndk, fetchEvents, signPublishEvent } = useNDK();
+  const { ndk, fetchEvents, signPublishEvent } = useNDKWrapper();
   const chatRooms = useMemo(
     () => Array.from(chatRoomMap.values()),
     [chatRoomMap.values()]
