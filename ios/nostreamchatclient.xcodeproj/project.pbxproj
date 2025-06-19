@@ -8,24 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		3D5CAC4F24DD77D0A2FE6E78 /* libPods-nostreamchatclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 654B656C86B42CCB23022751 /* libPods-nostreamchatclient.a */; };
+		3919DB6B22C1901998224792 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 794D51EC293E1F290DE203F3 /* ExpoModulesProvider.swift */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		6C6D84949FED0451F16C6DD8 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E41301027D285711DC5474 /* ExpoModulesProvider.swift */; };
-		9CA57813B88BC5F5E52350F9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 10A2FC83A72A9D13AA99A1D1 /* PrivacyInfo.xcprivacy */; };
+		6982742F7A62CFAD8496D4D3 /* libPods-nostreamchatclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B88868750CC799C3AC77CA74 /* libPods-nostreamchatclient.a */; };
+		A0F90D2E8545AE2B3CFB613A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 00FDB75B20A4546864E91AC0 /* PrivacyInfo.xcprivacy */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		10A2FC83A72A9D13AA99A1D1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = nostreamchatclient/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		00FDB75B20A4546864E91AC0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = nostreamchatclient/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* nostreamchatclient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = nostreamchatclient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = nostreamchatclient/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = nostreamchatclient/Info.plist; sourceTree = "<group>"; };
-		4333E4FAFC575311CDA3BF7B /* Pods-nostreamchatclient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nostreamchatclient.debug.xcconfig"; path = "Target Support Files/Pods-nostreamchatclient/Pods-nostreamchatclient.debug.xcconfig"; sourceTree = "<group>"; };
-		654B656C86B42CCB23022751 /* libPods-nostreamchatclient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-nostreamchatclient.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		70B0EAD5A7F5131C5008705F /* Pods-nostreamchatclient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nostreamchatclient.release.xcconfig"; path = "Target Support Files/Pods-nostreamchatclient/Pods-nostreamchatclient.release.xcconfig"; sourceTree = "<group>"; };
-		79E41301027D285711DC5474 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-nostreamchatclient/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		794D51EC293E1F290DE203F3 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-nostreamchatclient/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		8F93412443DBE1F83171EBD2 /* Pods-nostreamchatclient.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nostreamchatclient.release.xcconfig"; path = "Target Support Files/Pods-nostreamchatclient/Pods-nostreamchatclient.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = nostreamchatclient/SplashScreen.storyboard; sourceTree = "<group>"; };
+		AC8BFEBE40B3DA1F4938CEFB /* Pods-nostreamchatclient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nostreamchatclient.debug.xcconfig"; path = "Target Support Files/Pods-nostreamchatclient/Pods-nostreamchatclient.debug.xcconfig"; sourceTree = "<group>"; };
+		B88868750CC799C3AC77CA74 /* libPods-nostreamchatclient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-nostreamchatclient.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = nostreamchatclient/AppDelegate.swift; sourceTree = "<group>"; };
@@ -37,13 +37,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D5CAC4F24DD77D0A2FE6E78 /* libPods-nostreamchatclient.a in Frameworks */,
+				6982742F7A62CFAD8496D4D3 /* libPods-nostreamchatclient.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F2CEAC980A262B04324A513 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				6800B030B20C5DC2379286D2 /* nostreamchatclient */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* nostreamchatclient */ = {
 			isa = PBXGroup;
 			children = (
@@ -53,7 +61,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				10A2FC83A72A9D13AA99A1D1 /* PrivacyInfo.xcprivacy */,
+				00FDB75B20A4546864E91AC0 /* PrivacyInfo.xcprivacy */,
 			);
 			name = nostreamchatclient;
 			sourceTree = "<group>";
@@ -62,35 +70,27 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				654B656C86B42CCB23022751 /* libPods-nostreamchatclient.a */,
+				B88868750CC799C3AC77CA74 /* libPods-nostreamchatclient.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		608C975A47BF272B3858E658 /* nostreamchatclient */ = {
+		464BD0EA74587AD7116F53E1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				79E41301027D285711DC5474 /* ExpoModulesProvider.swift */,
-			);
-			name = nostreamchatclient;
-			sourceTree = "<group>";
-		};
-		81B27C647E587D004F4AA402 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				4333E4FAFC575311CDA3BF7B /* Pods-nostreamchatclient.debug.xcconfig */,
-				70B0EAD5A7F5131C5008705F /* Pods-nostreamchatclient.release.xcconfig */,
+				AC8BFEBE40B3DA1F4938CEFB /* Pods-nostreamchatclient.debug.xcconfig */,
+				8F93412443DBE1F83171EBD2 /* Pods-nostreamchatclient.release.xcconfig */,
 			);
 			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		82D021E994057BE3FEBBF523 /* ExpoModulesProviders */ = {
+		6800B030B20C5DC2379286D2 /* nostreamchatclient */ = {
 			isa = PBXGroup;
 			children = (
-				608C975A47BF272B3858E658 /* nostreamchatclient */,
+				794D51EC293E1F290DE203F3 /* ExpoModulesProvider.swift */,
 			);
-			name = ExpoModulesProviders;
+			name = nostreamchatclient;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -107,8 +107,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				81B27C647E587D004F4AA402 /* Pods */,
-				82D021E994057BE3FEBBF523 /* ExpoModulesProviders */,
+				464BD0EA74587AD7116F53E1 /* Pods */,
+				0F2CEAC980A262B04324A513 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -140,14 +140,14 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "nostreamchatclient" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				B93D6D52E47FA7DB03A02DB7 /* [Expo] Configure project */,
+				0456CB998E19E13EAA02BBE3 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				57601C8CA9608F22602DD91B /* [CP] Embed Pods Frameworks */,
-				7FE2AAC96B324281A2D12867 /* Upload Debug Symbols to Sentry */,
+				7899F31D54434BCFA3F66B11 /* Upload Debug Symbols to Sentry */,
+				5C67ED74733020CBDEA8F2BA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -197,7 +197,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				9CA57813B88BC5F5E52350F9 /* PrivacyInfo.xcprivacy in Resources */,
+				A0F90D2E8545AE2B3CFB613A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +218,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n/bin/sh `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('@sentry/react-native/package.json')) + '/scripts/sentry-xcode.sh'\"` `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
+		};
+		0456CB998E19E13EAA02BBE3 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-nostreamchatclient/expo-configure-project.sh\"\n";
 		};
 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -241,7 +260,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		57601C8CA9608F22602DD91B /* [CP] Embed Pods Frameworks */ = {
+		5C67ED74733020CBDEA8F2BA /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -259,7 +278,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-nostreamchatclient/Pods-nostreamchatclient-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7FE2AAC96B324281A2D12867 /* Upload Debug Symbols to Sentry */ = {
+		7899F31D54434BCFA3F66B11 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -271,7 +290,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh ../node_modules/@sentry/react-native/scripts/sentry-xcode-debug-files.sh";
+			shellScript = "/bin/sh `${NODE_BINARY:-node} --print \"require('path').dirname(require.resolve('@sentry/react-native/package.json')) + '/scripts/sentry-xcode-debug-files.sh'\"`";
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -321,25 +340,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-nostreamchatclient/Pods-nostreamchatclient-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B93D6D52E47FA7DB03A02DB7 /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-nostreamchatclient/expo-configure-project.sh\"\n";
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -348,7 +348,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				6C6D84949FED0451F16C6DD8 /* ExpoModulesProvider.swift in Sources */,
+				3919DB6B22C1901998224792 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,7 +357,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4333E4FAFC575311CDA3BF7B /* Pods-nostreamchatclient.debug.xcconfig */;
+			baseConfigurationReference = AC8BFEBE40B3DA1F4938CEFB /* Pods-nostreamchatclient.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -394,7 +394,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 70B0EAD5A7F5131C5008705F /* Pods-nostreamchatclient.release.xcconfig */;
+			baseConfigurationReference = 8F93412443DBE1F83171EBD2 /* Pods-nostreamchatclient.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
