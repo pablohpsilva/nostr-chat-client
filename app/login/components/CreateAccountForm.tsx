@@ -1,4 +1,4 @@
-import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
+import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
 import * as Clipboard from "expo-clipboard";
 import React, { Fragment, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";

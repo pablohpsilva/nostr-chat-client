@@ -8,10 +8,10 @@ import {
 import { Event, nip17 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useNDK } from "@/components/Context";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
 import { useChatStore } from "@/store/chat";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 import { Alert, Platform } from "react-native";
 import { useTag } from "./useTag";
 

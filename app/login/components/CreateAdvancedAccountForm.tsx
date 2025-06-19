@@ -1,4 +1,4 @@
-import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
+import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
 import * as Clipboard from "expo-clipboard";
 import { generateSeedWords, privateKeyFromSeedWords } from "nostr-tools/nip06";
 import React, { Fragment, useEffect, useState } from "react";

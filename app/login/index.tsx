@@ -1,14 +1,18 @@
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Fragment, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 
-import { useNDK } from "@/components/Context";
 import { Button } from "@/components/ui/Button";
 import { H3, TypographyBodyL } from "@/components/ui/Typography";
 import { APP_NAME } from "@/constants";
 import { ROUTES } from "@/constants/routes";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  NDKPrivateKeySigner,
+  useNDK,
+  useNDKSessionLogin,
+} from "@nostr-dev-kit/ndk-mobile";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CreateAccountForm } from "./components/CreateAccountForm";
 import { CreateAdvancedAccountForm } from "./components/CreateAdvancedAccountForm";
@@ -20,10 +24,18 @@ import { KeysType, LoginMode } from "./types";
 export default function LoginScreen() {
   const router = useRouter();
   const [mode, setMode] = useState<LoginMode>(LoginMode.LOGIN);
-  const { loginWithSecret } = useNDK();
+  const { ndk } = useNDK();
+  const login = useNDKSessionLogin();
 
   const handleLogin = async (keys: KeysType) => {
-    const result = await loginWithSecret(keys.nsec);
+    if (!ndk) {
+      Alert.alert("Error", "NDK not initialized");
+      return;
+    }
+
+    const signer = new NDKPrivateKeySigner(keys.nsec);
+    const result = await login(signer);
+
     if (result) {
       router.replace(ROUTES.CHAT);
     }

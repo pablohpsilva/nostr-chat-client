@@ -10,7 +10,6 @@ import {
   View,
 } from "react-native";
 
-import { useNDK } from "@/components/Context";
 import { Button } from "@/components/ui/Button";
 import { TypographyBodyL, TypographyTitle } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
@@ -18,6 +17,7 @@ import { fillRoute, ROUTES } from "@/constants/routes";
 import { useChatStore } from "@/store/chat";
 import { useChatListStore } from "@/store/chatlist";
 import { useProfileStore } from "@/store/profiles";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 import { Link, useRouter } from "expo-router";
 
 export default function SettingsModal({

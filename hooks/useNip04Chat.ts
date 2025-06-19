@@ -8,8 +8,8 @@ import {
 import { nip04 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useNDK } from "@/components/Context";
 import { useChatStore } from "@/store/chat";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;

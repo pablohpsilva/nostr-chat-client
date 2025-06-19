@@ -4,15 +4,15 @@ import {
   NDKKind,
   NDKSubscription,
   NDKSubscriptionOptions,
-} from "@nostr-dev-kit/ndk";
+} from "@nostr-dev-kit/ndk-mobile";
 import cloneDeep from "lodash.clonedeep";
 import { Event, nip17, nip19 } from "nostr-tools";
 import { useEffect, useMemo, useState } from "react";
 
-import { useNDK } from "@/components/Context";
 import { ChatRoom, Recipient } from "@/constants/types";
 import { wrapEvent } from "@/interal-lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 import useNip17Profiles from "./useNip17Profiles";
 import { useTag } from "./useTag";
 

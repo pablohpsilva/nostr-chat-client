@@ -1,8 +1,8 @@
 import { nip19 } from "nostr-tools";
 
-import { useNDK } from "@/components/Context";
 import { NIP17PossiblePublicKeys, Recipient } from "@/constants/types";
 import { generateUniqueDTag } from "@/interal-lib/generateUniqueDTag";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 
 /**
  * Generic function to remove duplicates from an array based on a key.

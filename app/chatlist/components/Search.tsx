@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 // import { useSearch } from "@/hooks/useSearch";
-import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKUserProfile } from "@nostr-dev-kit/ndk-mobile";
 
 import { TypographyBodyL } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";

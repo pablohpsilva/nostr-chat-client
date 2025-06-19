@@ -1,4 +1,4 @@
-import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKUserProfile } from "@nostr-dev-kit/ndk-mobile";
 import { Event } from "nostr-tools";
 import { Fragment, useState } from "react";
 

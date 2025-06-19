@@ -1,4 +1,4 @@
-import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKUserProfile } from "@nostr-dev-kit/ndk-mobile";
 import { nip19 } from "nostr-tools";
 
 export type Platform = "web" | "ios" | "android";

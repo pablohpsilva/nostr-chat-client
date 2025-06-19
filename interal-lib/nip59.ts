@@ -1,4 +1,4 @@
-import { NostrEvent } from "@nostr-dev-kit/ndk";
+import { NostrEvent } from "@nostr-dev-kit/ndk-mobile";
 import {
   EventTemplate,
   finalizeEvent,

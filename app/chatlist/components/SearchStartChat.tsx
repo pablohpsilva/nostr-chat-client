@@ -1,11 +1,10 @@
 import Ionicons from "@expo/vector-icons/build/Ionicons";
-import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKUserProfile } from "@nostr-dev-kit/ndk-mobile";
 import { Link } from "expo-router";
 import { nip19 } from "nostr-tools";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 
-import { useNDK } from "@/components/Context";
 import {
   TypographyBodyS,
   TypographyBodySBold,
@@ -14,6 +13,7 @@ import {
 import { Colors } from "@/constants/Colors";
 import { fillRoute, ROUTES } from "@/constants/routes";
 import { formatPubkey, isValidNpubOrPublicKey } from "@/interal-lib/utils";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 
 export default function SearchStartChat({
   npub: _npub,

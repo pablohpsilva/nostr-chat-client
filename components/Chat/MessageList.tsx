@@ -1,4 +1,4 @@
-import { NDKEvent } from "@nostr-dev-kit/ndk";
+import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useRef } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";

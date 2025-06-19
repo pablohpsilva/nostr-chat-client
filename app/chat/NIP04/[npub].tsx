@@ -8,11 +8,11 @@ import ChatHeader from "@/components/Chat/ChatHeader";
 import EmptyChat from "@/components/Chat/EmptyChat";
 import MessageInput from "@/components/Chat/MessageInput";
 import MessageList from "@/components/Chat/MessageList";
-import { useNDK } from "@/components/Context";
 import { TypographyOverline } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/routes";
 import useNip04Chat from "@/hooks/useNip04Chat";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 
 export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();

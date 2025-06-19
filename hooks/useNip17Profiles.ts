@@ -2,9 +2,9 @@ import cloneDeep from "lodash.clonedeep";
 import { nip19 } from "nostr-tools";
 import { useState } from "react";
 
-import { useNDK } from "@/components/Context";
 import { AppUserProfile } from "@/constants/types";
 import { useProfileStore } from "@/store/profiles";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 import { removeDuplicatesByKey } from "./useTag";
 
 export default function useNip17Profiles() {

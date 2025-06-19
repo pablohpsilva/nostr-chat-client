@@ -1,4 +1,4 @@
-import NDK, { NDKUser } from "@nostr-dev-kit/ndk";
+import NDK, { NDKUser } from "@nostr-dev-kit/ndk-mobile";
 import { useRef, useState } from "react";
 
 export const Users = (ndk: NDK | undefined) => {

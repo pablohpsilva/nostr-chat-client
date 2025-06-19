@@ -4,7 +4,7 @@ import NDK, {
   NDKNip07Signer,
   NDKNip46Signer,
   NDKPrivateKeySigner,
-} from "@nostr-dev-kit/ndk";
+} from "@nostr-dev-kit/ndk-mobile";
 import { useEffect, useRef, useState } from "react";
 
 export default function NDKInstance(explicitRelayUrls: string[]) {

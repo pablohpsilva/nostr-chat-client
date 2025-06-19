@@ -2,7 +2,7 @@ import NDK, {
   NDKNip07Signer,
   NDKNip46Signer,
   NDKPrivateKeySigner,
-} from "@nostr-dev-kit/ndk";
+} from "@nostr-dev-kit/ndk-mobile";
 import { nip19 } from "nostr-tools";
 
 export async function _loginWithSecret(skOrNsec: string) {

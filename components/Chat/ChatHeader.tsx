@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKUserProfile } from "@nostr-dev-kit/ndk-mobile";
 import { Link } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

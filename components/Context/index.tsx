@@ -6,7 +6,7 @@ import NDK, {
   NDKPrivateKeySigner,
   NDKUser,
   NDKUserProfile,
-} from "@nostr-dev-kit/ndk";
+} from "@nostr-dev-kit/ndk-mobile";
 import { PropsWithChildren, createContext, useContext } from "react";
 
 import NDKInstance from "./instance";

@@ -1,5 +1,5 @@
 // Here we will initialize NDK and configure it to be available throughout the application
-import NDK from "@nostr-dev-kit/ndk";
+import NDK from "@nostr-dev-kit/ndk-mobile";
 // import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
 import {
   NDKSessionLocalStorage,

@@ -13,7 +13,6 @@ import {
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useNDK } from "@/components/Context";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import {
@@ -25,6 +24,7 @@ import {
 import { Colors } from "@/constants/Colors";
 import { ROUTES } from "@/constants/routes";
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-hooks";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 
 export default function KeysScreen() {
   const router = useRouter();

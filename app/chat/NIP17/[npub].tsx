@@ -9,7 +9,7 @@ import ChatHeader from "@/components/Chat/ChatHeader";
 import EmptyChat from "@/components/Chat/EmptyChat";
 import MessageInput from "@/components/Chat/MessageInput";
 import MessageList from "@/components/Chat/MessageList";
-import { useNDK } from "@/components/Context";
+import { useNDK } from "@nostr-dev-kit/ndk-mobile";
 import { ROUTES } from "@/constants/routes";
 import { ChatRoom } from "@/constants/types";
 import useNip17Chat from "@/hooks/useNip17Chat";
