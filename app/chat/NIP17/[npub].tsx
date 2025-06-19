@@ -19,15 +19,16 @@ export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();
   const router = useRouter();
   const {
-    messages,
-    getConversationMessagesWebhook,
+    // messages,
+    // getConversationMessagesWebhook,
     sendMessage,
     isLoading,
-    isSendingMessage,
-    timeRange,
+    // isSendingMessage,
+    // timeRange,
     getHistoricalMessages,
   } = useNip17Chat([npub as string]);
-  const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
+  // const { storeChatRoom, loadChatRooms } = useNip17StoreProfile();
+  const { storeChatRoom } = useNip17StoreProfile();
   const { ndk } = useNDKWrapper();
   const currentUser = ndk?.activeUser;
 
@@ -61,11 +62,11 @@ export default function NIP17ChatPage() {
   };
 
   useEffect(() => {
-    loadChatRooms().then((chatRoomMap) => {
-      getConversationMessagesWebhook();
-      handleStoreChatRoom(chatRoomMap);
-    });
-    getHistoricalMessages();
+    // loadChatRooms().then((chatRoomMap) => {
+    //   getConversationMessagesWebhook();
+    //   handleStoreChatRoom(chatRoomMap);
+    // });
+    // getHistoricalMessages();
   }, [npub]);
 
   return (
@@ -83,12 +84,12 @@ export default function NIP17ChatPage() {
             onBackClick={handleBackToList}
           />
 
-          {messages.length === 0 && (
-            <EmptyChat
-              isLoading={isLoading}
-              loadPreviousMessages={getHistoricalMessages}
-            />
-          )}
+          {/* {messages.length === 0 && ( */}
+          <EmptyChat
+            isLoading={isLoading}
+            loadPreviousMessages={getHistoricalMessages}
+          />
+          {/* )}
 
           {messages.length > 0 && (
             <MessageList
@@ -97,11 +98,12 @@ export default function NIP17ChatPage() {
               loadPreviousMessages={getHistoricalMessages}
               timeRange={timeRange}
             />
-          )}
+          )} */}
 
           <MessageInput
             onSendMessage={handleSendMessage}
-            disable={isLoading || isSendingMessage}
+            // disable={isLoading || isSendingMessage}
+            disable={isLoading}
           />
         </View>
       </KeyboardAvoidingView>

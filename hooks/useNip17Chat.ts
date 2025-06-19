@@ -276,18 +276,17 @@ export default function useNip17Chat(_recipients: string | string[]) {
               publish: true,
             });
             console.log(`Published event ${index + 1} of ${events.length}`);
+            alertUser("PUBLISHED EVENT");
           } catch (error) {
             console.error("Error publishing event:", error);
-            alertUser(
-              `Error publishing event ${index + 1} of ${events.length}`
-            );
-            alertUser(`${error}`);
           }
         })
       );
     } catch (error) {
+      alertUser("MESSAGE ERROR");
+      alertUser(error?.toString() || "Error sending direct message");
       console.error("Error sending direct message:", error);
-      throw error;
+      // throw error;
     } finally {
       setIsSendingMessage(false);
     }
