@@ -44,7 +44,8 @@
           "project": "react-native",
           "organization": "nostr"
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
