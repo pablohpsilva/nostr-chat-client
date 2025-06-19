@@ -2,6 +2,7 @@ import { nip19 } from "nostr-tools";
 
 import { NIP17PossiblePublicKeys, Recipient } from "@/constants/types";
 import { generateUniqueDTag } from "@/interal-lib/generateUniqueDTag";
+import { captureException } from "@sentry/react-native";
 import useNDKWrapper from "./useNDKWrapper";
 
 /**
@@ -61,6 +62,7 @@ export function useTag() {
     ignoreCurrentUser = false
   ): Recipient[] => {
     if (!possiblePublicKeys) {
+      captureException(new Error("No public key found (normalizeRecipients)"));
       throw new Error("No public key found");
     }
 
@@ -106,6 +108,9 @@ export function useTag() {
     ignoreCurrentUser = false
   ): nip19.NPub[] => {
     if (!possiblePublicKeys) {
+      captureException(
+        new Error("No public key found (normalizeRecipientsNPub)")
+      );
       throw new Error("No public key found");
     }
 
@@ -157,6 +162,7 @@ export function useTag() {
     );
 
     if (!publicKey) {
+      captureException(new Error("No public key found (createChatTag)"));
       throw new Error("No public key found");
     }
 
@@ -197,6 +203,7 @@ export function useTag() {
     }
 
     if (!ignoreCurrentUserOnTag && !currentUser) {
+      captureException(new Error("No current user found (createMessageTag)"));
       throw new Error("No current user found");
     }
 

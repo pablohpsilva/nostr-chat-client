@@ -12,6 +12,7 @@ import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
 import { useChatStore } from "@/store/chat";
 import { alertUser } from "@/utils/alert";
+import { captureException } from "@sentry/react-native";
 import useNDKWrapper from "./useNDKWrapper";
 import { useTag } from "./useTag";
 
@@ -60,6 +61,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
         try {
           return nip17.unwrapEvent(e as Event, privateKey);
         } catch (error) {
+          captureException(error);
           return undefined;
         }
       })
@@ -79,6 +81,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
       const unwrappedEvent = unwrapMessages(events, privateKey);
       addMessages(dTag, unwrappedEvent);
     } catch (error) {
+      captureException(error);
       console.error(error);
     }
   };
@@ -123,9 +126,9 @@ export default function useNip17Chat(_recipients: string | string[]) {
 
       return events;
     } catch (error) {
+      captureException(error);
       console.error("Error fetching conversation messages:", error);
       return [];
-    } finally {
     }
   };
 
@@ -165,6 +168,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
         // console.log("Outgoing messages EOSE received", event);
       });
     } catch (error) {
+      captureException(error);
       console.error("Error fetching conversation messages:", error);
       return [];
     }
@@ -220,6 +224,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
 
       return true;
     } catch (error) {
+      captureException(error);
       console.error("Error fetching historical messages:", error);
       return false;
     } finally {
@@ -278,15 +283,16 @@ export default function useNip17Chat(_recipients: string | string[]) {
             console.log(`Published event ${index + 1} of ${events.length}`);
             alertUser("PUBLISHED EVENT");
           } catch (error) {
+            captureException(error);
             console.error("Error publishing event:", error);
           }
         })
       );
     } catch (error) {
+      captureException(error);
       alertUser("MESSAGE ERROR");
       alertUser(error?.toString() || "Error sending direct message");
       console.error("Error sending direct message:", error);
-      // throw error;
     } finally {
       setIsSendingMessage(false);
     }

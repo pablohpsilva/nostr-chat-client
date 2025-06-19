@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { AppUserProfile } from "@/constants/types";
 import { useProfileStore } from "@/store/profiles";
+import { captureException } from "@sentry/react-native";
 import useNDKWrapper from "./useNDKWrapper";
 import { removeDuplicatesByKey } from "./useTag";
 
@@ -62,8 +63,8 @@ export default function useNip17Profiles() {
 
       return profiles;
     } catch (error) {
+      captureException(error);
       console.error(error);
-      throw error;
     } finally {
       setLoading(false);
     }

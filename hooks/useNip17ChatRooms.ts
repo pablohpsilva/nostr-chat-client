@@ -12,6 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChatRoom, Recipient } from "@/constants/types";
 import { wrapEvent } from "@/interal-lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
+import { captureException } from "@sentry/react-native";
 import useNDKWrapper from "./useNDKWrapper";
 import useNip17Profiles from "./useNip17Profiles";
 import { useTag } from "./useTag";
@@ -182,6 +183,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
               return [chatRoomMapKey, chatRoom];
               // await loadProfile(chatRoom.recipients);
             } catch (err) {
+              captureException(err);
               console.error("Error unwrapping gifts", err);
               return null;
             }
@@ -191,6 +193,7 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
 
       return handleChatRoomEventAndProfile(chatRoomPromise);
     } catch (error) {
+      captureException(error);
       console.error("Error loading chat rooms", error);
       return new Map();
     } finally {
@@ -241,14 +244,15 @@ export default function useNip17ChatRooms(recipientPrivateKey?: Uint8Array) {
 
           handleChatRoomEventAndProfile([[chatRoomMapKey, chatRoom]]);
         } catch (err) {
+          captureException(err);
           console.error("Error unwrapping gifts", err);
         } finally {
           setLoading(false);
         }
       });
     } catch (error) {
+      captureException(error);
       console.error("Error loading chat rooms", error);
-    } finally {
     }
   };
 

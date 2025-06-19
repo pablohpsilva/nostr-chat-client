@@ -21,6 +21,23 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { initializeNDK } from "@/interal-lib/ndk";
 import { useNDKInit } from "@nostr-dev-kit/ndk-mobile";
 import { useEffect } from "react";
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://8e0f3df32b2ebb086ed1e34cee8f4d72@o4509492843577344.ingest.de.sentry.io/4509492844691536',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 // Disable all LogBox notifications
 if (__DEV__) {
@@ -44,7 +61,7 @@ const ndk = initializeNDK();
 //   'Setting a timer for a long period of time',
 // ]);
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   const initializeNDK = useNDKInit();
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -89,4 +106,4 @@ export default function RootLayout() {
       </Stack>
     </ThemeProvider>
   );
-}
+});
