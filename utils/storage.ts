@@ -1,3 +1,5 @@
+import { Platform } from "react-native";
+
 // Storage adapter that works across web and React Native
 interface StorageAdapter {
   getItem: (key: string) => Promise<string | null>;
@@ -8,6 +10,10 @@ interface StorageAdapter {
 class WebStorage implements StorageAdapter {
   async getItem(key: string): Promise<string | null> {
     try {
+      if (!localStorage.getItem(key)) {
+        return null;
+      }
+
       return localStorage.getItem(key);
     } catch (error) {
       console.warn("localStorage not available:", error);
@@ -17,19 +23,27 @@ class WebStorage implements StorageAdapter {
 
   async setItem(key: string, value: string): Promise<void> {
     try {
+      if (!key || !value) {
+        return;
+      }
+
       localStorage.setItem(key, value);
     } catch (error) {
       console.warn("localStorage setItem failed:", error);
-      throw error;
+      // throw error;
     }
   }
 
   async removeItem(key: string): Promise<void> {
     try {
+      if (!localStorage.getItem(key)) {
+        return;
+      }
+
       localStorage.removeItem(key);
     } catch (error) {
       console.warn("localStorage removeItem failed:", error);
-      throw error;
+      // throw error;
     }
   }
 }
@@ -49,9 +63,17 @@ class ReactNativeStorage implements StorageAdapter {
   }
 
   async getItem(key: string): Promise<string | null> {
-    if (!this.AsyncStorage) return null;
+    if (!this.AsyncStorage) {
+      return null;
+    }
+
     try {
-      return await this.AsyncStorage.getItem(key);
+      const item = await this.AsyncStorage.getItem(key);
+      if (!item) {
+        return null;
+      }
+
+      return item;
     } catch (error) {
       console.warn("AsyncStorage getItem failed:", error);
       return null;
@@ -59,26 +81,42 @@ class ReactNativeStorage implements StorageAdapter {
   }
 
   async setItem(key: string, value: string): Promise<void> {
+    // if (!this.AsyncStorage) {
+    //   throw new Error("AsyncStorage not available");
+    // }
     if (!this.AsyncStorage) {
-      throw new Error("AsyncStorage not available");
+      return;
     }
+
     try {
+      if (!key || !value) {
+        return;
+      }
+
       await this.AsyncStorage.setItem(key, value);
     } catch (error) {
       console.warn("AsyncStorage setItem failed:", error);
-      throw error;
+      // throw error;
     }
   }
 
   async removeItem(key: string): Promise<void> {
+    // if (!this.AsyncStorage) {
+    //   throw new Error("AsyncStorage not available");
+    // }
     if (!this.AsyncStorage) {
-      throw new Error("AsyncStorage not available");
+      return;
     }
+
+    if (!key) {
+      return;
+    }
+
     try {
       await this.AsyncStorage.removeItem(key);
     } catch (error) {
       console.warn("AsyncStorage removeItem failed:", error);
-      throw error;
+      // throw error;
     }
   }
 }
@@ -103,7 +141,8 @@ class MemoryStorage implements StorageAdapter {
 // Detect environment and create appropriate storage
 function createStorage(): StorageAdapter {
   // Check if we're in a React Native environment
-  if (typeof navigator !== "undefined" && navigator.product === "ReactNative") {
+  // if (typeof navigator !== "undefined" && navigator.product === "ReactNative") {
+  if (Platform.OS !== "web") {
     return new ReactNativeStorage();
   }
 
@@ -151,7 +190,7 @@ export async function setStoredData<T>(key: string, data: T): Promise<void> {
     await storage.setItem(key, json);
   } catch (error) {
     console.warn(`Failed to store data for key ${key}:`, error);
-    throw error;
+    // throw error;
   }
 }
 
@@ -160,6 +199,6 @@ export async function removeStoredData(key: string): Promise<void> {
     await storage.removeItem(key);
   } catch (error) {
     console.warn(`Failed to remove stored data for key ${key}:`, error);
-    throw error;
+    // throw error;
   }
 }
