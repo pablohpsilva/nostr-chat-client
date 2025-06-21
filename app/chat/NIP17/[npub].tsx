@@ -65,7 +65,7 @@ export default function NIP17ChatPage() {
       getConversationMessagesWebhook();
       handleStoreChatRoom(chatRoomMap);
     });
-    getHistoricalMessages();
+    // getHistoricalMessages();
   }, [npub]);
 
   return (
