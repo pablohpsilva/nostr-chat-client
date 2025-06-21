@@ -10,29 +10,36 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/interal-lib/nip17";
-import { useChatStore } from "@/store/chat";
 import { alertUser } from "@/utils/alert";
 import useNDKWrapper from "./useNDKWrapper";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
 
+interface TimeRange {
+  since: number;
+  until: number;
+}
+
+interface MissingRange {
+  since: number;
+  until: number;
+}
+
 export default function useNip17Chat(_recipients: string | string[]) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<
+    ReturnType<typeof nip17.unwrapEvent>[]
+  >([]);
+  const [timeRange, setTimeRange] = useState<TimeRange | null>(null);
+  const [isFetched, setIsFetched] = useState(false);
   const debouncedMessageCache = useRef<any[]>([]);
   const debounceTimer = useRef<number>(0);
   const { createMessageTag } = useTag();
-  const {
-    getMessages,
-    addMessages,
-    getTimeRange,
-    getMissingRanges,
-    markFetched,
-    updateTimeRange,
-  } = useChatStore();
   const { ndk, fetchEvents, signPublishEvent } = useNDKWrapper();
   const currentUser = ndk?.activeUser;
+
   const { dTag, recipients } = useMemo(() => {
     const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
 
@@ -48,6 +55,64 @@ export default function useNip17Chat(_recipients: string | string[]) {
       recipients: dRecipients,
     };
   }, [_recipients]);
+
+  // Helper function to add messages to local state
+  const addMessagesToState = (
+    newMessages: ReturnType<typeof nip17.unwrapEvent>[]
+  ) => {
+    setMessages((prevMessages) => {
+      // Create a Set of existing message IDs to avoid duplicates
+      const existingIds = new Set(prevMessages.map((msg) => msg.unwrapped.id));
+      const uniqueNewMessages = newMessages.filter(
+        (msg) => !existingIds.has(msg.unwrapped.id)
+      );
+
+      // Combine and sort by created_at
+      const combined = [...prevMessages, ...uniqueNewMessages];
+      return combined.sort(
+        (a, b) => a.unwrapped.created_at - b.unwrapped.created_at
+      );
+    });
+  };
+
+  // Helper function to get missing time ranges
+  const getMissingRanges = (): MissingRange[] => {
+    const now = Math.floor(Date.now() / 1000);
+    const oldestTime = now - 30 * 24 * 60 * 60; // 30 days ago
+
+    if (!timeRange) {
+      // No data fetched yet, return full range
+      return [{ since: oldestTime, until: now }];
+    }
+
+    const ranges: MissingRange[] = [];
+
+    // Add range before our earliest data if needed
+    if (timeRange.since > oldestTime) {
+      ranges.push({ since: oldestTime, until: timeRange.since });
+    }
+
+    // Add range after our latest data if needed
+    if (timeRange.until < now - 300) {
+      // 5 minutes buffer
+      ranges.push({ since: timeRange.until, until: now });
+    }
+
+    return ranges;
+  };
+
+  // Helper function to update time range
+  const updateTimeRangeState = (since: number, until: number) => {
+    setTimeRange((prev) => {
+      if (!prev) {
+        return { since, until };
+      }
+      return {
+        since: Math.min(prev.since, since),
+        until: Math.max(prev.until, until),
+      };
+    });
+  };
 
   const unwrapMessages = (
     event: NDKEvent[],
@@ -75,9 +140,8 @@ export default function useNip17Chat(_recipients: string | string[]) {
   ) => {
     try {
       const events = Array.isArray(event) ? event : [event];
-
       const unwrappedEvent = unwrapMessages(events, privateKey);
-      addMessages(dTag, unwrappedEvent);
+      addMessagesToState(unwrappedEvent);
     } catch (error) {
       console.error(error);
     }
@@ -155,9 +219,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
       outgoingSub = ndk?.subscribe(outgoingFilter, options)!;
 
       outgoingSub.on("event", (event: NDKEvent) => {
-        console.log("FOUND EVENT", event);
-        console.log("");
-        console.log("");
         // console.log("FOUND EVENT", event?.id);
         // addMessageToConversation(event, privateKey!);
         debouncedAddMessages(privateKey!)(event);
@@ -187,7 +248,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
       const privateKey = ndk?.signer?._privateKey;
 
       // Get missing time ranges we need to fetch
-      const missingRanges = getMissingRanges(dTag);
+      const missingRanges = getMissingRanges();
 
       for (const { since, until } of missingRanges) {
         const filter: NDKFilter = {
@@ -204,7 +265,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
         }
       }
 
-      // Only update time range if we actually fetched some ranges
       if (missingRanges.length > 0) {
         const { since, until } = missingRanges.reduce(
           (acc, curr) => {
@@ -219,11 +279,11 @@ export default function useNip17Chat(_recipients: string | string[]) {
           { since: Infinity, until: -Infinity }
         );
 
-        updateTimeRange(dTag, since, until);
+        updateTimeRangeState(since, until);
       }
 
       // Mark this chat as fetched
-      markFetched(dTag);
+      setIsFetched(true);
 
       return true;
     } catch (error) {
@@ -313,8 +373,8 @@ export default function useNip17Chat(_recipients: string | string[]) {
     getHistoricalMessages,
     isLoading,
     isSendingMessage,
-    messages: getMessages(dTag),
+    messages,
     sendMessage,
-    timeRange: getTimeRange(dTag),
+    timeRange,
   };
 }
