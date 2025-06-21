@@ -39,7 +39,9 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>31</string>
+    <string>32</string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>
@@ -47,14 +49,22 @@
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>
-      <false/>
+      <true/>
       <key>NSAllowsLocalNetworking</key>
+      <true/>
+      <key>NSAllowsArbitraryLoadsInWebContent</key>
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
     <string>This app uses the camera to scan QR codes for connecting to relays, take profile pictures, and share photos in chats.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>This app may use your location to share your location with other users in chats when you choose to do so.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>This app uses the photo library to share photos in chats.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app uses the photo library to share photos in chats.</string>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>This app does not access your Apple Music library. This permission is required due to third-party libraries that may reference music-related APIs.</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
