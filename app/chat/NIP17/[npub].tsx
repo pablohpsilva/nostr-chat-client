@@ -19,7 +19,7 @@ export default function NIP17ChatPage() {
   const { npub } = useLocalSearchParams();
   const router = useRouter();
   const {
-    messages,
+    messages = [],
     getConversationMessagesWebhook,
     sendMessage,
     isLoading,
@@ -61,10 +61,11 @@ export default function NIP17ChatPage() {
   };
 
   useEffect(() => {
-    loadChatRooms().then((chatRoomMap) => {
-      getConversationMessagesWebhook();
-      handleStoreChatRoom(chatRoomMap);
-    });
+    getConversationMessagesWebhook();
+    // loadChatRooms().then((chatRoomMap) => {
+    //   getConversationMessagesWebhook();
+    //   handleStoreChatRoom(chatRoomMap);
+    // });
     // getHistoricalMessages();
   }, [npub]);
 
