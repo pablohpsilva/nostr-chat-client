@@ -41,9 +41,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
   const currentUser = ndk?.activeUser;
 
   const { dTag, recipients } = useMemo(() => {
-    console.log("Creating message tag with _recipients:", _recipients);
-    console.log("Current user pubkey:", ndk?.activeUser?.pubkey);
-
     const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
 
     try {
@@ -52,8 +49,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
         recipients: dRecipients,
         recipientsPublicKeys: pubKeys,
       } = createMessageTag(recipients);
-
-      console.log("Created message tag:", { dTag, dRecipients, pubKeys });
 
       return {
         dTag,
@@ -74,17 +69,18 @@ export default function useNip17Chat(_recipients: string | string[]) {
   const addMessagesToState = (
     newMessages: ReturnType<typeof nip17.unwrapEvent>[]
   ) => {
-    setMessages((prevMessages) => {
-      // Create a Set of existing message IDs to avoid duplicates
-      const existingIds = new Set(prevMessages.map((msg) => msg.id));
-      const uniqueNewMessages = newMessages.filter(
-        (msg) => !existingIds.has(msg.id)
-      );
+    // setMessages((prevMessages) => {
+    //   // Create a Set of existing message IDs to avoid duplicates
+    //   const existingIds = new Set(prevMessages.map((msg) => msg.id));
+    //   const uniqueNewMessages = newMessages.filter(
+    //     (msg) => !existingIds.has(msg.id)
+    //   );
 
-      // Combine and sort by created_at
-      const combined = [...prevMessages, ...uniqueNewMessages];
-      return combined.sort((a, b) => a.created_at - b.created_at);
-    });
+    //   // Combine and sort by created_at
+    //   const combined = [...prevMessages, ...uniqueNewMessages];
+    //   return combined.sort((a, b) => a.created_at - b.created_at);
+    // });
+    alertUser(`ADD MESSAGES TO STATE: ${newMessages.length}`);
   };
 
   // Helper function to get missing time ranges
