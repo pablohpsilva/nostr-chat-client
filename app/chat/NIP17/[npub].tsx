@@ -12,7 +12,7 @@ import MessageList from "@/components/Chat/MessageList";
 import { ROUTES } from "@/constants/routes";
 import { ChatRoom } from "@/constants/types";
 import useNDKWrapper from "@/hooks/useNDKWrapper";
-import useNip17Chat from "@/hooks/useNip17Chat";
+import useNip17Chat from "@/hooks/useNip17ChatNoCache";
 import useNip17StoreProfile from "@/hooks/useNip17ChatRooms";
 
 export default function NIP17ChatPage() {

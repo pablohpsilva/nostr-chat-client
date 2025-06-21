@@ -41,20 +41,34 @@ export default function useNip17Chat(_recipients: string | string[]) {
   const currentUser = ndk?.activeUser;
 
   const { dTag, recipients } = useMemo(() => {
+    console.log("Creating message tag with _recipients:", _recipients);
+    console.log("Current user pubkey:", ndk?.activeUser?.pubkey);
+
     const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
 
-    const {
-      tag: dTag,
-      recipients: dRecipients,
-      recipientsPublicKeys: pubKeys,
-    } = createMessageTag(recipients);
+    try {
+      const {
+        tag: dTag,
+        recipients: dRecipients,
+        recipientsPublicKeys: pubKeys,
+      } = createMessageTag(recipients);
 
-    return {
-      dTag,
-      pubKeys,
-      recipients: dRecipients,
-    };
-  }, [_recipients]);
+      console.log("Created message tag:", { dTag, dRecipients, pubKeys });
+
+      return {
+        dTag,
+        pubKeys,
+        recipients: dRecipients,
+      };
+    } catch (error) {
+      console.error("Error creating message tag:", error);
+      return {
+        dTag: "",
+        pubKeys: [],
+        recipients: [],
+      };
+    }
+  }, [_recipients, ndk?.activeUser?.pubkey]);
 
   // Helper function to add messages to local state
   const addMessagesToState = (
@@ -62,16 +76,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
   ) => {
     setMessages((prevMessages) => {
       // Create a Set of existing message IDs to avoid duplicates
-      const existingIds = new Set(prevMessages.map((msg) => msg.unwrapped.id));
+      const existingIds = new Set(prevMessages.map((msg) => msg.id));
       const uniqueNewMessages = newMessages.filter(
-        (msg) => !existingIds.has(msg.unwrapped.id)
+        (msg) => !existingIds.has(msg.id)
       );
 
       // Combine and sort by created_at
       const combined = [...prevMessages, ...uniqueNewMessages];
-      return combined.sort(
-        (a, b) => a.unwrapped.created_at - b.unwrapped.created_at
-      );
+      return combined.sort((a, b) => a.created_at - b.created_at);
     });
   };
 
@@ -241,6 +253,19 @@ export default function useNip17Chat(_recipients: string | string[]) {
       setLoading(true);
 
       if (!currentUser || !_recipients) {
+        console.log("Missing currentUser or _recipients:", {
+          currentUser: !!currentUser,
+          _recipients,
+        });
+        return [];
+      }
+
+      // Debug: Check if dTag is valid
+      console.log("dTag value:", dTag);
+      console.log("recipients:", recipients);
+
+      if (!dTag) {
+        console.error("dTag is empty or undefined");
         return [];
       }
 
@@ -249,6 +274,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
 
       // Get missing time ranges we need to fetch
       const missingRanges = getMissingRanges();
+      console.log("Missing ranges:", missingRanges);
 
       for (const { since, until } of missingRanges) {
         const filter: NDKFilter = {
@@ -257,6 +283,19 @@ export default function useNip17Chat(_recipients: string | string[]) {
           since,
           until,
         };
+
+        console.log("Filter being used:", filter);
+
+        // Validate filter before calling fetchEvents
+        if (!filter.kinds || filter.kinds.length === 0) {
+          console.error("Invalid filter: missing kinds");
+          continue;
+        }
+
+        if (!filter["#d"] || filter["#d"].length === 0 || !filter["#d"][0]) {
+          console.error("Invalid filter: missing or empty #d tag");
+          continue;
+        }
 
         const events = await fetchEvents(filter);
 

@@ -6,6 +6,17 @@ export function generateUniqueDTag(
   pubkeys: string[],
   salt: string = DEFAULT_SALT
 ) {
+  console.log("generateUniqueDTag called with:", {
+    pubkeys,
+    salt,
+    DEFAULT_SALT,
+  });
+
+  if (!pubkeys || pubkeys.length === 0) {
+    console.error("No pubkeys provided to generateUniqueDTag");
+    return "";
+  }
+
   // 1. Sort the pubkeys lexicographically
   const sortedPubkeys = pubkeys.sort().concat(salt);
 
