@@ -229,7 +229,8 @@ export default function useNip17Chat(_recipients: string | string[]) {
       outgoingSub.on("event", (event: NDKEvent) => {
         // console.log("FOUND EVENT", event?.id);
         // addMessageToConversation(event, privateKey!);
-        debouncedAddMessages(privateKey!)(event);
+        // debouncedAddMessages(privateKey!)(event);
+        alertUser(`FOUND EVENT: ${event?.id}`);
       });
 
       // Handle EOSE (End of Stored Events)
