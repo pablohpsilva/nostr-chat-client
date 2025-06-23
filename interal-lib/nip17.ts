@@ -104,3 +104,7 @@ export function wrapManyEvents(
     )
   );
 }
+
+export const unwrapEvent = nip59.unwrapEvent;
+
+export const unwrapManyEvents = nip59.unwrapManyEvents;

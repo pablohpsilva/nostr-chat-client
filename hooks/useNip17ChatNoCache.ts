@@ -5,11 +5,11 @@ import {
   NDKSubscription,
   NDKSubscriptionOptions,
 } from "@nostr-dev-kit/ndk-mobile";
-import { Event, nip17 } from "nostr-tools";
+import { nip17, NostrEvent } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ReplyTo } from "@/constants/types";
-import { wrapManyEvents } from "@/interal-lib/nip17";
+import { unwrapManyEvents, wrapManyEvents } from "@/interal-lib/nip17";
 import { alertUser } from "@/utils/alert";
 import useNDKWrapper from "./useNDKWrapper";
 import { useTag } from "./useTag";
@@ -128,18 +128,22 @@ export default function useNip17Chat(_recipients: string | string[]) {
   ): ReturnType<typeof nip17.unwrapEvent>[] => {
     const events = Array.isArray(event) ? event : [event];
     try {
-      return events
-        .map((e) => {
-          try {
-            return nip17.unwrapEvent(e as Event, privateKey);
-          } catch (error) {
-            return undefined;
-          }
-        })
-        .filter(
-          (item): item is ReturnType<typeof nip17.unwrapEvent> =>
-            item !== undefined
-        );
+      return unwrapManyEvents(events as NostrEvent[], privateKey).filter(
+        (item): item is ReturnType<typeof nip17.unwrapEvent> =>
+          item !== undefined
+      );
+      // return events
+      //   .map((e) => {
+      //     try {
+      //       return unwrapEvent(e as Event, privateKey);
+      //     } catch (error) {
+      //       return undefined;
+      //     }
+      //   })
+      //   .filter(
+      //     (item): item is ReturnType<typeof nip17.unwrapEvent> =>
+      //       item !== undefined
+      //   );
     } catch (error) {
       alertUser(`UNWRAP MESSAGES ERROR: ${error}`);
       return [] as ReturnType<typeof nip17.unwrapEvent>[];
