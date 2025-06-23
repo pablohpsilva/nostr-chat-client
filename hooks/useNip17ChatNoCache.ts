@@ -172,6 +172,28 @@ export default function useNip17Chat(_recipients: string | string[]) {
       }, 200);
     };
 
+  const debouncedAddMessages2 =
+    (privateKey: Uint8Array<ArrayBuffer>) => (event: any) => {
+      debouncedMessageCache.current.push(event);
+      console.count("HIT");
+
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+
+      debounceTimer.current = setTimeout(() => {
+        if (debouncedMessageCache.current.length > 0) {
+          // addMessageToConversation(debouncedMessageCache.current, privateKey);
+          const events = Array.isArray(debouncedMessageCache.current)
+            ? debouncedMessageCache.current
+            : [debouncedMessageCache.current];
+          const unwrappedEvent = unwrapMessages(events, privateKey);
+          alertUser(`ADD MESSAGES TO STATE: ${unwrappedEvent.length}`);
+          debouncedMessageCache.current = [];
+        }
+      }, 200);
+    };
+
   const getConversationMessages = async (
     _options: NDKSubscriptionOptions = {}
   ) => {
@@ -230,7 +252,8 @@ export default function useNip17Chat(_recipients: string | string[]) {
         // console.log("FOUND EVENT", event?.id);
         // addMessageToConversation(event, privateKey!);
         // debouncedAddMessages(privateKey!)(event);
-        alertUser(`FOUND EVENT: ${event?.id}`);
+        // alertUser(`FOUND EVENT: ${event?.id}`);
+        debouncedAddMessages2(privateKey!)(event);
       });
 
       // Handle EOSE (End of Stored Events)
