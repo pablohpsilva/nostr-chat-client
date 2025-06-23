@@ -127,19 +127,23 @@ export default function useNip17Chat(_recipients: string | string[]) {
     privateKey: Uint8Array<ArrayBuffer>
   ): ReturnType<typeof nip17.unwrapEvent>[] => {
     const events = Array.isArray(event) ? event : [event];
-
-    return events
-      .map((e) => {
-        try {
-          return nip17.unwrapEvent(e as Event, privateKey);
-        } catch (error) {
-          return undefined;
-        }
-      })
-      .filter(
-        (item): item is ReturnType<typeof nip17.unwrapEvent> =>
-          item !== undefined
-      );
+    try {
+      return events
+        .map((e) => {
+          try {
+            return nip17.unwrapEvent(e as Event, privateKey);
+          } catch (error) {
+            return undefined;
+          }
+        })
+        .filter(
+          (item): item is ReturnType<typeof nip17.unwrapEvent> =>
+            item !== undefined
+        );
+    } catch (error) {
+      alertUser(`UNWRAP MESSAGES ERROR: ${error}`);
+      return [] as ReturnType<typeof nip17.unwrapEvent>[];
+    }
   };
 
   const addMessageToConversation = (
@@ -149,6 +153,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
     try {
       const events = Array.isArray(event) ? event : [event];
       const unwrappedEvent = unwrapMessages(events, privateKey);
+
       addMessagesToState(unwrappedEvent);
     } catch (error) {
       console.error(error);
@@ -184,10 +189,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
       debounceTimer.current = setTimeout(() => {
         if (debouncedMessageCache.current.length > 0) {
           // addMessageToConversation(debouncedMessageCache.current, privateKey);
-          const events = Array.isArray(debouncedMessageCache.current)
-            ? debouncedMessageCache.current
-            : [debouncedMessageCache.current];
-          const unwrappedEvent = unwrapMessages(events, privateKey);
+          // const events = Array.isArray(debouncedMessageCache.current)
+          //   ? debouncedMessageCache.current
+          //   : [debouncedMessageCache.current];
+          const unwrappedEvent = unwrapMessages(
+            debouncedMessageCache.current,
+            privateKey
+          );
+
           alertUser(`ADD MESSAGES TO STATE: ${unwrappedEvent.length}`);
           debouncedMessageCache.current = [];
         }
