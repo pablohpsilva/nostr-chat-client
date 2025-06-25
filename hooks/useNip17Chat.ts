@@ -5,20 +5,38 @@ import {
   NDKSubscription,
   NDKSubscriptionOptions,
 } from "@nostr-dev-kit/ndk-hooks";
+import NDK from "@nostr-dev-kit/ndk-mobile";
 import { Event, nip17 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Alert, Platform } from "react-native";
 
 import { useNDK } from "@/components/Context";
+import { DB_NAME, DEFAULT_RELAYS } from "@/constants";
 import { ReplyTo } from "@/constants/types";
-import { initializeNDK } from "@/internal-lib/ndk-mobile";
 import { wrapManyEvents } from "@/internal-lib/nip17";
 import { useChatStore } from "@/store/chat";
-import { Alert, Platform } from "react-native";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
+let instanceNdkMobile: NDK | null = null;
+(() => {
+  if (instanceNdkMobile) {
+    return instanceNdkMobile;
+  }
 
-const ndkMobile = initializeNDK();
+  const ndk = new NDK({
+    explicitRelayUrls: Object.keys(DEFAULT_RELAYS),
+    blacklistRelayUrls: [],
+    enableOutboxModel: true,
+    initialValidationRatio: 0.0,
+    lowestValidationRatio: 0.0,
+    clientName: DB_NAME,
+  });
+
+  ndk.connect();
+
+  return ndk;
+})();
 
 const alertUser = (message: string) => {
   Platform.OS === "web" ? alert(message) : Alert.alert(message);
@@ -284,7 +302,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
                 repost: false,
                 publish: true,
               },
-              ndkMobile
+              instanceNdkMobile
             );
             console.log(`Published event ${index + 1} of ${events.length}`);
           } catch (error) {
