@@ -132,18 +132,6 @@ export default function useNip17Chat(_recipients: string | string[]) {
         (item): item is ReturnType<typeof nip17.unwrapEvent> =>
           item !== undefined
       );
-      // return events
-      //   .map((e) => {
-      //     try {
-      //       return unwrapEvent(e as Event, privateKey);
-      //     } catch (error) {
-      //       return undefined;
-      //     }
-      //   })
-      //   .filter(
-      //     (item): item is ReturnType<typeof nip17.unwrapEvent> =>
-      //       item !== undefined
-      //   );
     } catch (error) {
       alertUser(`UNWRAP MESSAGES ERROR: ${error}`);
       return [] as ReturnType<typeof nip17.unwrapEvent>[];
@@ -196,12 +184,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
           // const events = Array.isArray(debouncedMessageCache.current)
           //   ? debouncedMessageCache.current
           //   : [debouncedMessageCache.current];
-          const unwrappedEvent = unwrapMessages(
-            debouncedMessageCache.current,
-            privateKey
-          );
+          // const unwrappedEvent = unwrapMessages(
+          //   debouncedMessageCache.current,
+          //   privateKey
+          // );
 
-          alertUser(`ADD MESSAGES TO STATE: ${unwrappedEvent.length}`);
+          alertUser(
+            `ADD MESSAGES TO STATE: ${debouncedMessageCache.current.length}`
+          );
           debouncedMessageCache.current = [];
         }
       }, 200);

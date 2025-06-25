@@ -2,7 +2,7 @@ import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { nip19 } from "nostr-tools";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 
 import ChatHeader from "@/components/Chat/ChatHeader";
@@ -60,14 +60,14 @@ export default function NIP17ChatPage() {
     await storeChatRoom(chatRoomMap, { publicKey });
   };
 
-  useEffect(() => {
-    getConversationMessagesWebhook();
-    // loadChatRooms().then((chatRoomMap) => {
-    //   getConversationMessagesWebhook();
-    //   handleStoreChatRoom(chatRoomMap);
-    // });
-    // getHistoricalMessages();
-  }, [npub]);
+  // useEffect(() => {
+  //   getConversationMessagesWebhook();
+  //   // loadChatRooms().then((chatRoomMap) => {
+  //   //   getConversationMessagesWebhook();
+  //   //   handleStoreChatRoom(chatRoomMap);
+  //   // });
+  //   // getHistoricalMessages();
+  // }, [npub]);
 
   return (
     <Fragment>
