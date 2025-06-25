@@ -10,12 +10,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useNDK } from "@/components/Context";
 import { ReplyTo } from "@/constants/types";
-import { wrapManyEvents } from "@/interal-lib/nip17";
+import { initializeNDK } from "@/internal-lib/ndk-mobile";
+import { wrapManyEvents } from "@/internal-lib/nip17";
 import { useChatStore } from "@/store/chat";
 import { Alert, Platform } from "react-native";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
+
+const ndkMobile = initializeNDK();
 
 const alertUser = (message: string) => {
   Platform.OS === "web" ? alert(message) : Alert.alert(message);
@@ -274,11 +277,15 @@ export default function useNip17Chat(_recipients: string | string[]) {
         events.map(async (event, index) => {
           try {
             console.log(`Publishing event ${index + 1} of ${events.length}`);
-            await signPublishEvent(event as NDKEvent, {
-              sign: false,
-              repost: false,
-              publish: true,
-            });
+            await signPublishEvent(
+              event as NDKEvent,
+              {
+                sign: false,
+                repost: false,
+                publish: true,
+              },
+              ndkMobile
+            );
             console.log(`Published event ${index + 1} of ${events.length}`);
           } catch (error) {
             console.error("Error publishing event:", error);

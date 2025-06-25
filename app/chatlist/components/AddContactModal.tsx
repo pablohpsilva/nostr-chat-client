@@ -16,7 +16,7 @@ import { TextField } from "@/components/ui/TextField";
 import { H4, TypographyBodyL } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { EPermissionTypes, usePermissions } from "@/hooks/usePermissions";
-import { isValidNpubOrPublicKey } from "@/interal-lib/utils";
+import { isValidNpubOrPublicKey } from "@/internal-lib/utils";
 import SearchStartChat from "./SearchStartChat";
 
 let CameraScanner: any = null;

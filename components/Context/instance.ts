@@ -90,19 +90,27 @@ export default function NDKInstance(explicitRelayUrls: string[]) {
       repost: false,
       sign: true,
       publish: true,
-    }
+    },
+    _ndk?: any
   ) {
-    if (ndk === undefined) return;
-    event.ndk = ndk;
+    if (ndk === undefined) {
+      return;
+    }
+
+    event.ndk = _ndk || ndk;
+
     if (params.repost) {
       await event.repost();
     }
+
     if (params.sign) {
       await event.sign();
     }
+
     if (params.publish) {
       await event.publish();
     }
+
     return event;
   }
 

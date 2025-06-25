@@ -53,7 +53,8 @@ interface NDKContext {
           publish: boolean;
           sign: boolean;
         }
-      | undefined
+      | undefined,
+    _ndk?: any
   ) => Promise<undefined | NDKEvent>;
   logout: () => Promise<void>;
   getUser: (_: string) => NDKUser;
@@ -67,7 +68,8 @@ const NDKContext = createContext<NDKContext>({
   loginWithNip46: (_: string, __?: string) => Promise.resolve(undefined),
   loginWithSecret: (_: string) => Promise.resolve(undefined),
   loginWithNip07: () => Promise.resolve(undefined),
-  signPublishEvent: (_: NDKEvent, __?: {}) => Promise.resolve(undefined),
+  signPublishEvent: (_: NDKEvent, __?: {}, _ndk?: any) =>
+    Promise.resolve(undefined),
   logout: () => Promise.resolve(undefined),
   getUser: (_: string) => {
     return NDKUser.prototype;

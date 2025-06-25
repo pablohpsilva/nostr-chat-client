@@ -23,3 +23,5 @@ export const GLOBAL_CHAT: Channel = {
 export const PLATFORM = Capacitor.getPlatform() as Platform;
 
 export const APP_NAME = "NostrChat";
+
+export const DB_NAME = "nostreamchat";
