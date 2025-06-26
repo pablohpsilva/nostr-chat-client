@@ -68,6 +68,7 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.3",
     "react-native-bouncy-checkbox": "^4.1.2",
+    "react-native-builder-bob": "^0.40.12",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-get-random-values": "1.11.0",
     "react-native-hole-view": "^3.0.1",

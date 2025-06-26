@@ -33,74 +33,69 @@ const MessageInput = ({ onSendMessage, disable }: MessageInputProps) => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={["bottom"]}>
-        <View style={styles.inputContainer}>
-          <Button
-            variant="small-close"
-            size="unset"
-            onPress={handleOnClickLightning}
-          >
-            <Ionicons
-              name="attach-outline"
-              size={20}
-              color={Colors.dark.white}
-            />
-          </Button>
+      <View style={styles.inputContainer}>
+        <Button
+          variant="small-close"
+          size="unset"
+          onPress={handleOnClickLightning}
+        >
+          <Ionicons name="attach-outline" size={20} color={Colors.dark.white} />
+        </Button>
 
-          <View style={styles.inputWrapper}>
+        <View style={styles.inputWrapper}>
+          <Button
+            onPress={handleOnPressExpandTextInput}
+            style={styles.expandButton}
+          >
             <Ionicons
               name="ellipsis-horizontal-outline"
               size={20}
               color={Colors.dark.white}
-              onPress={handleOnPressExpandTextInput}
-              style={styles.expandButton}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Type a message..."
-              value={newMessage}
-              onChangeText={setNewMessage}
-              onSubmitEditing={!disable ? handleSend : () => {}}
-              returnKeyType="send"
-              placeholderTextColor={Colors.dark.deactive}
-              multiline={!!maxTextInputLines}
-              numberOfLines={maxTextInputLines}
-            />
-          </View>
-
-          <Button variant="small-close" size="unset" onPress={handleSend}>
-            <Ionicons name="send-outline" size={20} color={Colors.dark.white} />
           </Button>
-
-          {!newMessage?.length && (
-            <Fragment>
-              <Button
-                variant="small-close"
-                size="unset"
-                onPress={handleOnClickLightning}
-              >
-                <Ionicons
-                  name="flash-outline"
-                  size={20}
-                  color={Colors.dark.white}
-                />
-              </Button>
-
-              <Button
-                variant="small-close"
-                size="unset"
-                onPress={handleOnClickLightning}
-              >
-                <Ionicons
-                  name="mic-outline"
-                  size={20}
-                  color={Colors.dark.white}
-                />
-              </Button>
-            </Fragment>
-          )}
+          <TextInput
+            style={[styles.input, { minHeight: maxTextInputLines * 20 }]}
+            placeholder="Type a message..."
+            value={newMessage}
+            onChangeText={setNewMessage}
+            onSubmitEditing={!disable ? handleSend : () => {}}
+            returnKeyType="send"
+            placeholderTextColor={Colors.dark.deactive}
+          />
         </View>
-      </SafeAreaView>
+
+        <Button variant="small-close" size="unset" onPress={handleSend}>
+          <Ionicons name="send-outline" size={20} color={Colors.dark.white} />
+        </Button>
+
+        {!newMessage?.length && (
+          <Fragment>
+            <Button
+              variant="small-close"
+              size="unset"
+              onPress={handleOnClickLightning}
+            >
+              <Ionicons
+                name="flash-outline"
+                size={20}
+                color={Colors.dark.white}
+              />
+            </Button>
+
+            <Button
+              variant="small-close"
+              size="unset"
+              onPress={handleOnClickLightning}
+            >
+              <Ionicons
+                name="mic-outline"
+                size={20}
+                color={Colors.dark.white}
+              />
+            </Button>
+          </Fragment>
+        )}
+      </View>
     </View>
   );
 };
@@ -111,12 +106,15 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 12,
     backgroundColor: Colors.dark.backgroundSecondary,
+    height: "auto",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "center",
+    paddingBottom: 12,
     gap: 8,
+    height: "auto",
   },
   inputWrapper: {
     position: "relative",
@@ -130,7 +128,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.backgroundPrimary,
     fontSize: 16,
     paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingVertical: 0,
     borderRadius: 16,
     borderWidth: 1,
     color: Colors.dark.white,
@@ -145,7 +143,10 @@ const styles = StyleSheet.create({
   },
   expandButton: {
     position: "absolute",
-    top: -20,
+    top: -25,
+    // backgroundColor: "red",
+    padding: 5,
+    zIndex: 10,
   },
 });
 

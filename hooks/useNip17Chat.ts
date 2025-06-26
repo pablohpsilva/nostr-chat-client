@@ -5,7 +5,7 @@ import {
   NDKSubscription,
   NDKSubscriptionOptions,
 } from "@nostr-dev-kit/ndk-hooks";
-import NDK from "@nostr-dev-kit/ndk-mobile";
+// import NDK from "@nostr-dev-kit/ndk-mobile";
 import { Event, nip17 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Platform } from "react-native";
@@ -18,25 +18,25 @@ import { useChatStore } from "@/store/chat";
 import { useTag } from "./useTag";
 
 let outgoingSub: NDKSubscription;
-let instanceNdkMobile: NDK | null = null;
-(() => {
-  if (instanceNdkMobile) {
-    return instanceNdkMobile;
-  }
+// let instanceNdkMobile: NDK | null = null;
+// (() => {
+//   if (instanceNdkMobile) {
+//     return instanceNdkMobile;
+//   }
 
-  const ndk = new NDK({
-    explicitRelayUrls: Object.keys(DEFAULT_RELAYS),
-    blacklistRelayUrls: [],
-    enableOutboxModel: true,
-    initialValidationRatio: 0.0,
-    lowestValidationRatio: 0.0,
-    clientName: DB_NAME,
-  });
+//   const ndk = new NDK({
+//     explicitRelayUrls: Object.keys(DEFAULT_RELAYS),
+//     blacklistRelayUrls: [],
+//     enableOutboxModel: true,
+//     initialValidationRatio: 0.0,
+//     lowestValidationRatio: 0.0,
+//     clientName: DB_NAME,
+//   });
 
-  ndk.connect();
+//   ndk.connect();
 
-  return ndk;
-})();
+//   return ndk;
+// })();
 
 const alertUser = (message: string) => {
   Platform.OS === "web" ? alert(message) : Alert.alert(message);
@@ -301,8 +301,8 @@ export default function useNip17Chat(_recipients: string | string[]) {
                 sign: false,
                 repost: false,
                 publish: true,
-              },
-              instanceNdkMobile
+              }
+              // instanceNdkMobile
             );
             console.log(`Published event ${index + 1} of ${events.length}`);
           } catch (error) {
