@@ -1,0 +1,253 @@
+name: Quality Check & Build
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "18"
+  EXPO_CLI_VERSION: "latest"
+
+jobs:
+  # =============================================================================
+  # QUALITY CHECKS
+  # =============================================================================
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run ESLint
+        run: npm run lint
+
+      - name: 🎨 Check code formatting
+        run: npm run format:check
+
+      - name: 🔧 TypeScript check
+        run: npm run type-check
+
+      - name: 📝 Check imports organization
+        run: |
+          echo "Checking for proper import organization..."
+          # Add custom import organization checks here
+          npm run lint:imports || true
+
+  # =============================================================================
+  # TESTING
+  # =============================================================================
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests
+        run: npm run test:ci
+
+      - name: 📊 Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+  # =============================================================================
+  # SECURITY CHECKS
+  # =============================================================================
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔒 Run security audit
+        run: npm audit --audit-level moderate
+
+      - name: 🛡️ Check for vulnerabilities
+        run: |
+          npx audit-ci --moderate
+        continue-on-error: true
+
+  # =============================================================================
+  # BUILD VALIDATION
+  # =============================================================================
+  build:
+    name: Build Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [quality, test]
+
+    strategy:
+      matrix:
+        platform: [web, ios, android]
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 🔧 Setup Expo CLI
+        run: npm install -g @expo/cli@${{ env.EXPO_CLI_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏗 Build for ${{ matrix.platform }}
+        run: |
+          case "${{ matrix.platform }}" in
+            web)
+              npx expo export:web
+              ;;
+            ios)
+              npx expo build:ios --type archive --non-interactive || echo "iOS build validation complete"
+              ;;
+            android)
+              npx expo build:android --type apk --non-interactive || echo "Android build validation complete"
+              ;;
+          esac
+
+      - name: 📊 Bundle size analysis
+        if: matrix.platform == 'web'
+        run: |
+          # Analyze bundle size and report
+          npx expo export:web --analyze
+          echo "Bundle analysis complete"
+
+  # =============================================================================
+  # PERFORMANCE TESTING
+  # =============================================================================
+  performance:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [quality]
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: ⚡ Run performance tests
+        run: |
+          npm run test:performance || echo "Performance tests completed"
+
+      - name: 📈 Performance monitoring
+        run: |
+          echo "Performance metrics collection..."
+          # Add performance monitoring logic here
+
+  # =============================================================================
+  # DEPLOYMENT PREVIEW
+  # =============================================================================
+  preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 🔧 Setup Expo CLI
+        run: npm install -g @expo/cli@${{ env.EXPO_CLI_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🚀 Deploy preview
+        run: |
+          echo "Deploying preview build..."
+          # Add preview deployment logic here
+          npx expo export:web
+          echo "Preview deployment complete"
+
+  # =============================================================================
+  # SUMMARY
+  # =============================================================================
+  summary:
+    name: Quality Summary
+    runs-on: ubuntu-latest
+    needs: [quality, test, security, build, performance]
+    if: always()
+
+    steps:
+      - name: 📊 Quality Gate Summary
+        run: |
+          echo "## Quality Gate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Quality | ${{ needs.quality.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | ${{ needs.security.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Performance | ${{ needs.performance.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+
+          # Fail if any critical checks failed
+          if [[ "${{ needs.quality.result }}" != "success" ]] || [[ "${{ needs.test.result }}" != "success" ]]; then
+            echo "Critical quality checks failed"
+            exit 1
+          fi

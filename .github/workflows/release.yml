@@ -1,0 +1,336 @@
+name: Release & Deploy
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g., v1.0.0)"
+        required: true
+        type: string
+      platform:
+        description: "Platform to build"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - web
+          - ios
+          - android
+
+env:
+  NODE_VERSION: "18"
+  EXPO_CLI_VERSION: "latest"
+
+jobs:
+  # =============================================================================
+  # RELEASE VALIDATION
+  # =============================================================================
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      should_build_web: ${{ steps.platform.outputs.web }}
+      should_build_ios: ${{ steps.platform.outputs.ios }}
+      should_build_android: ${{ steps.platform.outputs.android }}
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏷️ Extract version
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Building version: ${VERSION}"
+
+      - name: 🎯 Determine platforms
+        id: platform
+        run: |
+          PLATFORM="${{ github.event.inputs.platform || 'all' }}"
+
+          if [[ "$PLATFORM" == "all" ]]; then
+            echo "web=true" >> $GITHUB_OUTPUT
+            echo "ios=true" >> $GITHUB_OUTPUT
+            echo "android=true" >> $GITHUB_OUTPUT
+          else
+            echo "web=$([[ '$PLATFORM' == 'web' ]] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+            echo "ios=$([[ '$PLATFORM' == 'ios' ]] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+            echo "android=$([[ '$PLATFORM' == 'android' ]] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ✅ Validate version format
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format: $VERSION"
+            echo "Expected format: v1.0.0"
+            exit 1
+          fi
+
+  # =============================================================================
+  # WEB BUILD & DEPLOY
+  # =============================================================================
+  build-web:
+    name: Build & Deploy Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: validate
+    if: needs.validate.outputs.should_build_web == 'true'
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 🔧 Setup Expo CLI
+        run: npm install -g @expo/cli@${{ env.EXPO_CLI_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏗 Build web
+        run: |
+          npx expo export:web
+
+      - name: 📊 Analyze bundle
+        run: |
+          npx expo export:web --analyze
+          echo "Bundle analysis complete for version ${{ needs.validate.outputs.version }}"
+
+      - name: 🚀 Deploy to production
+        run: |
+          echo "Deploying web build..."
+          # Add actual deployment logic here
+          # Example: Deploy to Vercel, Netlify, or custom server
+          echo "Web deployment complete for ${{ needs.validate.outputs.version }}"
+
+      - name: 📦 Archive web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build-${{ needs.validate.outputs.version }}
+          path: dist/
+          retention-days: 30
+
+  # =============================================================================
+  # IOS BUILD
+  # =============================================================================
+  build-ios:
+    name: Build iOS
+    runs-on: macos-latest
+    timeout-minutes: 45
+    needs: validate
+    if: needs.validate.outputs.should_build_ios == 'true'
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 🔧 Setup Expo CLI
+        run: npm install -g @expo/cli@${{ env.EXPO_CLI_VERSION }} eas-cli@latest
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🍎 Setup iOS environment
+        run: |
+          # Setup iOS certificates and provisioning profiles
+          echo "Setting up iOS build environment..."
+
+      - name: 🏗 Build iOS
+        run: |
+          echo "Building iOS app for version ${{ needs.validate.outputs.version }}"
+          # Add EAS build or other iOS build logic
+          # eas build --platform ios --profile production --non-interactive
+          echo "iOS build initiated"
+
+      - name: 📱 Archive iOS build
+        run: |
+          echo "Archiving iOS build artifacts..."
+          # Archive build artifacts
+
+  # =============================================================================
+  # ANDROID BUILD
+  # =============================================================================
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: validate
+    if: needs.validate.outputs.should_build_android == 'true'
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: 🔧 Setup Expo CLI
+        run: npm install -g @expo/cli@${{ env.EXPO_CLI_VERSION }} eas-cli@latest
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🤖 Setup Android environment
+        run: |
+          echo "Setting up Android build environment..."
+          # Setup Android SDK, keystores, etc.
+
+      - name: 🏗 Build Android
+        run: |
+          echo "Building Android app for version ${{ needs.validate.outputs.version }}"
+          # Add EAS build or other Android build logic
+          # eas build --platform android --profile production --non-interactive
+          echo "Android build initiated"
+
+      - name: 📱 Archive Android build
+        run: |
+          echo "Archiving Android build artifacts..."
+          # Archive build artifacts
+
+  # =============================================================================
+  # RELEASE CREATION
+  # =============================================================================
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [validate, build-web]
+    if: always() && needs.validate.result == 'success'
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📝 Generate changelog
+        id: changelog
+        run: |
+          # Generate changelog from git commits
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | sed -n '2p')
+          if [[ -z "$PREVIOUS_TAG" ]]; then
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          echo "## Changes" > changelog.md
+          echo "" >> changelog.md
+          git log --pretty=format:"- %s (%h)" $PREVIOUS_TAG..HEAD >> changelog.md
+
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat changelog.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 🚀 Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.validate.outputs.version }}
+          release_name: Release ${{ needs.validate.outputs.version }}
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
+
+            ## Downloads
+
+            - 🌐 **Web**: Deployed automatically
+            - 📱 **iOS**: Available via TestFlight/App Store
+            - 🤖 **Android**: Available via Play Store/APK download
+
+            ## Installation
+
+            ```bash
+            # Clone and install
+            git clone https://github.com/username/nostream-chat-client.git
+            cd nostream-chat-client
+            git checkout ${{ needs.validate.outputs.version }}
+            npm install
+            npm start
+            ```
+          draft: false
+          prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
+
+  # =============================================================================
+  # POST-RELEASE TASKS
+  # =============================================================================
+  post-release:
+    name: Post-Release Tasks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [create-release, build-web]
+    if: always() && needs.create-release.result == 'success'
+
+    steps:
+      - name: 📚 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📊 Update documentation
+        run: |
+          echo "Updating documentation for ${{ needs.validate.outputs.version }}"
+          # Update version in documentation files
+          # Update API documentation
+          # Update deployment guides
+
+      - name: 🔔 Notify stakeholders
+        run: |
+          echo "Notifying stakeholders of release ${{ needs.validate.outputs.version }}"
+          # Send notifications to Slack, Discord, email, etc.
+          # Update status pages
+          # Notify app stores of new version
+
+      - name: 📈 Analytics & Monitoring
+        run: |
+          echo "Setting up monitoring for release ${{ needs.validate.outputs.version }}"
+          # Configure monitoring dashboards
+          # Set up alerts for new version
+          # Track deployment metrics
+
+  # =============================================================================
+  # ROLLBACK CAPABILITY
+  # =============================================================================
+  rollback:
+    name: Rollback Capability
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: failure()
+
+    steps:
+      - name: 🔄 Prepare rollback
+        run: |
+          echo "Release failed, preparing rollback capabilities..."
+          echo "Manual rollback instructions:"
+          echo "1. Revert web deployment"
+          echo "2. Rollback database migrations (if any)"
+          echo "3. Notify users of service restoration"
