@@ -1,6 +1,7 @@
 import { Link, Stack, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { Fragment } from "react";
-import { StatusBar, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/ui/Button";
@@ -19,10 +20,14 @@ export default function HomeScreen() {
     router.replace("/login");
   };
 
+  const handleNavigateToNostrSample = () => {
+    router.push("/nostrsample");
+  };
+
   return (
     <Fragment>
       <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar barStyle="light-content" />
+      <StatusBar style="light" />
 
       <View style={styles.container}>
         <View style={{ minHeight: 100 }} />
@@ -55,6 +60,7 @@ export default function HomeScreen() {
 
         <SafeAreaView edges={["bottom"]}>
           <Button onPress={handleNavigateToLogin}>Get Started</Button>
+          <Button onPress={handleNavigateToNostrSample}>Nostr Sample</Button>
         </SafeAreaView>
       </View>
     </Fragment>
