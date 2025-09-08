@@ -81,8 +81,8 @@ class NostrTools {
   private relayUrls: string[] = [];
   private subscriptions: Map<string, NostrSubscription> = new Map();
   private user: NostrUser | null = null;
-  private connectionCallbacks: Array<(connected: boolean) => void> = [];
-  private eventCallbacks: Array<(event: NostrEvent) => void> = [];
+  private connectionCallbacks: ((connected: boolean) => void)[] = [];
+  private eventCallbacks: ((event: NostrEvent) => void)[] = [];
   private isInitialized = false;
   private lastPublishTime = 0;
   private publishCount = 0;

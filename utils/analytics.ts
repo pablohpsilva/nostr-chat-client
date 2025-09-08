@@ -9,6 +9,12 @@ import { errorHandler } from "./errorHandling";
 import { performanceMonitor } from "./performanceMonitor";
 
 // =============================================================================
+// REACT HOOKS
+// =============================================================================
+
+import React, { useEffect, useRef } from "react";
+
+// =============================================================================
 // TYPES
 // =============================================================================
 
@@ -425,7 +431,7 @@ class AnalyticsManager {
 
     this.flushTimer = setInterval(() => {
       this.flush();
-    }, this.config.flushInterval);
+    }, this.config.flushInterval) as unknown as NodeJS.Timeout;
   }
 
   private setupErrorBoundaryIntegration(): void {
@@ -598,12 +604,6 @@ class AnalyticsManager {
   }
 }
 
-// =============================================================================
-// REACT HOOKS
-// =============================================================================
-
-import React, { useEffect, useRef } from "react";
-
 /**
  * Hook for tracking screen views automatically
  */
@@ -653,8 +653,4 @@ export const analytics = new AnalyticsManager();
 
 export type { AnalyticsConfig, AnalyticsEvent, CrashReport, UserMetrics };
 
-export {
-  useAnalyticsInteraction,
-  useAnalyticsPerformance,
-  useAnalyticsScreenView,
-};
+// Hooks are exported above as individual function exports

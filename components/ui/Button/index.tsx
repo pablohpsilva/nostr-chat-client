@@ -53,3 +53,5 @@ export function Button({
     </TouchableOpacity>
   );
 }
+
+export { LinkButton } from "./LinkButton";

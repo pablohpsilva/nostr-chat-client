@@ -9,6 +9,12 @@ import { Platform } from "react-native";
 import { analytics } from "./analytics";
 
 // =============================================================================
+// REACT HOOKS
+// =============================================================================
+
+import { useCallback } from "react";
+
+// =============================================================================
 // TYPES
 // =============================================================================
 
@@ -121,7 +127,7 @@ class SecurityManager {
       });
     } catch (error) {
       this.logSecurityEvent("security_init_failed", "high", {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -193,7 +199,7 @@ class SecurityManager {
     } catch (error) {
       this.logSecurityEvent("input_validation_error", "high", {
         fieldName,
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
 
       return {
@@ -277,7 +283,7 @@ class SecurityManager {
     } catch (error) {
       this.logSecurityEvent("secure_store_failed", "high", {
         key,
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -298,7 +304,7 @@ class SecurityManager {
     } catch (error) {
       this.logSecurityEvent("secure_retrieve_failed", "high", {
         key,
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
       return null;
     }
@@ -311,7 +317,7 @@ class SecurityManager {
     } catch (error) {
       this.logSecurityEvent("secure_remove_failed", "medium", {
         key,
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
     }
   }
@@ -325,7 +331,7 @@ class SecurityManager {
     } catch (error) {
       // Fallback to less secure method
       this.logSecurityEvent("secure_random_fallback", "medium", {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
 
       return Array.from({ length }, () =>
@@ -349,7 +355,7 @@ class SecurityManager {
       return `${hash}:${saltToUse}`;
     } catch (error) {
       this.logSecurityEvent("hash_failed", "high", {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -366,7 +372,7 @@ class SecurityManager {
       return hashedValue === computedValue;
     } catch (error) {
       this.logSecurityEvent("hash_verification_failed", "medium", {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
       return false;
     }
@@ -445,7 +451,7 @@ class SecurityManager {
       }
     } catch (error) {
       this.logSecurityEvent("encryption_init_failed", "critical", {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -470,7 +476,7 @@ class SecurityManager {
       return Buffer.from(encrypted).toString("base64");
     } catch (error) {
       this.logSecurityEvent("encryption_failed", "high", {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -497,7 +503,7 @@ class SecurityManager {
       return decrypted;
     } catch (error) {
       this.logSecurityEvent("decryption_failed", "high", {
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -588,12 +594,6 @@ function isValidRelayUrl(url: string): boolean {
   }
 }
 
-// =============================================================================
-// REACT HOOKS
-// =============================================================================
-
-import { useCallback } from "react";
-
 /**
  * Hook for secure form validation
  */
@@ -642,9 +642,4 @@ export const security = new SecurityManager();
 
 export type { SecurityConfig, SecurityEvent, ValidationRule };
 
-export {
-  NOSTR_VALIDATION_RULES,
-  useRateLimit,
-  useSecureStorage,
-  useSecureValidation,
-};
+// Hooks and constants are exported above as individual exports

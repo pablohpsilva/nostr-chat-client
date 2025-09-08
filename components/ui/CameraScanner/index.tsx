@@ -107,7 +107,7 @@ export const CameraScanner = ({
       timeout = setTimeout(() => {
         setIsActive(true);
         setFlash("off");
-      }, 1000);
+      }, 1000) as unknown as NodeJS.Timeout;
     }
     setIsActive(false);
     return () => {

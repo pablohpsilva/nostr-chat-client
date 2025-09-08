@@ -4,10 +4,9 @@ import {
   StyleSheet,
   TextInput,
   TextInputProps,
-} from "react-native";
+ View } from "react-native";
 
 import { Colors } from "@/constants/Colors";
-import { View } from "react-native";
 import { TypographyOverline } from "../Typography";
 
 interface TextFieldProps extends TextInputProps {

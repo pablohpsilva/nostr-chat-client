@@ -155,7 +155,7 @@ export default function Search() {
 
             {searchQuery ? (
               <TypographyBodyL style={styles.noResultsText}>
-                No results found for "{searchQuery}"
+                No results found for &quot;{searchQuery}&quot;
               </TypographyBodyL>
             ) : (
               <TypographyBodyL style={styles.noResultsText}>

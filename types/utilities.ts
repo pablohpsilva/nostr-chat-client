@@ -63,7 +63,7 @@ export type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<
  */
 export type DeepReadonly<T> = {
   readonly [P in keyof T]: T[P] extends (infer U)[]
-    ? ReadonlyArray<DeepReadonly<U>>
+    ? readonly DeepReadonly<U>[]
     : T[P] extends readonly (infer U)[]
     ? readonly DeepReadonly<U>[]
     : T[P] extends object
@@ -364,8 +364,8 @@ export function removeBrand<T, K>(value: Brand<T, K>): T {
 /**
  * Type-safe Object.keys
  */
-export function typedKeys<T extends object>(obj: T): Array<keyof T> {
-  return Object.keys(obj) as Array<keyof T>;
+export function typedKeys<T extends object>(obj: T): (keyof T)[] {
+  return Object.keys(obj) as (keyof T)[];
 }
 
 /**
@@ -373,14 +373,14 @@ export function typedKeys<T extends object>(obj: T): Array<keyof T> {
  */
 export function typedEntries<T extends object>(
   obj: T
-): Array<[keyof T, T[keyof T]]> {
-  return Object.entries(obj) as Array<[keyof T, T[keyof T]]>;
+): [keyof T, T[keyof T]][] {
+  return Object.entries(obj) as [keyof T, T[keyof T]][];
 }
 
 /**
  * Type-safe array filter with type predicate
  */
-export function filterDefined<T>(array: Array<T | null | undefined>): T[] {
+export function filterDefined<T>(array: (T | null | undefined)[]): T[] {
   return array.filter(isDefined);
 }
 

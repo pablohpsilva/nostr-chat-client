@@ -8,6 +8,12 @@ import { analytics } from "./analytics";
 import { performanceMonitor } from "./performanceMonitor";
 
 // =============================================================================
+// REACT HOOKS
+// =============================================================================
+
+import { useCallback, useEffect, useState } from "react";
+
+// =============================================================================
 // TYPES
 // =============================================================================
 
@@ -169,13 +175,13 @@ class BundleOptimizer {
   /**
    * Get optimization recommendations
    */
-  getOptimizationRecommendations(): Array<{
+  getOptimizationRecommendations(): {
     type: string;
     severity: "low" | "medium" | "high";
     description: string;
     expectedSavings: number;
     implementation: string;
-  }> {
+  }[] {
     if (!this.analysis) {
       return [
         {
@@ -285,7 +291,9 @@ class BundleOptimizer {
           await this.enableTreeShaking();
           applied.push("tree_shaking");
         } catch (error) {
-          errors.push(`Tree shaking failed: ${error.message}`);
+          errors.push(
+            `Tree shaking failed: ${error instanceof Error ? error.message : String(error)}`
+          );
         }
       } else {
         skipped.push("tree_shaking");
@@ -297,7 +305,9 @@ class BundleOptimizer {
           await this.enableCodeSplitting();
           applied.push("code_splitting");
         } catch (error) {
-          errors.push(`Code splitting failed: ${error.message}`);
+          errors.push(
+            `Code splitting failed: ${error instanceof Error ? error.message : String(error)}`
+          );
         }
       } else {
         skipped.push("code_splitting");
@@ -309,7 +319,9 @@ class BundleOptimizer {
           await this.enableLazyLoading();
           applied.push("lazy_loading");
         } catch (error) {
-          errors.push(`Lazy loading failed: ${error.message}`);
+          errors.push(
+            `Lazy loading failed: ${error instanceof Error ? error.message : String(error)}`
+          );
         }
       } else {
         skipped.push("lazy_loading");
@@ -321,7 +333,9 @@ class BundleOptimizer {
           await this.optimizeImages();
           applied.push("image_optimization");
         } catch (error) {
-          errors.push(`Image optimization failed: ${error.message}`);
+          errors.push(
+            `Image optimization failed: ${error instanceof Error ? error.message : String(error)}`
+          );
         }
       } else {
         skipped.push("image_optimization");
@@ -362,7 +376,7 @@ class BundleOptimizer {
       chunkCount: number;
       score: number;
     };
-    recommendations: Array<any>;
+    recommendations: any[];
     loadingStrategy: LoadingStrategy;
     performanceMetrics: any;
   } {
@@ -602,12 +616,6 @@ class BundleOptimizer {
   }
 }
 
-// =============================================================================
-// REACT HOOKS
-// =============================================================================
-
-import { useCallback, useEffect, useState } from "react";
-
 /**
  * Hook for bundle optimization monitoring
  */
@@ -671,8 +679,4 @@ export type {
   OptimizationConfig,
 };
 
-export {
-  OPTIMIZATION_STRATEGIES,
-  useBundleOptimization,
-  usePerformanceMonitoring,
-};
+// Hooks and constants are exported above as individual exports

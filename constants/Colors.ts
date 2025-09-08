@@ -19,6 +19,10 @@ export const Colors = {
     yellow: "#FFDD72",
     coral: "#FF968E",
     danger: "#cc453a",
+    text: "#000000",
+    background: "#ffffff",
+    icon: "#687076",
+    tabIconDefault: "#687076",
   },
   dark: {
     primary: "#246BFD",
@@ -35,5 +39,9 @@ export const Colors = {
     yellow: "#FFDD72",
     coral: "#FF968E",
     danger: "#cc453a",
+    text: "#ffffff",
+    background: "#000000",
+    icon: "#9BA1A6",
+    tabIconDefault: "#9BA1A6",
   },
 };

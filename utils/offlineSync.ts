@@ -9,6 +9,12 @@ import { analytics } from "./analytics";
 import { errorHandler } from "./errorHandling";
 
 // =============================================================================
+// REACT HOOKS
+// =============================================================================
+
+import { useCallback, useEffect, useState } from "react";
+
+// =============================================================================
 // TYPES
 // =============================================================================
 
@@ -122,7 +128,10 @@ class OfflineSyncManager {
         cacheSize: this.cache.size,
       });
     } catch (error) {
-      errorHandler.handle(error, "OfflineSyncManager.initialize");
+      errorHandler.handle(
+        error instanceof Error ? error : new Error(String(error)),
+        "OfflineSyncManager.initialize"
+      );
       throw error;
     }
   }
@@ -245,7 +254,10 @@ class OfflineSyncManager {
             action.status = "failed";
           }
 
-          errorHandler.handle(error, `OfflineSync.syncAction.${action.type}`);
+          errorHandler.handle(
+            error instanceof Error ? error : new Error(String(error)),
+            `OfflineSync.syncAction.${action.type}`
+          );
         }
       }
 
@@ -515,11 +527,14 @@ class OfflineSyncManager {
 
   private setupPeriodicSync(): void {
     // Sync every 5 minutes when online
-    this.syncInterval = setInterval(() => {
-      if (this.syncStatus.isOnline && !this.syncStatus.isSyncing) {
-        this.attemptSync();
-      }
-    }, 5 * 60 * 1000);
+    this.syncInterval = setInterval(
+      () => {
+        if (this.syncStatus.isOnline && !this.syncStatus.isSyncing) {
+          this.attemptSync();
+        }
+      },
+      5 * 60 * 1000
+    ) as NodeJS.Timeout;
   }
 
   private async attemptSync(): Promise<void> {
@@ -530,7 +545,10 @@ class OfflineSyncManager {
     try {
       await this.forcSync();
     } catch (error) {
-      errorHandler.handle(error, "OfflineSync.attemptSync");
+      errorHandler.handle(
+        error instanceof Error ? error : new Error(String(error)),
+        "OfflineSync.attemptSync"
+      );
     }
   }
 
@@ -634,12 +652,6 @@ class OfflineSyncManager {
     ]);
   }
 }
-
-// =============================================================================
-// REACT HOOKS
-// =============================================================================
-
-import { useCallback, useEffect, useState } from "react";
 
 /**
  * Hook for offline sync status
@@ -754,4 +766,4 @@ export type {
   SyncStatus,
 };
 
-export { useOfflineCache, useOfflineSync, useOptimisticUpdate };
+// Hooks are exported above as individual function exports

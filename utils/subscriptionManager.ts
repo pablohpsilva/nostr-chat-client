@@ -178,7 +178,7 @@ export class DebouncedSubscriptionManager extends SubscriptionManager {
     const timer = setTimeout(() => {
       super.subscribe(id, subscription, timeoutMs);
       this.debounceTimers.delete(id);
-    }, debounceMs);
+    }, debounceMs) as unknown as NodeJS.Timeout;
 
     this.debounceTimers.set(id, timer);
     return id;

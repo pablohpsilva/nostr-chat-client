@@ -8,7 +8,7 @@ interface Props {
   fallback?: (error: Error, errorInfo: ErrorInfo) => ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
   resetOnPropsChange?: boolean;
-  resetKeys?: Array<string | number>;
+  resetKeys?: (string | number)[];
 }
 
 interface State {

@@ -127,6 +127,16 @@ class PerformanceMonitor {
   }
 
   /**
+   * Get current memory usage
+   */
+  getMemoryUsage(): MemoryUsage | null {
+    if (this.memoryHistory.length === 0) {
+      this.recordMemoryUsage();
+    }
+    return this.memoryHistory[this.memoryHistory.length - 1] || null;
+  }
+
+  /**
    * Get performance metrics summary
    */
   getMetrics(): PerformanceMetric[] {
@@ -174,10 +184,13 @@ class PerformanceMonitor {
     return {
       metrics: this.getMetrics(),
       memoryHistory: this.getMemoryHistory(),
-      averageMetrics: this.getUniqueMetricNames().reduce((acc, name) => {
-        acc[name] = this.getAverageMetric(name);
-        return acc;
-      }, {} as Record<string, number | null>),
+      averageMetrics: this.getUniqueMetricNames().reduce(
+        (acc, name) => {
+          acc[name] = this.getAverageMetric(name);
+          return acc;
+        },
+        {} as Record<string, number | null>
+      ),
     };
   }
 

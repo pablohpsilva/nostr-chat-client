@@ -116,7 +116,7 @@ interface ChatStore {
   shouldFetchDefaultRange: (chatKey: string) => boolean;
   getMissingRanges: (
     chatKey: string
-  ) => Array<{ since: number; until: number }>;
+  ) => { since: number; until: number }[];
   markFetched: (chatKey: string) => void;
 }
 
@@ -412,7 +412,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       return [defaultRange];
     }
 
-    const ranges: Array<{ since: number; until: number }> = [];
+    const ranges: { since: number; until: number }[] = [];
 
     // Always fetch 10 days before the oldest message we have
     const tenDaysBeforeOldest = chatData.since

@@ -198,7 +198,7 @@ class SubscriptionCache {
   private startCleanup(): void {
     this.cleanupInterval = setInterval(() => {
       this.cleanupOldEntries();
-    }, 30000); // Clean up every 30 seconds
+    }, 30000) as unknown as NodeJS.Timeout; // Clean up every 30 seconds
   }
 
   /**

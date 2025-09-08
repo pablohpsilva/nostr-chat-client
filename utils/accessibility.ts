@@ -8,6 +8,12 @@ import { AccessibilityInfo, Platform } from "react-native";
 import { analytics } from "./analytics";
 
 // =============================================================================
+// REACT HOOKS
+// =============================================================================
+
+import { useCallback, useEffect, useState } from "react";
+
+// =============================================================================
 // TYPES
 // =============================================================================
 
@@ -274,7 +280,7 @@ class AccessibilityManager {
       } else if (Platform.OS === "android") {
         AccessibilityInfo.announceForAccessibility(text);
       }
-    }, delay);
+    }, delay) as unknown as NodeJS.Timeout;
 
     analytics.track("accessibility_announcement", {
       textLength: text.length,
@@ -414,7 +420,7 @@ class AccessibilityManager {
     }
 
     const { key, shiftKey, ctrlKey, altKey, metaKey } = event;
-    const modifiers = [];
+    const modifiers: string[] = [];
 
     if (shiftKey) modifiers.push("Shift");
     if (ctrlKey) modifiers.push("Ctrl");
@@ -447,18 +453,18 @@ class AccessibilityManager {
    */
   validateContent(content: {
     text?: string;
-    images?: Array<{ alt?: string; decorative?: boolean }>;
-    links?: Array<{ text: string; url: string }>;
-    headings?: Array<{ level: number; text: string }>;
+    images?: { alt?: string; decorative?: boolean }[];
+    links?: { text: string; url: string }[];
+    headings?: { level: number; text: string }[];
   }): {
     isValid: boolean;
-    violations: Array<{ type: string; message: string; severity: string }>;
+    violations: { type: string; message: string; severity: string }[];
   } {
-    const violations: Array<{
+    const violations: {
       type: string;
       message: string;
       severity: string;
-    }> = [];
+    }[] = [];
 
     // Check text contrast (simplified check)
     if (content.text && content.text.length < 3) {
@@ -529,7 +535,7 @@ class AccessibilityManager {
   generateReport(): {
     score: number;
     config: AccessibilityConfig;
-    features: Array<{ name: string; enabled: boolean; score: number }>;
+    features: { name: string; enabled: boolean; score: number }[];
     recommendations: string[];
   } {
     const features = [
@@ -690,16 +696,10 @@ class AccessibilityManager {
   }
 }
 
-// =============================================================================
-// REACT HOOKS
-// =============================================================================
-
-import { useCallback, useEffect, useState } from "react";
-
 /**
  * Hook for accessibility configuration
  */
-export function useAccessibility() {
+function useAccessibilityConfig() {
   const [config, setConfig] = useState<AccessibilityConfig>(
     accessibility.getConfig()
   );
@@ -729,7 +729,7 @@ export function useAccessibility() {
 /**
  * Hook for keyboard navigation
  */
-export function useKeyboardNavigation(context: string) {
+function useKeyboardNav(context: string) {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const result = accessibility.handleKeyboard(event, context);
@@ -750,7 +750,7 @@ export function useKeyboardNavigation(context: string) {
 /**
  * Hook for focus management
  */
-export function useFocusManagement() {
+function useFocusManager() {
   const focusElement = useCallback((elementId: string) => {
     accessibility.focusElement(elementId);
   }, []);
@@ -765,7 +765,7 @@ export function useFocusManagement() {
 /**
  * Hook for accessibility props
  */
-export function useAccessibilityProps(
+function useAccessibilityPropsHelper(
   label: string,
   hint?: string,
   role?: string,
@@ -790,8 +790,8 @@ export type {
 export {
   COLOR_SCHEMES,
   KEYBOARD_SHORTCUTS,
-  useAccessibility,
-  useAccessibilityProps,
-  useFocusManagement,
-  useKeyboardNavigation,
+  useAccessibilityConfig as useAccessibility,
+  useAccessibilityPropsHelper as useAccessibilityProps,
+  useFocusManager as useFocusManagement,
+  useKeyboardNav as useKeyboardNavigation,
 };
