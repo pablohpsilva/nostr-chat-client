@@ -1,4 +1,4 @@
-import { useNostrTools } from "@/hooks/useNostrTools";
+import { useNostrTools } from "@/hooks/nostr";
 import React, { createContext, ReactNode, useContext, useEffect } from "react";
 
 // Create the context

@@ -17,7 +17,7 @@ export class SubscriptionManager {
   subscribe(
     id: string,
     subscription: NDKSubscription,
-    timeoutMs = NOSTR_TIMEOUTS.SUBSCRIPTION_TIMEOUT
+    timeoutMs: number = NOSTR_TIMEOUTS.SUBSCRIPTION_TIMEOUT
   ): string {
     if (this.isDestroyed) {
       throw new Error("SubscriptionManager has been destroyed");

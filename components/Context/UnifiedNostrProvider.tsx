@@ -538,5 +538,26 @@ export function useUnifiedNostr(): UnifiedNostrContext {
   return context;
 }
 
+/**
+ * Compatibility hook for the old NDK context interface
+ * This allows existing components to work without changes
+ */
+export function useNDK() {
+  const unified = useUnifiedNostr();
+
+  return {
+    ndk: unified.ndk,
+    signer: unified.signer,
+    fetchEvents: unified.fetchEvents,
+    loginWithNip46: unified.loginWithNip46,
+    loginWithSecret: unified.loginWithSecret,
+    loginWithNip07: unified.loginWithNip07,
+    signPublishEvent: unified.signPublishEvent,
+    logout: unified.logout,
+    getUser: unified.getUser,
+    getProfile: unified.getProfile,
+  };
+}
+
 // Export for backward compatibility
 export { useUnifiedNostr as useNostr };

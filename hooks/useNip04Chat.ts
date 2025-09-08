@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNDK } from "@/components/Context";
 import { NOSTR_TIMEOUTS } from "@/constants/nostr";
 import { useChatStore } from "@/store/chat";
+import { getPrivateKey, hasNDKSigner } from "@/types/ndk";
 import { errorHandler } from "@/utils/errorHandling";
 import { useSubscriptionManager } from "@/utils/subscriptionManager";
 import { useTag } from "./useTag";
@@ -107,8 +108,14 @@ export default function useNip04Chat(_recipients: string | string[]) {
         return [];
       }
 
-      // @ts-expect-error
-      const privateKey = ndk?.signer?._privateKey;
+      const privateKey =
+        ndk && hasNDKSigner(ndk) ? getPrivateKey(ndk.signer) : null;
+
+      if (!privateKey) {
+        throw errorHandler.authenticationError(
+          "No private key available for NIP-04 messages"
+        );
+      }
 
       // Get missing time ranges we need to fetch
       const missingRanges = getMissingRanges(chatKey);
@@ -173,8 +180,14 @@ export default function useNip04Chat(_recipients: string | string[]) {
         return [];
       }
 
-      // @ts-expect-error
-      const privateKey = ndk.signer?._privateKey;
+      const privateKey =
+        ndk && hasNDKSigner(ndk) ? getPrivateKey(ndk.signer) : null;
+
+      if (!privateKey) {
+        throw errorHandler.authenticationError(
+          "No private key available for NIP-04 webhook"
+        );
+      }
 
       // We need two filters to get the complete conversation:
       // 1. Messages sent FROM current user TO recipients
@@ -259,15 +272,22 @@ export default function useNip04Chat(_recipients: string | string[]) {
       }
 
       setLoading(true);
-      // @ts-expect-error
-      const privateKey = ndk?.signer?._privateKey;
+
+      const privateKey =
+        ndk && hasNDKSigner(ndk) ? getPrivateKey(ndk.signer) : null;
+
+      if (!privateKey) {
+        throw errorHandler.authenticationError(
+          "No private key available for sending NIP-04 message"
+        );
+      }
 
       const events = recipients
         .map((recipient) => {
           const event = {
             pubkey: currentUser.pubkey,
             kind: NDKKind.EncryptedDirectMessage,
-            content: nip04.encrypt(privateKey!, currentUser.pubkey, message),
+            content: nip04.encrypt(privateKey, currentUser.pubkey, message),
             tags: [["p", recipient.publicKey]],
             created_at: Math.floor(Date.now() / 1000),
           };

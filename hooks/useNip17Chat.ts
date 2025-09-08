@@ -12,6 +12,7 @@ import { NOSTR_TIMEOUTS } from "@/constants/nostr";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/internal-lib/nip17";
 import { useChatStore } from "@/store/chat";
+import { getPrivateKey, hasNDKSigner } from "@/types/ndk";
 import { errorHandler } from "@/utils/errorHandling";
 import { useSubscriptionManager } from "@/utils/subscriptionManager";
 // Alert and Platform imports removed - using centralized errorHandler
@@ -111,8 +112,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
         return [];
       }
 
-      // @ts-expect-error
-      const privateKey = ndk?.signer?._privateKey;
+      const privateKey =
+        ndk && hasNDKSigner(ndk) ? getPrivateKey(ndk.signer) : null;
+
+      if (!privateKey) {
+        throw errorHandler.authenticationError(
+          "No private key available for decryption"
+        );
+      }
 
       // Filter to get the conversation messages
       const filter: NDKFilter = {
@@ -140,8 +147,15 @@ export default function useNip17Chat(_recipients: string | string[]) {
         return [];
       }
 
-      // @ts-expect-error
-      const privateKey = ndk?.signer?._privateKey;
+      const privateKey =
+        ndk && hasNDKSigner(ndk) ? getPrivateKey(ndk.signer) : null;
+
+      if (!privateKey) {
+        throw errorHandler.authenticationError(
+          "No private key available for webhook"
+        );
+      }
+
       const since = Math.floor(Date.now() / 1000) - 3 * 24 * 60 * 60;
 
       const outgoingFilter: NDKFilter = {
@@ -199,8 +213,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
         return [];
       }
 
-      // @ts-expect-error
-      const privateKey = ndk?.signer?._privateKey;
+      const privateKey =
+        ndk && hasNDKSigner(ndk) ? getPrivateKey(ndk.signer) : null;
+
+      if (!privateKey) {
+        throw errorHandler.authenticationError(
+          "No private key available for historical messages"
+        );
+      }
 
       // Get missing time ranges we need to fetch
       const missingRanges = getMissingRanges(dTag);
@@ -258,8 +278,14 @@ export default function useNip17Chat(_recipients: string | string[]) {
     try {
       setIsSendingMessage(true);
 
-      // @ts-expect-error
-      const privateKey = ndk?.signer?._privateKey;
+      const privateKey =
+        ndk && hasNDKSigner(ndk) ? getPrivateKey(ndk.signer) : null;
+
+      if (!privateKey) {
+        throw errorHandler.authenticationError(
+          "No private key available for sending messages"
+        );
+      }
 
       const events = wrapManyEvents(
         privateKey,
@@ -298,7 +324,9 @@ export default function useNip17Chat(_recipients: string | string[]) {
           } catch (error) {
             console.error("Error publishing event:", error);
             errorHandler.showUserError(
-              `Error publishing event ${index + 1} of ${events.length}: ${error}`,
+              `Error publishing event ${index + 1} of ${
+                events.length
+              }: ${error}`,
               "Publish Failed"
             );
           }

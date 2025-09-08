@@ -138,7 +138,7 @@ const NDKProvider = ({
   );
 };
 
-const useNDK = () => {
+const useOldNDK = () => {
   const context = useContext(NDKContext);
   if (context === undefined) {
     throw new Error("import NDKProvider to use useNDK");
@@ -146,4 +146,8 @@ const useNDK = () => {
   return context;
 };
 
-export { NDKProvider, useNDK };
+// Re-export the compatibility hook from UnifiedNostrProvider
+export { useNDK } from "./UnifiedNostrProvider";
+
+// Keep the old NDKProvider for now but deprecated
+export { NDKProvider };
