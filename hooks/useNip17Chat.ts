@@ -2,24 +2,22 @@ import {
   NDKEvent,
   NDKFilter,
   NDKKind,
-  NDKSubscription,
   NDKSubscriptionOptions,
 } from "@nostr-dev-kit/ndk-hooks";
 import { Event, nip17 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useNDK } from "@/components/Context";
+import { NOSTR_TIMEOUTS } from "@/constants/nostr";
 import { ReplyTo } from "@/constants/types";
 import { wrapManyEvents } from "@/internal-lib/nip17";
 import { useChatStore } from "@/store/chat";
-import { Alert, Platform } from "react-native";
+import { errorHandler } from "@/utils/errorHandling";
+import { useSubscriptionManager } from "@/utils/subscriptionManager";
+// Alert and Platform imports removed - using centralized errorHandler
 import { useTag } from "./useTag";
 
-let outgoingSub: NDKSubscription;
-
-const alertUser = (message: string) => {
-  Platform.OS === "web" ? alert(message) : Alert.alert(message);
-};
+// Remove this function - we'll use the centralized errorHandler.showUserError instead
 
 export default function useNip17Chat(_recipients: string | string[]) {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
@@ -27,6 +25,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
   const debouncedMessageCache = useRef<any[]>([]);
   const debounceTimer = useRef<number>(0);
   const { createMessageTag } = useTag();
+  const subscriptionManager = useSubscriptionManager();
   const {
     getMessages,
     addMessages,
@@ -101,7 +100,7 @@ export default function useNip17Chat(_recipients: string | string[]) {
           addMessageToConversation(debouncedMessageCache.current, privateKey);
           debouncedMessageCache.current = [];
         }
-      }, 200);
+      }, NOSTR_TIMEOUTS.MESSAGE_DEBOUNCE);
     };
 
   const getConversationMessages = async (
@@ -156,20 +155,36 @@ export default function useNip17Chat(_recipients: string | string[]) {
         ..._options,
       };
 
-      outgoingSub = ndk?.subscribe(outgoingFilter, options)!;
+      const subscription = ndk?.subscribe(outgoingFilter, options);
+      if (!subscription) {
+        throw errorHandler.createError(
+          "CONNECTION_FAILED",
+          "Failed to create subscription"
+        );
+      }
 
-      outgoingSub.on("event", (event: NDKEvent) => {
+      // Use subscription manager for proper cleanup
+      const subscriptionId = `nip17-webhook-${dTag}`;
+      subscriptionManager.subscribe(
+        subscriptionId,
+        subscription,
+        NOSTR_TIMEOUTS.SUBSCRIPTION_TIMEOUT
+      );
+
+      subscription.on("event", (event: NDKEvent) => {
         console.log("FOUND EVENT", event?.id);
-        // addMessageToConversation(event, privateKey!);
         debouncedAddMessages(privateKey!)(event);
       });
 
       // Handle EOSE (End of Stored Events)
-      outgoingSub.on("eose", (event: any) => {
+      subscription.on("eose", (event: any) => {
         console.log("Outgoing messages EOSE received", event);
       });
     } catch (error) {
-      console.error("Error fetching conversation messages:", error);
+      errorHandler.handle(
+        error as Error,
+        "useNip17Chat.getConversationMessagesWebhook"
+      );
       return [];
     }
   };
@@ -282,10 +297,10 @@ export default function useNip17Chat(_recipients: string | string[]) {
             console.log(`Published event ${index + 1} of ${events.length}`);
           } catch (error) {
             console.error("Error publishing event:", error);
-            alertUser(
-              `Error publishing event ${index + 1} of ${events.length}`
+            errorHandler.showUserError(
+              `Error publishing event ${index + 1} of ${events.length}: ${error}`,
+              "Publish Failed"
             );
-            alertUser(`${error}`);
           }
         })
       );
@@ -299,8 +314,8 @@ export default function useNip17Chat(_recipients: string | string[]) {
 
   useEffect(() => {
     return () => {
-      // Clean up subscriptions when the hook unmounts
-      outgoingSub?.stop?.();
+      // Cleanup is handled by useSubscriptionManager automatically
+      // No need for manual cleanup
     };
   }, []);
 

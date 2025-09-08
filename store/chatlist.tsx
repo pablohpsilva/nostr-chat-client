@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { NOSTR_STORAGE_KEYS } from "@/constants/nostr";
 import { ChatRoom } from "@/constants/types";
 import {
   getStoredData,
@@ -7,7 +8,7 @@ import {
   setStoredData,
 } from "@/utils/storage";
 
-const CHATLIST_STORAGE_KEY = "nostream-chatlist-data";
+const CHATLIST_STORAGE_KEY = NOSTR_STORAGE_KEYS.CHATLIST_DATA;
 
 // Helper function to convert Map to object for storage
 const mapToObject = (map: Map<string, ChatRoom>): Record<string, ChatRoom> => {

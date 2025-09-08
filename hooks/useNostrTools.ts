@@ -1,3 +1,4 @@
+import { NOSTR_DEFAULTS } from "@/constants/nostr";
 import { ReplyTo } from "@/constants/types";
 import {
   NostrEvent,
@@ -378,7 +379,7 @@ export function useNostrPublishNip17() {
         setError(null);
         const publishedEvent = await nostrTools.sendNip17DirectMessage(
           // recipientPubkey,
-          "000ce6323f7789c48099bbd7da7248634d3310b170992ab15dbdd677c91ed287",
+          NOSTR_DEFAULTS.DEFAULT_CHAT_RECIPIENT,
           message,
           conversationTitle,
           replyTo,

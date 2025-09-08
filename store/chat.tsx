@@ -1,6 +1,7 @@
 import { nip17 } from "nostr-tools";
 import { create } from "zustand";
 
+import { NOSTR_LIMITS, NOSTR_STORAGE_KEYS } from "@/constants/nostr";
 import { removeDuplicatesByKey } from "@/hooks/useTag";
 import {
   getStoredData,
@@ -33,12 +34,13 @@ import {
  * ```
  */
 
-// Helper function to get default time range (today to 10 days ago)
+// Helper function to get default time range (today to configured days ago)
 const getDefaultTimeRange = () => {
   const now = Math.floor(Date.now() / 1000);
-  const tenDaysAgo = now - 10 * 24 * 60 * 60; // 10 days in seconds
+  const daysAgo =
+    now - NOSTR_LIMITS.DEFAULT_MESSAGE_HISTORY_DAYS * 24 * 60 * 60;
   return {
-    since: tenDaysAgo,
+    since: daysAgo,
     until: now,
   };
 };
@@ -52,7 +54,7 @@ interface ChatData {
   lastFetched?: number; // When we last fetched messages
 }
 
-const CHAT_STORAGE_KEY = "nostream-chat-data";
+const CHAT_STORAGE_KEY = NOSTR_STORAGE_KEYS.CHAT_DATA;
 
 // Helper function to convert Map to object for storage
 const mapToObject = (map: Map<string, ChatData>): Record<string, ChatData> => {

@@ -1,3 +1,8 @@
+import {
+  NOSTR_LIMITS,
+  NOSTR_STORAGE_KEYS,
+  NOSTR_TIMEOUTS,
+} from "@/constants/nostr";
 import { NIP17PossiblePublicKeys, Recipient, ReplyTo } from "@/constants/types";
 import { removeDuplicatesByKey } from "@/hooks/useTag";
 import {
@@ -61,11 +66,6 @@ export interface RelayInfo {
 }
 
 // Constants
-const STORAGE_KEYS = {
-  PRIVATE_KEY: "nostr_private_key",
-  RELAYS: "nostr_relays",
-  USER_PROFILE: "nostr_user_profile",
-} as const;
 
 const DEFAULT_RELAYS = [
   // "wss://relay.damus.io",
@@ -137,7 +137,7 @@ class NostrTools {
     try {
       // Load stored relays
       const storedRelays = await getStoredData<string[]>(
-        STORAGE_KEYS.RELAYS,
+        NOSTR_STORAGE_KEYS.RELAYS,
         relayUrls
       );
 
@@ -278,7 +278,7 @@ class NostrTools {
       this.user = user;
 
       // Store the private key securely
-      await setStoredData(STORAGE_KEYS.PRIVATE_KEY, privateKey);
+      await setStoredData(NOSTR_STORAGE_KEYS.PRIVATE_KEY, privateKey);
 
       return user;
     } catch (error) {
@@ -306,7 +306,7 @@ class NostrTools {
   private async loadStoredUser(): Promise<void> {
     try {
       const storedPrivateKey = await getStoredData<string | null>(
-        STORAGE_KEYS.PRIVATE_KEY,
+        NOSTR_STORAGE_KEYS.PRIVATE_KEY,
         null
       );
       if (storedPrivateKey) {
@@ -333,8 +333,8 @@ class NostrTools {
   async logout(): Promise<void> {
     try {
       this.user = null;
-      await removeStoredData(STORAGE_KEYS.PRIVATE_KEY);
-      await removeStoredData(STORAGE_KEYS.USER_PROFILE);
+      await removeStoredData(NOSTR_STORAGE_KEYS.PRIVATE_KEY);
+      await removeStoredData(NOSTR_STORAGE_KEYS.USER_PROFILE);
 
       // Close all subscriptions
       this.subscriptions.clear();
@@ -434,9 +434,14 @@ class NostrTools {
       );
 
       // Add cooldown for rapid publishes
-      if (this.publishCount > 1 && timeSinceLastPublish < 3000) {
+      if (
+        this.publishCount > 1 &&
+        timeSinceLastPublish < NOSTR_TIMEOUTS.PUBLISH_COOLDOWN
+      ) {
         console.log("⏳ Rapid publish detected, adding cooldown...");
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) =>
+          setTimeout(resolve, NOSTR_TIMEOUTS.RAPID_PUBLISH_COOLDOWN)
+        );
       }
 
       // Convert hex string to Uint8Array for signing
@@ -467,7 +472,9 @@ class NostrTools {
 
       try {
         // Wait for pool to initialize
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) =>
+          setTimeout(resolve, NOSTR_TIMEOUTS.POOL_STABILIZATION_DELAY / 2)
+        );
 
         // Get the array of promises from the isolated pool
         const publishPromises = isolatedPool.publish(targetRelays, signedEvent);
@@ -479,8 +486,15 @@ class NostrTools {
             promise,
             new Promise((_, reject) =>
               setTimeout(
-                () => reject(new Error("Publish timeout (15s)")),
-                15000
+                () =>
+                  reject(
+                    new Error(
+                      `Publish timeout (${
+                        NOSTR_TIMEOUTS.PUBLISH_TIMEOUT / 1000
+                      }s)`
+                    )
+                  ),
+                NOSTR_TIMEOUTS.PUBLISH_TIMEOUT
               )
             ),
           ]).then(
@@ -641,13 +655,18 @@ class NostrTools {
       );
 
       // Add cooldown for rapid publishes
-      if (this.publishCount > 1 && timeSinceLastPublish < 2000) {
+      if (
+        this.publishCount > 1 &&
+        timeSinceLastPublish < NOSTR_TIMEOUTS.RAPID_PUBLISH_COOLDOWN
+      ) {
         console.log("⏳ Rapid NIP-17 publish detected, adding cooldown...");
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) =>
+          setTimeout(resolve, NOSTR_TIMEOUTS.RAPID_PUBLISH_COOLDOWN / 2)
+        );
       }
 
       // Smart reconnection for NIP-17 based on failure history
-      if (this.consecutiveFailures >= 2) {
+      if (this.consecutiveFailures >= NOSTR_LIMITS.MAX_CONSECUTIVE_FAILURES) {
         console.log(
           `🔄 Multiple failures detected (${this.consecutiveFailures}), forcing pool refresh for NIP-17...`
         );
@@ -785,14 +804,14 @@ class NostrTools {
         },
       });
 
-      // Timeout after 10 seconds
+      // Timeout after configured time
       setTimeout(() => {
         sub.close();
         const uniqueEvents = Array.from(
           new Map(events.map((e) => [e.id, e])).values()
         ).sort((a, b) => b.created_at - a.created_at);
         resolve(uniqueEvents);
-      }, 10000);
+      }, NOSTR_TIMEOUTS.SUBSCRIPTION_TIMEOUT);
     });
   }
 
@@ -847,7 +866,7 @@ class NostrTools {
         this.relayUrls.push(relayUrl);
 
         // Update stored relays
-        await setStoredData(STORAGE_KEYS.RELAYS, this.relayUrls);
+        await setStoredData(NOSTR_STORAGE_KEYS.RELAYS, this.relayUrls);
 
         console.log(`Added relay: ${relayUrl}`);
       }
@@ -865,7 +884,7 @@ class NostrTools {
         this.relayUrls.splice(index, 1);
 
         // Update stored relays
-        await setStoredData(STORAGE_KEYS.RELAYS, this.relayUrls);
+        await setStoredData(NOSTR_STORAGE_KEYS.RELAYS, this.relayUrls);
 
         console.log(`Removed relay: ${relayUrl}`);
       }
@@ -934,7 +953,7 @@ class NostrTools {
     this.eventCallbacks = [];
 
     // Delete stored relays
-    await removeStoredData(STORAGE_KEYS.RELAYS);
+    await removeStoredData(NOSTR_STORAGE_KEYS.RELAYS);
 
     // Close the pool only if it exists
     if (this.pool) {

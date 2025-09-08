@@ -2,18 +2,17 @@ import {
   NDKEvent,
   NDKFilter,
   NDKKind,
-  NDKSubscription,
   NDKSubscriptionOptions,
 } from "@nostr-dev-kit/ndk-hooks";
 import { nip04 } from "nostr-tools";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useNDK } from "@/components/Context";
+import { NOSTR_TIMEOUTS } from "@/constants/nostr";
 import { useChatStore } from "@/store/chat";
+import { errorHandler } from "@/utils/errorHandling";
+import { useSubscriptionManager } from "@/utils/subscriptionManager";
 import { useTag } from "./useTag";
-
-let outgoingSub: NDKSubscription;
-let incomingSub: NDKSubscription;
 
 export default function useNip04Chat(_recipients: string | string[]) {
   const [isLoading, setLoading] = useState(false);
@@ -22,6 +21,7 @@ export default function useNip04Chat(_recipients: string | string[]) {
   const { ndk, fetchEvents, signPublishEvent } = useNDK();
   const currentUser = ndk?.activeUser;
   const debounceTimer = useRef<number>(0);
+  const subscriptionManager = useSubscriptionManager();
   const { recipients, chatKey, pubKeys } = useMemo(() => {
     const recipients = Array.isArray(_recipients) ? _recipients : [_recipients];
 
@@ -94,7 +94,7 @@ export default function useNip04Chat(_recipients: string | string[]) {
           addMessageToConversation(debouncedMessageCache.current, privateKey);
           debouncedMessageCache.current = [];
         }
-      }, 200);
+      }, NOSTR_TIMEOUTS.MESSAGE_DEBOUNCE);
     };
 
   const getHistoricalMessages = async (
@@ -201,30 +201,36 @@ export default function useNip04Chat(_recipients: string | string[]) {
         ..._options,
       };
 
-      outgoingSub = ndk?.subscribe(outgoingFilter, options)!;
-      incomingSub = ndk?.subscribe(incomingFilter, options)!;
+      const outgoingSub = ndk?.subscribe(outgoingFilter, options);
+      const incomingSub = ndk?.subscribe(incomingFilter, options);
+
+      if (!outgoingSub || !incomingSub) {
+        throw errorHandler.createError(
+          "CONNECTION_FAILED",
+          "Failed to create subscriptions"
+        );
+      }
+
+      // Use subscription manager for proper cleanup
+      const outgoingId = `nip04-outgoing-${chatKey}`;
+      const incomingId = `nip04-incoming-${chatKey}`;
+
+      subscriptionManager.subscribe(
+        outgoingId,
+        outgoingSub,
+        NOSTR_TIMEOUTS.SUBSCRIPTION_TIMEOUT
+      );
+      subscriptionManager.subscribe(
+        incomingId,
+        incomingSub,
+        NOSTR_TIMEOUTS.SUBSCRIPTION_TIMEOUT
+      );
 
       outgoingSub.on("event", (event: NDKEvent) => {
-        // // For outgoing messages, the p tag contains the recipient
-        // const recipientPubkey = event.tags.find((tag) => tag[0] === "p")?.[1];
-        // // console.log("recipientPubkey", recipientPubkey);
-
-        // if (recipientPubkey) {
-        //   // addMessageToConversation(event, recipientPubkey, privateKey!);
-        //   addMessageToConversation(event, privateKey!);
-        // }
         debouncedAddMessages(privateKey!)(event);
       });
 
       incomingSub.on("event", (event: NDKEvent) => {
-        // // For incoming messages, the author is the sender
-        // const senderPubkey = event.pubkey;
-        // // console.log("senderPubkey", senderPubkey);
-
-        // if (senderPubkey) {
-        //   // addMessageToConversation(event, senderPubkey, privateKey);
-        //   addMessageToConversation(event, privateKey);
-        // }
         debouncedAddMessages(privateKey!)(event);
       });
 
@@ -294,8 +300,8 @@ export default function useNip04Chat(_recipients: string | string[]) {
 
   useEffect(() => {
     return () => {
-      outgoingSub?.stop?.();
-      incomingSub?.stop?.();
+      // Cleanup is handled by useSubscriptionManager automatically
+      // No need for manual cleanup
     };
   }, []);
 
