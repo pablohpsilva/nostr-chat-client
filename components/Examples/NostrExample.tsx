@@ -7,7 +7,7 @@ import {
   useNostrSubscription,
   useNostrTools,
 } from "@/hooks/useNostrTools";
-import { NostrEvent, NostrFilter } from "@/interal-lib/ndk";
+import { NostrEvent, NostrFilter } from "@/internal-lib/ndk";
 import React, { useEffect, useState } from "react";
 import {
   Alert,

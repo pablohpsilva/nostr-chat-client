@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useNDK } from "@/components/Context";
 import { ReplyTo } from "@/constants/types";
-import { wrapManyEvents } from "@/interal-lib/nip17";
+import { wrapManyEvents } from "@/internal-lib/nip17";
 import { useChatStore } from "@/store/chat";
 import { Alert, Platform } from "react-native";
 import { useTag } from "./useTag";

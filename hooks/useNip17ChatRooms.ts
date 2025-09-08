@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useNDK } from "@/components/Context";
 import { ChatRoom, Recipient } from "@/constants/types";
-import { wrapEvent } from "@/interal-lib/nip17";
+import { wrapEvent } from "@/internal-lib/nip17";
 import { useChatListStore } from "@/store/chatlist";
 import useNip17Profiles from "./useNip17Profiles";
 import { useTag } from "./useTag";

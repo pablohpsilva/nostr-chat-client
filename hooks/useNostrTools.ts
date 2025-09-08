@@ -5,7 +5,7 @@ import {
   nostrTools,
   NostrUser,
   RelayInfo,
-} from "@/interal-lib/ndk";
+} from "@/internal-lib/ndk";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // Hook for main nostr connection and authentication

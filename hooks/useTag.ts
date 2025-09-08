@@ -2,7 +2,7 @@ import { nip19 } from "nostr-tools";
 
 import { useNDK } from "@/components/Context";
 import { NIP17PossiblePublicKeys, Recipient } from "@/constants/types";
-import { generateUniqueDTag } from "@/interal-lib/generateUniqueDTag";
+import { generateUniqueDTag } from "@/internal-lib/generateUniqueDTag";
 
 /**
  * Generic function to remove duplicates from an array based on a key.
