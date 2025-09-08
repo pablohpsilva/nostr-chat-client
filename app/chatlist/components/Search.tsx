@@ -11,17 +11,12 @@ import {
   View,
 } from "react-native";
 
-// import { useSearch } from "@/hooks/useSearch";
 import { NDKUserProfile } from "@nostr-dev-kit/ndk";
 
 import { TypographyBodyL } from "@/components/ui/Typography";
 import { Colors } from "@/constants/Colors";
 import { isValidNpub } from "@/interal-lib/utils";
 import SearchStartChat from "./SearchStartChat";
-
-// const formatPubkey = (pubkey: string) => {
-//   return `${pubkey.substring(0, 8)}...${pubkey.substring(pubkey.length - 8)}`;
-// };
 
 /**
  * Format and highlight search terms in content

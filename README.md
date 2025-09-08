@@ -1,50 +1,207 @@
-# Welcome to your Expo app 👋
+# nostr Chat Client 🟣
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A decentralized, privacy-focused chat application built on the Nostr protocol. Experience truly secure messaging with end-to-end encryption, no data collection, and complete user sovereignty over communications.
 
-## Get started
+## ✨ Features
 
-1. Install dependencies
+- 🌐 **Decentralized** - No central servers, operates on the Nostr network
+- 🔒 **Real End-to-End Encryption** - Messages encrypted on your device using NIP-04 and NIP-17 protocols
+- 👤 **Anonymous** - No registration required, you control your identity
+- 🔓 **Permissionless** - Open protocol, censorship-resistant
+- 🚫 **No Tracking** - Zero data collection or analytics
+- ⚡️ **Lightning Powered** - Built-in Lightning Network support
+- 🧅 **Tor Compatible** - Enhanced privacy protection
+- 📱 **Cross-Platform** - iOS, Android, and Web support
+
+## 🛠 Technology Stack
+
+### Core Technologies
+
+- **[Expo](https://expo.dev)** - React Native framework for cross-platform development
+- **[React Native](https://reactnative.dev)** - Mobile app framework
+- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
+- **[Expo Router](https://docs.expo.dev/router/introduction/)** - File-based routing system
+
+### Nostr Implementation
+
+- **[nostr-tools](https://github.com/nbd-wtf/nostr-tools)** - Core Nostr protocol implementation
+- **[NDK (Nostr Development Kit)](https://github.com/nostr-dev-kit/ndk)** - Advanced Nostr functionality
+- **NIP-04** - Direct message encryption
+- **NIP-17** - Private direct messages with enhanced privacy
+- **NIP-44** - Versioned encryption standard
+
+### State Management & Storage
+
+- **[Zustand](https://github.com/pmndrs/zustand)** - Lightweight state management
+- **[AsyncStorage](https://github.com/react-native-async-storage/async-storage)** - Persistent local storage
+- **React Context** - Global state management for Nostr connections
+
+### UI & Styling
+
+- **Custom Design System** - Consistent theming and typography
+- **React Native Reanimated** - Smooth animations
+- **Expo Symbols** - Native system icons
+- **Custom Fonts** - Inter and Poppins font families
+
+### Cryptography & Security
+
+- **[@noble/ciphers](https://github.com/paulmillr/noble-ciphers)** - Cryptographic primitives
+- **[@noble/curves](https://github.com/paulmillr/noble-curves)** - Elliptic curve cryptography
+- **[@noble/hashes](https://github.com/paulmillr/noble-hashes)** - Hash functions
+- **[@scure/bip32](https://github.com/paulmillr/scure-bip32)** - HD key derivation
+- **[@scure/bip39](https://github.com/paulmillr/scure-bip39)** - Mnemonic seed phrases
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** (v18 or later)
+- **pnpm** (recommended) or npm
+- **Expo CLI** (`npm install -g @expo/cli`)
+- **iOS Simulator** (macOS) or **Android Studio** (for emulators)
+
+### Installation
+
+1. **Clone the repository**
 
    ```bash
+   git clone <repository-url>
+   cd nostr-chat-client
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   pnpm install
+   # or
    npm install
    ```
 
-2. Start the app
-
+3. **Start the development server**
    ```bash
-   npx expo start
+   pnpm start
+   # or
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+### Running on Different Platforms
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+#### iOS Simulator (macOS only)
 
 ```bash
-npm run reset-project
+pnpm ios
+# or
+npm run ios
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+#### Android Emulator
 
-## Learn more
+```bash
+pnpm android
+# or
+npm run android
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+#### Web Browser
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+pnpm web
+# or
+npm run web
+```
 
-## Join the community
+#### Expo Go (Development)
 
-Join our community of developers creating universal apps.
+1. Install [Expo Go](https://expo.dev/go) on your mobile device
+2. Scan the QR code from the terminal after running `pnpm start`
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 📱 Building for Production
+
+### iOS
+
+```bash
+# Build for iOS
+pnpm eas:build:ios
+
+# Submit to App Store
+pnpm eas:submit:ios
+
+# Build and submit in one command
+pnpm eas:release:ios
+```
+
+### Android
+
+```bash
+# Prebuild Android
+pnpm prebuild:android
+
+# Build Android APK/AAB
+pnpm eas:build:android
+```
+
+## 🏗 Project Structure
+
+```
+nostr-chat-client/
+├── app/                    # App screens (file-based routing)
+│   ├── chat/              # Chat screens (NIP-04 & NIP-17)
+│   ├── chatlist/          # Chat list and contacts
+│   ├── login/             # Authentication screens
+│   └── keys/              # Key management
+├── components/            # Reusable UI components
+│   ├── Chat/              # Chat-specific components
+│   ├── Context/           # React Context providers
+│   └── ui/                # Design system components
+├── hooks/                 # Custom React hooks
+├── interal-lib/           # Core Nostr implementation
+├── store/                 # Zustand state stores
+├── constants/             # App constants and configuration
+└── utils/                 # Utility functions
+```
+
+## 🔧 Development Scripts
+
+```bash
+# Development
+pnpm start              # Start Expo dev server
+pnpm ios               # Run on iOS simulator
+pnpm android           # Run on Android emulator
+pnpm web               # Run in web browser
+
+# Code Quality
+pnpm lint              # Run ESLint
+pnpm doctor            # Run Expo doctor
+
+# Building
+pnpm prebuild:ios      # Prebuild for iOS
+pnpm prebuild:android  # Prebuild for Android
+
+# Version Management
+pnpm update:version    # Update app version
+pnpm update:build      # Update build number
+```
+
+## 🔐 Privacy & Security
+
+This application prioritizes user privacy and security:
+
+- **Local Key Management** - Private keys never leave your device
+- **End-to-End Encryption** - All messages encrypted before transmission
+- **No Data Collection** - Zero telemetry or analytics
+- **Decentralized Architecture** - No central servers to compromise
+- **Open Source** - Transparent, auditable code
+
+## 📚 Documentation
+
+- [Nostr Tools Usage Guide](./docs/NOSTR_TOOLS_USAGE.md) - Comprehensive guide to the Nostr implementation
+- [Expo Documentation](https://docs.expo.dev/) - Framework documentation
+- [Nostr Protocol](https://nostr.com/) - Learn about the Nostr protocol
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
+
+## 📄 License
+
+This project is private and proprietary. All rights reserved.

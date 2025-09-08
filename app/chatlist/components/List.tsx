@@ -95,6 +95,7 @@ export default function List() {
 
           {isLoadingNip04UserProfiles && <ActivityIndicator size="small" />}
         </View>
+
         {Object.values(nip04UserProfiles).map(
           ({ npub, displayName, picture, created_at }, index) => (
             <ProfileListItem
@@ -117,21 +118,6 @@ export default function List() {
           </View>
         )}
       </View>
-
-      {/* {isLoading ? (
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#0066cc" />
-          <TypographyBodyS style={styles.loadingText}>
-            Loading chats...
-          </TypographyBodyS>
-        </View>
-      ) : !hasConversations ? (
-        <View style={styles.centerContainer}>
-          <TypographyBodyS style={styles.emptyText}>
-            No conversations yet
-          </TypographyBodyS>
-        </View>
-      ) : } */}
     </ScrollView>
   );
 }
