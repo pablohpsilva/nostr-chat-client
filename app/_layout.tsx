@@ -17,6 +17,7 @@ import "react-native-reanimated";
 
 // import NDKHeadless from "@/components/NDKHeadless";
 import { UnifiedNostrProvider } from "@/components/Context/UnifiedNostrProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary/ErrorBoundary";
 import { DEFAULT_RELAYS } from "@/constants";
 import { DarkTheme, DefaultTheme } from "@/constants/Theme";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -62,29 +63,38 @@ export default function RootLayout() {
   }
 
   return (
-    <UnifiedNostrProvider
-      relayUrls={Object.keys(DEFAULT_RELAYS)}
-      autoConnect={true}
+    <ErrorBoundary
+      onError={(error, errorInfo) => {
+        // TODO: Log to crash analytics in production
+        console.error("Root error boundary caught:", error, errorInfo);
+      }}
     >
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        {/* <PolyfillCrypto /> */}
-        {/* <NDKHeadless /> */}
-        <Stack>
-          <Stack.Screen name="features" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="chatlist" options={{ headerShown: false }} />
-          <Stack.Screen name="relays" options={{ headerShown: false }} />
-          <Stack.Screen name="keys" options={{ headerShown: false }} />
-          <Stack.Screen name="nostrsample" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="chat/NIP17/[npub]"
-            options={{ headerShown: false }}
-          />
-          {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </UnifiedNostrProvider>
+      <UnifiedNostrProvider
+        relayUrls={Object.keys(DEFAULT_RELAYS)}
+        autoConnect={true}
+      >
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          {/* <PolyfillCrypto /> */}
+          {/* <NDKHeadless /> */}
+          <Stack>
+            <Stack.Screen name="features" options={{ headerShown: false }} />
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="chatlist" options={{ headerShown: false }} />
+            <Stack.Screen name="relays" options={{ headerShown: false }} />
+            <Stack.Screen name="keys" options={{ headerShown: false }} />
+            <Stack.Screen name="nostrsample" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="chat/NIP17/[npub]"
+              options={{ headerShown: false }}
+            />
+            {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </UnifiedNostrProvider>
+    </ErrorBoundary>
   );
 }
