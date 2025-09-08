@@ -1,7 +1,7 @@
 import { NOSTR_ERROR_CODES } from "@/constants/nostr";
 import { NostrEvent, NostrFilter, nostrTools } from "@/internal-lib/ndk";
 import { errorHandler } from "@/utils/errorHandling";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * Hook for subscribing to Nostr events
@@ -21,17 +21,33 @@ export function useNostrSubscription(
   const [error, setError] = useState<string | null>(null);
   const subscriptionRef = useRef<string | null>(null);
 
-  const { enabled = true, relayUrls, onEvent, onEose } = options;
+  // Use refs to avoid re-subscriptions when callbacks change
+  const onEventRef = useRef(options.onEvent);
+  const onEoseRef = useRef(options.onEose);
 
   useEffect(() => {
-    if (!enabled || !filters.length) return;
+    onEventRef.current = options.onEvent;
+    onEoseRef.current = options.onEose;
+  }, [options.onEvent, options.onEose]);
+
+  const { enabled = true, relayUrls } = options;
+
+  // Memoize filters and relayUrls to prevent unnecessary re-subscriptions
+  const memoizedFilters = useMemo(() => filters, [JSON.stringify(filters)]);
+  const memoizedRelayUrls = useMemo(
+    () => relayUrls,
+    [JSON.stringify(relayUrls)]
+  );
+
+  useEffect(() => {
+    if (!enabled || !memoizedFilters.length) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
       const subscriptionId = nostrTools.subscribe(
-        filters,
+        memoizedFilters,
         (event: NostrEvent) => {
           setEvents((prev) => {
             // Prevent duplicates
@@ -44,13 +60,13 @@ export function useNostrSubscription(
             );
             return newEvents;
           });
-          onEvent?.(event);
+          onEventRef.current?.(event);
         },
         () => {
           setIsLoading(false);
-          onEose?.();
+          onEoseRef.current?.();
         },
-        relayUrls
+        memoizedRelayUrls
       );
 
       subscriptionRef.current = subscriptionId;
@@ -70,7 +86,7 @@ export function useNostrSubscription(
         subscriptionRef.current = null;
       }
     };
-  }, [enabled, JSON.stringify(filters), JSON.stringify(relayUrls)]);
+  }, [enabled, memoizedFilters, memoizedRelayUrls]);
 
   const refetch = useCallback(() => {
     setEvents([]);

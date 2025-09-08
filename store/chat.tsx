@@ -186,8 +186,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         lastFetched: Math.floor(Date.now() / 1000),
       });
 
-      // Auto-save after updating
-      setTimeout(() => get().saveChats(), 0);
+      // Debounced auto-save to prevent excessive saves
+      const saveDebounceTimeout = setTimeout(() => get().saveChats(), 1000);
+
+      // Store timeout ID to clear previous timeout if new updates come in
+      if ((globalThis as any).__chatSaveTimeout) {
+        clearTimeout((globalThis as any).__chatSaveTimeout);
+      }
+      (globalThis as any).__chatSaveTimeout = saveDebounceTimeout;
 
       return { ...state, chats: newChats };
     }),
@@ -224,8 +230,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         until: newUntil,
       });
 
-      // Auto-save after updating
-      setTimeout(() => get().saveChats(), 0);
+      // Debounced auto-save to prevent excessive saves
+      const saveDebounceTimeout = setTimeout(() => get().saveChats(), 1000);
+
+      // Store timeout ID to clear previous timeout if new updates come in
+      if ((globalThis as any).__chatSaveTimeout) {
+        clearTimeout((globalThis as any).__chatSaveTimeout);
+      }
+      (globalThis as any).__chatSaveTimeout = saveDebounceTimeout;
 
       return { ...state, chats: newChats };
     }),
@@ -263,8 +275,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         until: newUntil,
       });
 
-      // Auto-save after updating
-      setTimeout(() => get().saveChats(), 0);
+      // Debounced auto-save to prevent excessive saves
+      const saveDebounceTimeout = setTimeout(() => get().saveChats(), 1000);
+
+      // Store timeout ID to clear previous timeout if new updates come in
+      if ((globalThis as any).__chatSaveTimeout) {
+        clearTimeout((globalThis as any).__chatSaveTimeout);
+      }
+      (globalThis as any).__chatSaveTimeout = saveDebounceTimeout;
 
       return { ...state, chats: newChats };
     }),

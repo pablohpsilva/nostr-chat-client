@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import React, { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
@@ -11,24 +12,39 @@ interface ChatMessageProps {
   timestamp: number;
 }
 
-const ChatMessage = ({ isFromMe, content, timestamp }: ChatMessageProps) => {
-  return (
-    <View
-      style={[
+const ChatMessage = React.memo(
+  ({ isFromMe, content, timestamp }: ChatMessageProps) => {
+    // Memoize the formatted timestamp to avoid recalculating on every render
+    const formattedTimestamp = useMemo(
+      () => dayjs(new Date(timestamp * 1000)).format("YYYY-MM-DD HH:mm"),
+      [timestamp]
+    );
+
+    // Memoize the container styles to prevent array recreation
+    const containerStyles = useMemo(
+      () => [
         styles.container,
         styles.defaultShadow,
         isFromMe ? styles.myMessage : styles.otherMessage,
-      ]}
-    >
-      <MarkdownRenderer text={content} />
-      <TypographyCaptionXS
-        style={[styles.timestamp, isFromMe && styles.myTimestamp]}
-      >
-        {dayjs(new Date(timestamp * 1000)).format("YYYY-MM-DD HH:mm")}
-      </TypographyCaptionXS>
-    </View>
-  );
-};
+      ],
+      [isFromMe]
+    );
+
+    // Memoize the timestamp styles
+    const timestampStyles = useMemo(
+      () => [styles.timestamp, isFromMe && styles.myTimestamp],
+      [isFromMe]
+    );
+    return (
+      <View style={containerStyles}>
+        <MarkdownRenderer text={content} />
+        <TypographyCaptionXS style={timestampStyles}>
+          {formattedTimestamp}
+        </TypographyCaptionXS>
+      </View>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {

@@ -1,10 +1,12 @@
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import ChatMessage from "@/components/Chat/ChatMessage";
+import VirtualizedMessageList from "@/components/Chat/VirtualizedMessageList";
 import { Button } from "@/components/ui/Button";
+import { NOSTR_LIMITS } from "@/constants/nostr";
 import { TimeRange } from "@/store/chat";
 import { useNDK } from "../Context";
 
@@ -15,88 +17,106 @@ interface MessageListProps {
   timeRange: TimeRange;
 }
 
-const MessageList = ({
-  messages,
-  isLoading = false,
-  loadPreviousMessages,
-  timeRange,
-}: MessageListProps) => {
-  const { ndk } = useNDK();
-  const currentUser = ndk?.activeUser;
-  const scrollViewRef = useRef<ScrollView>(null);
-  const lastMessageTimestampRef = useRef<number>(0);
-  const loadMoreText = useMemo(
-    () =>
-      isLoading
-        ? "Fetching and decrypting messages..."
-        : timeRange?.since
-        ? `Loaded since ${dayjs(timeRange.since * 1000).format(
-            "YYYY-MM-DD"
-          )}. Tap to load more.`
-        : "Tap to load messages",
-    [isLoading, timeRange?.since]
-  );
+const MessageList = React.memo(
+  ({
+    messages,
+    isLoading = false,
+    loadPreviousMessages,
+    timeRange,
+  }: MessageListProps) => {
+    const { ndk } = useNDK();
+    const currentUser = ndk?.activeUser;
+    const scrollViewRef = useRef<ScrollView>(null);
+    const lastMessageTimestampRef = useRef<number>(0);
 
-  const scrollToBottom = () => {
-    scrollViewRef.current?.scrollToEnd({ animated: false });
-  };
+    // Memoize the load more text to prevent unnecessary re-renders
+    const loadMoreText = useMemo(
+      () =>
+        isLoading
+          ? "Fetching and decrypting messages..."
+          : timeRange?.since
+          ? `Loaded since ${dayjs(timeRange.since * 1000).format(
+              "YYYY-MM-DD"
+            )}. Tap to load more.`
+          : "Tap to load messages",
+      [isLoading, timeRange?.since]
+    );
 
-  useEffect(() => {
-    if (messages.length === 0) {
-      return;
+    // Memoize scroll function to prevent re-creation
+    const scrollToBottom = useCallback(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: false });
+    }, []);
+
+    // Memoize currentUser pubkey to prevent unnecessary re-renders
+    const currentUserPubkey = useMemo(
+      () => currentUser?.pubkey,
+      [currentUser?.pubkey]
+    );
+
+    useEffect(() => {
+      if (messages.length === 0) {
+        return;
+      }
+
+      const latestMessage = messages[messages.length - 1];
+      const latestTimestamp = latestMessage.created_at || 0;
+
+      if (latestTimestamp > lastMessageTimestampRef.current) {
+        lastMessageTimestampRef.current = latestTimestamp;
+        scrollToBottom();
+      }
+    }, [messages, scrollToBottom]);
+
+    // Use virtualized list for large message counts
+    const shouldUseVirtualization =
+      messages.length > NOSTR_LIMITS.MESSAGE_PER_PAGE;
+
+    if (shouldUseVirtualization) {
+      return (
+        <VirtualizedMessageList
+          messages={messages}
+          isLoading={isLoading}
+          loadPreviousMessages={loadPreviousMessages}
+          timeRange={timeRange}
+        />
+      );
     }
 
-    const latestMessage = messages[messages.length - 1];
-    const latestTimestamp = latestMessage.created_at || 0;
-    // const isFromCurrentUser = latestMessage.pubkey === currentUser?.pubkey;
-
-    if (
-      latestTimestamp > lastMessageTimestampRef.current
-      // && isFromCurrentUser
-    ) {
-      lastMessageTimestampRef.current = latestTimestamp;
-      scrollToBottom();
-    }
-  }, [messages, currentUser?.pubkey]);
-
-  return (
-    <ScrollView
-      ref={scrollViewRef}
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-    >
-      <View>
-        <Button
-          disabled={isLoading}
-          variant="text-primary"
-          onPress={loadPreviousMessages}
-        >
-          {loadMoreText}
-        </Button>
-      </View>
-
-      {messages.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No messages yet</Text>
+    return (
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+      >
+        <View>
+          <Button
+            disabled={isLoading}
+            variant="text-primary"
+            onPress={loadPreviousMessages}
+          >
+            {loadMoreText}
+          </Button>
         </View>
-      ) : (
-        messages.map((message, index) => {
-          const isFromMe = message.pubkey === currentUser?.pubkey;
 
-          return (
+        {messages.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No messages yet</Text>
+          </View>
+        ) : (
+          messages.map((message) => (
             <ChatMessage
-              key={`${message.id}-${message.created_at}-${index}`}
-              isFromMe={isFromMe}
+              key={message.id || `${message.created_at}-${message.pubkey}`}
+              isFromMe={message.pubkey === currentUserPubkey}
               content={message.content}
               timestamp={message.created_at!}
             />
-          );
-        })
-      )}
-      <View style={styles.scrollBuffer} />
-    </ScrollView>
-  );
-};
+          ))
+        )}
+        <View style={styles.scrollBuffer} />
+      </ScrollView>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
